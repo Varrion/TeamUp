@@ -10,10 +10,10 @@ import org.mapstruct.factory.Mappers;
 public interface UserDtoMapper {
     UserDtoMapper INSTANCE = Mappers.getMapper(UserDtoMapper.class);
 
-    @Mapping(target = "personalInfo.email", source = "email")
-    @Mapping(target = "personalInfo.phoneNumber", source = "phoneNumber")
-    @Mapping(target = "personalInfo.city", source = "city")
-    @Mapping(target = "personalInfo.address", source = "address")
-    @Mapping(target = "userRole.role", source = "roleType")
+//    @Mapping(target = "personalInfo.email", source = "email")
+//    @Mapping(target = "personalInfo.phoneNumber", source = "phoneNumber")
+//    @Mapping(target = "personalInfo.city", source = "city")
+//    @Mapping(target = "personalInfo.address", source = "address")
+//    @Mapping(source = "roleType", target = "userRole.role")
     UserDto toDto(User user);
 }

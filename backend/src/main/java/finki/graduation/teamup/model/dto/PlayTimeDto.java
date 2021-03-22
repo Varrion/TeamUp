@@ -1,10 +1,10 @@
 package finki.graduation.teamup.model.dto;
 
-import lombok.Value;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Value
+@Data
 public class PlayTimeDto {
     String fieldStatus;
 

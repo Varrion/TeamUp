@@ -1,10 +1,10 @@
 package finki.graduation.teamup.model.dto;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
 
 @EqualsAndHashCode(callSuper = true)
-@Value
+@Data
 public class UserDto extends PersonalInfoDto {
     String username;
 

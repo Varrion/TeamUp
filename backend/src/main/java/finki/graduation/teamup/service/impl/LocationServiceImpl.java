@@ -5,6 +5,7 @@ import finki.graduation.teamup.model.PersonalInfo;
 import finki.graduation.teamup.model.User;
 import finki.graduation.teamup.model.dto.LocationDto;
 import finki.graduation.teamup.repository.LocationRepository;
+import finki.graduation.teamup.service.FileService;
 import finki.graduation.teamup.service.LocationService;
 import finki.graduation.teamup.service.PersonalInfoFactory;
 import finki.graduation.teamup.service.mapper.LocationDtoMapper;
@@ -22,11 +23,13 @@ import java.util.Optional;
 public class LocationServiceImpl implements LocationService {
     private final LocationRepository locationRepository;
     private final UserDetailsService userDetailsService;
+    private final FileService fileService;
 
     public LocationServiceImpl(LocationRepository locationRepository,
-                               @Qualifier("locationOwnerServiceImpl") UserDetailsService userDetailsService) {
+                               @Qualifier("locationOwnerServiceImpl") UserDetailsService userDetailsService, FileService fileService) {
         this.locationRepository = locationRepository;
         this.userDetailsService = userDetailsService;
+        this.fileService = fileService;
     }
 
     @Override

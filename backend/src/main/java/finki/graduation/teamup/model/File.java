@@ -16,7 +16,16 @@ import javax.persistence.ManyToOne;
 @NoArgsConstructor
 @AllArgsConstructor
 public class File extends BaseName {
-    String location;
+    @ManyToOne
+    Location location;
+
+    @ManyToOne
+    PlayingField playingField;
+
+    @ManyToOne
+    User user;
+
+    String fileLocation;
 
     String type;
 

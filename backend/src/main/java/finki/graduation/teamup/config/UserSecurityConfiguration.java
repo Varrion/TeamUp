@@ -1,5 +1,6 @@
 package finki.graduation.teamup.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -14,7 +15,7 @@ public class UserSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final UserDetailsService userDetailsServiceImpl;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserSecurityConfiguration(UserDetailsService userDetailsServiceImpl, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserSecurityConfiguration(@Qualifier("userServiceImpl") UserDetailsService userDetailsServiceImpl, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userDetailsServiceImpl = userDetailsServiceImpl;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }

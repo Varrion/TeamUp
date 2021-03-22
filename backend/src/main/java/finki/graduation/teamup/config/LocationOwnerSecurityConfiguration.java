@@ -1,5 +1,6 @@
 package finki.graduation.teamup.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -14,7 +15,7 @@ public class LocationOwnerSecurityConfiguration extends WebSecurityConfigurerAda
     private final UserDetailsService adminDetailsServiceImpl;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public LocationOwnerSecurityConfiguration(UserDetailsService adminDetailsServiceImpl, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public LocationOwnerSecurityConfiguration(@Qualifier("locationOwnerServiceImpl") UserDetailsService adminDetailsServiceImpl, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.adminDetailsServiceImpl = adminDetailsServiceImpl;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }

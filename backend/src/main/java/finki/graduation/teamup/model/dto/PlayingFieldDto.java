@@ -1,8 +1,8 @@
 package finki.graduation.teamup.model.dto;
 
-import lombok.Value;
+import lombok.Data;
 
-@Value
+@Data
 public class PlayingFieldDto {
     String name;
 

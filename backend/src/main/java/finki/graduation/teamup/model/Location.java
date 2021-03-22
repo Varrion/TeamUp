@@ -32,6 +32,9 @@ public class Location extends BaseDescription {
     @ManyToOne
     User owner;
 
+    @OneToMany(orphanRemoval = true)
+    Set<File> files;
+
     public void updateLocation(LocationDto locationDto) {
         setName(locationDto.getName());
         setDescription(locationDto.getDescription());

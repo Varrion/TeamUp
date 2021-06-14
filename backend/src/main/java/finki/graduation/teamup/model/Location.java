@@ -6,11 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
@@ -18,6 +16,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Where(clause = "deleted_on is null")
 public class Location extends BaseDescription {
     @OneToMany(orphanRemoval = true, mappedBy = "location")
     Set<PlayingField> playingFields;
@@ -26,7 +25,7 @@ public class Location extends BaseDescription {
 
     Double longitude;
 
-    @OneToOne(mappedBy = "location", orphanRemoval = true)
+    @OneToOne(mappedBy = "location", orphanRemoval = true, cascade = CascadeType.ALL)
     PersonalInfo locationInfo;
 
     @ManyToOne

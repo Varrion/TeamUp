@@ -1,7 +1,7 @@
 package finki.graduation.teamup.repository;
 
 import finki.graduation.teamup.model.Location;
-import finki.graduation.teamup.model.dto.LocationDto;
+import finki.graduation.teamup.model.projection.LocationProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,21 +13,29 @@ import java.util.List;
 @Repository
 public interface LocationRepository extends JpaRepository<Location, Long> {
     @Transactional
-    @Query("SELECT  location.name         AS name, " +
+    @Query("SELECT  location.id           AS id, " +
+            "       location.name         AS name, " +
             "       location.description  AS description, " +
             "       location.latitude     AS latitude, " +
-            "       location.longitude    AS longitude " +
+            "       location.longitude    AS longitude, " +
+            "       owner.username        AS locationOwnerUsername " +
             "FROM Location location " +
-            "WHERE location.deletedOn IS NULL")
-    List<LocationDto> findAllLocations();
+            "    INNER JOIN location.owner owner " +
+            "WHERE location.deletedOn IS NULL " +
+            "   AND owner.deletedOn IS NULL")
+    List<LocationProjection> findAllLocations();
 
     @Transactional
-    @Query("SELECT  location.name         AS name, " +
+    @Query("SELECT  location.id           as id, " +
+            "       location.name         AS name, " +
             "       location.description  AS description, " +
             "       location.latitude     AS latitude, " +
-            "       location.longitude    AS longitude " +
+            "       location.longitude    AS longitude, " +
+            "       owner.username        AS locationOwnerUsername " +
             "FROM Location location " +
+            "    INNER JOIN location.owner owner " +
             "WHERE location.deletedOn IS NULL " +
-            "       AND location.id = :locationId ")
-    LocationDto findLocationById(@Param("locationId") Long locationId);
+            "   AND owner.deletedOn IS NULL" +
+            "   AND location.id = :locationId ")
+    LocationProjection findLocationById(@Param("locationId") Long locationId);
 }

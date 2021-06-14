@@ -1,0 +1,18 @@
+.role-card {
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.quote-text {
+    max-width: fit-content;
+    margin: 0 auto;
+}
+
+.team-up-section {
+    background-color: whitesmoke;
+}

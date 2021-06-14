@@ -1,8 +1,8 @@
 package finki.graduation.teamup.repository;
 
 import finki.graduation.teamup.model.User;
-import finki.graduation.teamup.model.dto.UserDto;
 import finki.graduation.teamup.model.enums.Role;
+import finki.graduation.teamup.model.projection.UserProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,55 +16,54 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     @Transactional
-    @Query("SELECT " +
-            "   user.username        AS username, " +
-            "   user.password        AS password, " +
-            "   user.name            AS name, " +
-            "   user.surname         AS surname, " +
-            "   user.age             AS age, " +
-            "   userInfo.email       AS email, " +
-            "   userInfo.phoneNumber AS phoneNumber, " +
-            "   userInfo.city        AS city, " +
-            "   userInfo.address     AS address, " +
-            "   user.description     AS description, " +
-            "   userRole.role        AS roleType " +
-            "FROM User user " +
-            "   INNER JOIN user.personalInfo userInfo " +
-            "   INNER JOIN user.userRole userRole " +
+    Optional<User> findByUsername(String username);
+
+    @Transactional
+    @Query(value = "SELECT user " +
+                   "FROM User user " +
+                   "INNER JOIN FETCH user.personalInfo personalInfo " +
+                   "WHERE user.deletedOn IS NULL " +
+                   "   AND personalInfo.deletedOn IS NULL " +
+                   "   AND (user.role = :role OR :role IS NULL) ")
+    List<UserProjection> findAllUsers(@Param("role") Role role);
+
+    @Transactional
+    @Query("SELECT user " +
+            "FROM Team team " +
+            "   INNER JOIN team.members user " +
+            "   INNER JOIN FETCH user.personalInfo personalInfo " +
             "WHERE user.deletedOn IS NULL " +
-            "   AND userInfo.deletedOn IS NULL " +
-            "   AND userRole.deletedOn IS NULL " +
-            "   AND (:role IS NULL OR userRole.role = :role)")
-    List<UserDto> findAllUsers(@Param("role") Role role);
+            "      AND team.id = :teamId " +
+            "      AND personalInfo.deletedOn IS NULL" +
+            "      AND team.deletedOn IS NULL ")
+    List<UserProjection> findAllMembersInTeam(@Param("teamId") Long teamId);
 
     @Transactional
-    @Query(" SELECT user " +
+    @Query("SELECT user " +
+            "FROM Team team " +
+            "   INNER JOIN team.pendingMembers user " +
+            "   INNER JOIN FETCH user.personalInfo personalInfo " +
+            "WHERE user.deletedOn IS NULL " +
+            "      AND team.id = :teamId " +
+            "      AND personalInfo.deletedOn IS NULL" +
+            "      AND team.deletedOn IS NULL ")
+    List<UserProjection> findAllPendingMembersForTeam(@Param("teamId") Long teamId);
+
+    @Transactional
+    @Query(value = "SELECT user " +
             "FROM User user " +
-            "   INNER JOIN user.userRole userRole " +
+            "   INNER JOIN FETCH user.personalInfo personalInfo " +
             "WHERE user.username = :username " +
-            "   AND userRole.role=:role " +
-            "   AND user.deletedOn is null ")
-    Optional<User> findUserByUsername(@Param("username") String username, @Param("role") Role role);
+            "   AND user.deletedOn IS NULL " +
+            "   AND personalInfo.deletedOn IS NULL")
+    UserProjection takeUserByUsername(@Param("username") String username);
 
     @Transactional
-    @Query("SELECT " +
-            "   user.username        AS username, " +
-            "   user.password        AS password, " +
-            "   user.name            AS name, " +
-            "   user.surname         AS surname, " +
-            "   user.age             AS age, " +
-            "   userInfo.email       AS email, " +
-            "   userInfo.phoneNumber AS phoneNumber, " +
-            "   userInfo.city        AS city, " +
-            "   userInfo.address     AS address, " +
-            "   user.description     AS description, " +
-            "   userRole.role        AS roleType " +
+    @Query("SELECT COUNT(user.id) " +
             "FROM User user " +
-            "   INNER JOIN user.personalInfo userInfo " +
-            "   INNER JOIN user.userRole userRole " +
-            "WHERE user.id = :id " +
-            "   AND user.deletedOn IS NULL " +
-            "   AND userInfo.deletedOn IS NULL " +
-            "   AND userRole.deletedOn IS NULL ")
-    UserDto findOneUserById(@Param("id") Long id);
+            "INNER JOIN user.personalInfo personalInfo " +
+            "WHERE user.deletedOn IS NULL " +
+            "   AND personalInfo.deletedOn IS NULL " +
+            "   AND (user.username = :username or personalInfo.email = :email) ")
+    int checkIfUsernameAndEmailAreUnique(@Param("username") String username, @Param("email") String email);
 }

@@ -1,0 +1,54 @@
+.center-position {
+    margin: 0 auto;
+}
+
+.team-up-login-text {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    color: white;
+    font-size: xxx-large;
+    font-weight: 700;
+    padding-right: 25px;
+    font-style: italic;
+    font-family: cursive;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.background-image {
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.role-card-text {
+    color: white;
+    text-shadow: 2px 2px black;
+}
+
+.role-card-button {
+    width: 200px;
+    margin: 0 auto !important;
+    border: 1px solid black;
+}
+
+.attribute-card-image {
+    border-radius: 35px;
+    border: 2px solid black;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.border-effect :hover {
+    border-width: 5px;
+    border-color: lightblue;
+}
+
+.zoom :hover {
+    transform: scale(1.2);
+}

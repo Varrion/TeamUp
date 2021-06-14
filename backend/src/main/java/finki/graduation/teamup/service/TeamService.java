@@ -1,25 +1,20 @@
 package finki.graduation.teamup.service;
 
-import finki.graduation.teamup.model.dto.*;
+import finki.graduation.teamup.model.dto.AddRemoveTeamMemberRequestDto;
+import finki.graduation.teamup.model.dto.CreateUpdateTeamMemberRequestDto;
+import finki.graduation.teamup.model.dto.TeamDto;
 import finki.graduation.teamup.model.enums.TeamStatus;
+import finki.graduation.teamup.model.projection.TeamProjection;
 import finki.graduation.teamup.service.base.BaseGetDeleteService;
 
-import java.util.List;
+public interface TeamService extends BaseGetDeleteService<TeamProjection, Long, TeamStatus> {
+    TeamProjection create(CreateUpdateTeamMemberRequestDto requestDto);
 
-public interface TeamService extends BaseGetDeleteService<TeamDto, Long, Void> {
-    List<TeamDto> getAllTeamsByStatus(TeamStatus teamStatus);
+    TeamProjection update(CreateUpdateTeamMemberRequestDto requestDto, Long id);
 
-    TeamDto create(CreateUpdateTeamMemberRequestDto requestDto);
+    TeamProjection changeStatus(String status, Long id);
 
-    TeamDto update(CreateUpdateTeamMemberRequestDto requestDto, Long id);
+    TeamProjection approveMemberInTeam(AddRemoveTeamMemberRequestDto requestDto, Long id);
 
-    TeamDto changeStatus(String status, Long id);
-
-    TeamDto approveMemberInTeam(AddRemoveTeamMemberRequestDto requestDto, Long id);
-
-    TeamDto removeUserFromTeam(AddRemoveTeamMemberRequestDto requestDto, Long id, boolean isUserPending);
-
-    List<UserDto> getAllMembersInTeam(Long teamId);
-
-    List<UserDto> getAllPendingMembersForTeam(Long teamId);
+    TeamProjection removeUserFromTeam(AddRemoveTeamMemberRequestDto requestDto, Long id, boolean isUserPending);
 }

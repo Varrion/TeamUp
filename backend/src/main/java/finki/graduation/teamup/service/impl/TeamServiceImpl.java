@@ -4,13 +4,13 @@ import finki.graduation.teamup.model.Team;
 import finki.graduation.teamup.model.User;
 import finki.graduation.teamup.model.dto.AddRemoveTeamMemberRequestDto;
 import finki.graduation.teamup.model.dto.CreateUpdateTeamMemberRequestDto;
-import finki.graduation.teamup.model.dto.TeamDto;
-import finki.graduation.teamup.model.dto.UserDto;
 import finki.graduation.teamup.model.enums.TeamStatus;
+import finki.graduation.teamup.model.projection.TeamProjection;
 import finki.graduation.teamup.repository.TeamRepository;
 import finki.graduation.teamup.service.TeamService;
-import finki.graduation.teamup.service.mapper.TeamDtoMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.projection.ProjectionFactory;
+import org.springframework.data.projection.SpelAwareProxyProjectionFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -32,19 +32,15 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public List<TeamDto> getAll(Void unused) {
-        return teamRepository.getAllTeams(null);
-    }
-
-    @Override
-    public List<TeamDto> getAllTeamsByStatus(TeamStatus teamStatus) {
+    public List<TeamProjection> getAll(TeamStatus teamStatus) {
         return teamRepository.getAllTeams(teamStatus);
     }
 
     @Override
-    public TeamDto getById(Long id) {
+    public TeamProjection getById(Long id) {
         Team team = findTeamOrThrowException(id);
-        return TeamDtoMapper.INSTANCE.toDto(team);
+
+        return (TeamProjection) team;
     }
 
     @Override
@@ -56,7 +52,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public TeamDto create(CreateUpdateTeamMemberRequestDto requestDto) {
+    public TeamProjection create(CreateUpdateTeamMemberRequestDto requestDto) {
         Team team = new Team();
 
         team.setCreatedOn(LocalDateTime.now());
@@ -77,11 +73,13 @@ public class TeamServiceImpl implements TeamService {
         team.setSize(requestDto.getMaxSize());
 
         teamRepository.save(team);
-        return TeamDtoMapper.INSTANCE.toDto(team);
+
+        ProjectionFactory pf = new SpelAwareProxyProjectionFactory();
+        return pf.createProjection(TeamProjection.class, team);
     }
 
     @Override
-    public TeamDto update(CreateUpdateTeamMemberRequestDto requestDto, Long id) {
+    public TeamProjection update(CreateUpdateTeamMemberRequestDto requestDto, Long id) {
         Team team = findTeamOrThrowException(id);
 
         User teamLead = (User) userService.loadUserByUsername(requestDto.getTeamLead());
@@ -94,22 +92,26 @@ public class TeamServiceImpl implements TeamService {
         team.setSize(requestDto.getMaxSize());
 
         teamRepository.save(team);
-        return TeamDtoMapper.INSTANCE.toDto(team);
+
+        ProjectionFactory pf = new SpelAwareProxyProjectionFactory();
+        return pf.createProjection(TeamProjection.class, team);
     }
 
     @Override
-    public TeamDto changeStatus(String status, Long id) {
+    public TeamProjection changeStatus(String status, Long id) {
         Team team = findTeamOrThrowException(id);
 
         TeamStatus teamStatus = TeamStatus.valueOf(status);
         team.setTeamStatus(teamStatus);
 
         teamRepository.save(team);
-        return TeamDtoMapper.INSTANCE.toDto(team);
+
+        ProjectionFactory pf = new SpelAwareProxyProjectionFactory();
+        return pf.createProjection(TeamProjection.class, team);
     }
 
     @Override
-    public TeamDto approveMemberInTeam(AddRemoveTeamMemberRequestDto requestDto, Long id) {
+    public TeamProjection approveMemberInTeam(AddRemoveTeamMemberRequestDto requestDto, Long id) {
         Team team = findTeamOrThrowException(id);
         validate(requestDto, team, true);
 
@@ -131,11 +133,12 @@ public class TeamServiceImpl implements TeamService {
         team.setPendingMembers(awaitingApproval);
         teamRepository.save(team);
 
-        return TeamDtoMapper.INSTANCE.toDto(team);
+        ProjectionFactory pf = new SpelAwareProxyProjectionFactory();
+        return pf.createProjection(TeamProjection.class, team);
     }
 
     @Override
-    public TeamDto removeUserFromTeam(AddRemoveTeamMemberRequestDto requestDto, Long id, boolean isUserPending) {
+    public TeamProjection removeUserFromTeam(AddRemoveTeamMemberRequestDto requestDto, Long id, boolean isUserPending) {
         Team team = findTeamOrThrowException(id);
         validate(requestDto, team, false);
 
@@ -162,28 +165,13 @@ public class TeamServiceImpl implements TeamService {
         team.setPendingMembers(awaitingApproval);
         teamRepository.save(team);
 
-        return TeamDtoMapper.INSTANCE.toDto(team);
-    }
-
-    @Override
-    public List<UserDto> getAllMembersInTeam(Long teamId) {
-        return teamRepository.findAllMembersInTeam(teamId);
-    }
-
-    @Override
-    public List<UserDto> getAllPendingMembersForTeam(Long teamId) {
-        return teamRepository.findAllPendingMembersForTeam(teamId);
+        ProjectionFactory pf = new SpelAwareProxyProjectionFactory();
+        return pf.createProjection(TeamProjection.class, team);
     }
 
     private Team findTeamOrThrowException(Long id) {
-        Team team = teamRepository.findById(id)
+        return teamRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        if (team.getDeletedOn() != null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-
-        return team;
     }
 
     private void validate(AddRemoveTeamMemberRequestDto requestDto, Team team, boolean isStatusImportant) {

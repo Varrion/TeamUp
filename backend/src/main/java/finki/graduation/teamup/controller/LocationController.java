@@ -1,6 +1,7 @@
 package finki.graduation.teamup.controller;
 
 import finki.graduation.teamup.model.dto.LocationDto;
+import finki.graduation.teamup.model.projection.LocationProjection;
 import finki.graduation.teamup.service.LocationService;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,17 +18,22 @@ public class LocationController {
     }
 
     @GetMapping
-    public List<LocationDto> getAllLocations() {
+    public List<LocationProjection> getAllLocations() {
         return locationService.getAll(null);
     }
 
+    @GetMapping("{id}")
+    public LocationProjection getLocation(@PathVariable Long id) {
+        return locationService.getById(id);
+    }
+
     @PostMapping
-    public LocationDto createLocation(@RequestBody LocationDto locationDto) {
+    public LocationProjection createLocation(@RequestBody LocationDto locationDto) {
         return locationService.save(locationDto);
     }
 
     @PutMapping("{id}")
-    public LocationDto updateLocation(@RequestBody LocationDto locationDto, @PathVariable Long id) {
+    public LocationProjection updateLocation(@RequestBody LocationDto locationDto, @PathVariable Long id) {
         return locationService.update(locationDto, id);
     }
 

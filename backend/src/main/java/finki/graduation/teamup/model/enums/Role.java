@@ -1,7 +1,14 @@
 package finki.graduation.teamup.model.enums;
 
-public enum Role {
+import org.springframework.security.core.GrantedAuthority;
+
+public enum Role implements GrantedAuthority {
     User,
     LocationOwner,
-    Admin
+    Admin;
+
+    @Override
+    public String getAuthority() {
+        return name();
+    }
 }

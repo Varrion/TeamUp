@@ -2,9 +2,8 @@ package finki.graduation.teamup.controller;
 
 import finki.graduation.teamup.model.dto.AddRemoveTeamMemberRequestDto;
 import finki.graduation.teamup.model.dto.CreateUpdateTeamMemberRequestDto;
-import finki.graduation.teamup.model.dto.TeamDto;
-import finki.graduation.teamup.model.dto.UserDto;
 import finki.graduation.teamup.model.enums.TeamStatus;
+import finki.graduation.teamup.model.projection.TeamProjection;
 import finki.graduation.teamup.service.TeamService;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,26 +20,27 @@ public class TeamController {
     }
 
     @GetMapping
-    public List<TeamDto> getAllTeams(@RequestParam(value = "status", required = false) TeamStatus teamStatus) {
-        if (teamStatus != null) {
-            return teamService.getAllTeamsByStatus(teamStatus);
-        }
+    public List<TeamProjection> getAllTeams(@RequestParam(value = "status", required = false) TeamStatus teamStatus) {
+        return teamService.getAll(teamStatus);
+    }
 
-        return teamService.getAll(null);
+    @GetMapping("{id}")
+    public TeamProjection getTeam(@PathVariable Long id) {
+        return teamService.getById(id);
     }
 
     @PostMapping
-    public TeamDto createTeam(@RequestBody CreateUpdateTeamMemberRequestDto createUpdateTeamMemberRequestDto) {
+    public TeamProjection createTeam(@RequestBody CreateUpdateTeamMemberRequestDto createUpdateTeamMemberRequestDto) {
         return teamService.create(createUpdateTeamMemberRequestDto);
     }
 
     @PutMapping("{id}")
-    public TeamDto updateTeam(@RequestBody CreateUpdateTeamMemberRequestDto createUpdateTeamMemberRequestDto, @PathVariable Long id) {
+    public TeamProjection updateTeam(@RequestBody CreateUpdateTeamMemberRequestDto createUpdateTeamMemberRequestDto, @PathVariable Long id) {
         return teamService.update(createUpdateTeamMemberRequestDto, id);
     }
 
     @PatchMapping("{id}")
-    public TeamDto changeTeamStatus(@PathVariable Long id, @RequestBody String teamStatus) {
+    public TeamProjection changeTeamStatus(@PathVariable Long id, @RequestBody String teamStatus) {
         return teamService.changeStatus(teamStatus, id);
     }
 
@@ -49,23 +49,13 @@ public class TeamController {
         teamService.deleteById(id);
     }
 
-    @GetMapping("{id}/members")
-    public List<UserDto> getAllTeamMembers(@PathVariable Long id) {
-        return teamService.getAllMembersInTeam(id);
-    }
-
-    @GetMapping("{id}/pending-members")
-    public List<UserDto> getAllTeamPendingMembers(@PathVariable Long id) {
-        return teamService.getAllPendingMembersForTeam(id);
-    }
-
     @PostMapping("{id}/members/add")
-    public TeamDto addUserInTeam(@RequestBody AddRemoveTeamMemberRequestDto addRemoveTeamMemberRequestDto, @PathVariable Long id) {
+    public TeamProjection addUserInTeam(@RequestBody AddRemoveTeamMemberRequestDto addRemoveTeamMemberRequestDto, @PathVariable Long id) {
         return teamService.approveMemberInTeam(addRemoveTeamMemberRequestDto, id);
     }
 
     @PostMapping("{id}/members/remove")
-    public TeamDto removeUserFromTeam(@RequestBody AddRemoveTeamMemberRequestDto addRemoveTeamMemberRequestDto,
+    public TeamProjection removeUserFromTeam(@RequestBody AddRemoveTeamMemberRequestDto addRemoveTeamMemberRequestDto,
                                       @PathVariable Long id,
                                       @RequestParam(value = "isUserPending") boolean isUserPending) {
         return teamService.removeUserFromTeam(addRemoveTeamMemberRequestDto, id, isUserPending);

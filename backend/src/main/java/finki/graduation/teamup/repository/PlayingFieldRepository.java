@@ -2,6 +2,7 @@ package finki.graduation.teamup.repository;
 
 import finki.graduation.teamup.model.PlayingField;
 import finki.graduation.teamup.model.dto.PlayingFieldDto;
+import finki.graduation.teamup.model.projection.PlayingFieldProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,5 +26,5 @@ public interface PlayingFieldRepository extends JpaRepository<PlayingField, Long
             "WHERE location.id = :locationId " +
             "    AND location.deletedOn IS NULL " +
             "    AND playingField.deletedOn IS NULL")
-    List<PlayingFieldDto> getAllPlayingFieldsByLocation(@Param("locationId") Long locationId);
+    List<PlayingFieldProjection> getAllPlayingFieldsByLocation(@Param("locationId") Long locationId);
 }

@@ -2,6 +2,7 @@ package finki.graduation.teamup.controller;
 
 import finki.graduation.teamup.model.dto.UserDto;
 import finki.graduation.teamup.model.enums.Role;
+import finki.graduation.teamup.model.projection.UserProjection;
 import finki.graduation.teamup.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,28 +19,37 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserDto> getAllUsers(@RequestParam(value = "userRole") Role role) {
-        return userService.getAll(null);
+    public List<UserProjection> getAllUsers(@RequestParam(value = "userRole", required = false) Role role) {
+        return userService.getAll(role);
     }
 
-    @GetMapping("{id}")
-    public UserDto getUserDetails(@PathVariable Long id) {
-        return userService.getById(id);
+    @GetMapping("teams/{teamId}/members")
+    public List<UserProjection> getAllTeamMembers(@PathVariable Long teamId) {
+        return userService.getAllMembersInTeam(teamId);
+    }
+
+    @GetMapping("teams/{teamId}/pending")
+    public List<UserProjection> getAllTeamPendingMembers(@PathVariable Long teamId) {
+        return userService.getAllPendingMembersForTeam(teamId);
+    }
+
+    @GetMapping("{username}")
+    public UserProjection getUserDetails(@PathVariable String username) {
+        return userService.getById(username);
     }
 
     @PostMapping
-    public UserDto saveUser(@RequestBody UserDto userDto) {
+    public UserProjection saveUser(@RequestBody UserDto userDto) {
         return userService.save(userDto);
     }
 
-    @PutMapping("{id}")
-    public UserDto updateUser(@RequestBody UserDto userDto, @PathVariable Long id) {
-        return userService.update(userDto, id);
+    @PutMapping("{username}")
+    public UserProjection updateUser(@RequestBody UserDto userDto, @PathVariable String username) {
+        return userService.update(userDto, username);
     }
 
-    @DeleteMapping("{id}")
-    public void deleteUser(@PathVariable Long id) {
-        userService.deleteById(id);
+    @DeleteMapping("{username}")
+    public void deleteUser(@PathVariable String username) {
+        userService.deleteById(username);
     }
-
 }

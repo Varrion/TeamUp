@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @MappedSuperclass
-public class BaseCreatedOnDeletedOn extends BaseId {
+public abstract class BaseCreatedOnDeletedOn extends BaseId {
     @CreatedDate
     LocalDateTime createdOn;
 

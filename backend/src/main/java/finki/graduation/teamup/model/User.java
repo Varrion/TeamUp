@@ -2,46 +2,53 @@ package finki.graduation.teamup.model;
 
 import finki.graduation.teamup.model.base.BaseDescription;
 import finki.graduation.teamup.model.dto.UserDto;
+import finki.graduation.teamup.model.enums.Role;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User extends BaseDescription implements UserDetails {
+@Where(clause = "deleted_on is null")
+public class User extends BaseDescription implements UserDetails, Serializable {
+    @Column(nullable = false)
     String username;
 
+    @Column(nullable = false)
     String password;
 
+    @Column(nullable = false)
     String surname;
 
     Integer age;
 
-    @OneToOne(mappedBy = "user", orphanRemoval = true)
+    @OneToOne(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     PersonalInfo personalInfo;
 
-    @OneToOne(mappedBy = "user", orphanRemoval = true)
-    UserRole userRole;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    Role role;
 
-    Boolean disabled;
+    boolean isAccountNonExpired = true;
 
-    Boolean accountExpired;
+    boolean isAccountNonLocked = true;
 
-    Boolean accountLocked;
+    boolean isCredentialsNonExpired = true;
 
-    Boolean credentialsExpired;
+    boolean isEnabled = true;
 
     @OneToMany(orphanRemoval = true, mappedBy = "owner")
     Set<Location> ownedLocations;
@@ -63,27 +70,27 @@ public class User extends BaseDescription implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return Collections.singletonList(role);
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return accountExpired;
+        return isAccountNonExpired;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return !accountLocked;
+        return isAccountNonLocked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return isCredentialsNonExpired;
     }
 
     @Override
     public boolean isEnabled() {
-        return !disabled;
+        return isEnabled;
     }
 
     public void deleteUser() {
@@ -91,7 +98,6 @@ public class User extends BaseDescription implements UserDetails {
 
         setDeletedOn(dateTimeNow);
         personalInfo.setDeletedOn(dateTimeNow);
-        userRole.setDeletedOn(dateTimeNow);
     }
 
     public void updateUser(UserDto userDto) {

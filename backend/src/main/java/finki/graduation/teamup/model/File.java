@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.Entity;
 import javax.persistence.Lob;
@@ -15,6 +16,7 @@ import javax.persistence.ManyToOne;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Where(clause = "deleted_on is null")
 public class File extends BaseName {
     @ManyToOne
     Location location;

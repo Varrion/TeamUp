@@ -8,12 +8,12 @@ import finki.graduation.teamup.model.dto.PlayingFieldDto;
 import finki.graduation.teamup.model.enums.FieldStatus;
 import finki.graduation.teamup.model.enums.FieldType;
 import finki.graduation.teamup.model.enums.Sport;
+import finki.graduation.teamup.model.projection.PlayTimeProjection;
+import finki.graduation.teamup.model.projection.PlayingFieldProjection;
 import finki.graduation.teamup.repository.PlayTimeRepository;
 import finki.graduation.teamup.repository.PlayingFieldRepository;
 import finki.graduation.teamup.service.LocationService;
 import finki.graduation.teamup.service.PlayingFieldService;
-import finki.graduation.teamup.service.mapper.PlayTimeDtoMapper;
-import finki.graduation.teamup.service.mapper.PlayingFieldDtoMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -36,14 +36,14 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
     }
 
     @Override
-    public List<PlayingFieldDto> getAll(Long locationId) {
+    public List<PlayingFieldProjection> getAll(Long locationId) {
         return playingFieldRepository.getAllPlayingFieldsByLocation(locationId);
     }
 
     @Override
-    public PlayingFieldDto getById(Long id) {
+    public PlayingFieldProjection getById(Long id) {
         PlayingField playingField = findPlayingFieldOrThrowException(id);
-        return PlayingFieldDtoMapper.INSTANCE.toDto(playingField);
+        return (PlayingFieldProjection) playingField;
     }
 
     @Override
@@ -55,7 +55,7 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
     }
 
     @Override
-    public PlayingFieldDto save(PlayingFieldDto entityDto, Long locationId) {
+    public PlayingFieldProjection save(PlayingFieldDto entityDto, Long locationId) {
         Location location = locationService.findLocationOrThrowException(locationId);
 
         PlayingField playingField = new PlayingField();
@@ -71,26 +71,26 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
         playingField.setLocation(location);
 
         playingFieldRepository.save(playingField);
-        return PlayingFieldDtoMapper.INSTANCE.toDto(playingField);
+        return (PlayingFieldProjection) playingField;
     }
 
     @Override
-    public PlayingFieldDto update(PlayingFieldDto entityDto, Long fieldId) {
+    public PlayingFieldProjection update(PlayingFieldDto entityDto, Long fieldId) {
         PlayingField playingField = findPlayingFieldOrThrowException(fieldId);
         playingField.updateField(entityDto);
 
         playingFieldRepository.save(playingField);
-        return PlayingFieldDtoMapper.INSTANCE.toDto(playingField);
+        return (PlayingFieldProjection) playingField;
     }
 
     //FieldPlayTime
     @Override
-    public List<PlayTimeDto> getAllFieldPlayingIntervals(Long fieldId) {
+    public List<PlayTimeProjection> getAllFieldPlayingIntervals(Long fieldId) {
         return playTimeRepository.findAllPlayingIntervalsForGivenField(fieldId);
     }
 
     @Override
-    public PlayTimeDto addFieldPlayTime(PlayTimeDto playingFieldDto, Long fieldId) {
+    public PlayTimeProjection addFieldPlayTime(PlayTimeDto playingFieldDto, Long fieldId) {
         PlayingField playingField = findPlayingFieldOrThrowException(fieldId);
 
         PlayTime playTime = new PlayTime();
@@ -104,10 +104,10 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
         playTime.setPlayingField(playingField);
 
         playTimeRepository.save(playTime);
-        return PlayTimeDtoMapper.INSTANCE.toDto(playTime);
+        return (PlayTimeProjection) playTime;
     }
 
-    public PlayTimeDto updatePlayTimeStatus(PlayTimeDto playTimeDto, Long playTimeId) {
+    public PlayTimeProjection updatePlayTimeStatus(PlayTimeDto playTimeDto, Long playTimeId) {
         PlayTime playTime = findPlayTimeOrThrowException(playTimeId);
         FieldStatus status = FieldStatus.valueOf(playTimeDto.getFieldStatus());
         playTime.setFieldStatus(status);
@@ -116,7 +116,7 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
         playTime.setGameEndTime(playTimeDto.getGameEndTime());
 
         playTimeRepository.save(playTime);
-        return PlayTimeDtoMapper.INSTANCE.toDto(playTime);
+        return (PlayTimeProjection) playTime;
     }
 
     @Override

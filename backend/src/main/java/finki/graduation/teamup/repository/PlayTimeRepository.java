@@ -2,6 +2,7 @@ package finki.graduation.teamup.repository;
 
 import finki.graduation.teamup.model.PlayTime;
 import finki.graduation.teamup.model.dto.PlayTimeDto;
+import finki.graduation.teamup.model.projection.PlayTimeProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,5 +25,5 @@ public interface PlayTimeRepository extends JpaRepository<PlayTime, Long> {
             "      AND field.id = :fieldId " +
             "      AND field.deletedOn IS NULL " +
             "      AND location.deletedOn IS NULL")
-    List<PlayTimeDto> findAllPlayingIntervalsForGivenField(@Param("fieldId") Long fieldId);
+    List<PlayTimeProjection> findAllPlayingIntervalsForGivenField(@Param("fieldId") Long fieldId);
 }

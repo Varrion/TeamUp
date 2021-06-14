@@ -1,7 +1,6 @@
 package finki.graduation.teamup.model.dto;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data

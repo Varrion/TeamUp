@@ -4,41 +4,38 @@ import finki.graduation.teamup.model.Location;
 import finki.graduation.teamup.model.PersonalInfo;
 import finki.graduation.teamup.model.User;
 import finki.graduation.teamup.model.dto.LocationDto;
+import finki.graduation.teamup.model.projection.LocationProjection;
 import finki.graduation.teamup.repository.LocationRepository;
 import finki.graduation.teamup.service.FileService;
 import finki.graduation.teamup.service.LocationService;
-import finki.graduation.teamup.service.PersonalInfoFactory;
-import finki.graduation.teamup.service.mapper.LocationDtoMapper;
-import org.springframework.beans.factory.annotation.Qualifier;
+import finki.graduation.teamup.service.UserService;
+import finki.graduation.teamup.service.factory.PersonalInfoFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class LocationServiceImpl implements LocationService {
     private final LocationRepository locationRepository;
-    private final UserDetailsService userDetailsService;
+    private final UserService userService;
     private final FileService fileService;
 
-    public LocationServiceImpl(LocationRepository locationRepository,
-                               @Qualifier("locationOwnerServiceImpl") UserDetailsService userDetailsService, FileService fileService) {
+    public LocationServiceImpl(LocationRepository locationRepository, UserService userService, FileService fileService) {
         this.locationRepository = locationRepository;
-        this.userDetailsService = userDetailsService;
+        this.userService = userService;
         this.fileService = fileService;
     }
 
     @Override
-    public List<LocationDto> getAll(Void unused) {
+    public List<LocationProjection> getAll(Void unused) {
         return locationRepository.findAllLocations();
     }
 
     @Override
-    public LocationDto getById(Long id) {
+    public LocationProjection getById(Long id) {
         return locationRepository.findLocationById(id);
     }
 
@@ -51,10 +48,10 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public LocationDto save(LocationDto entityDto) {
+    public LocationProjection save(LocationDto entityDto) {
         Location location = new Location();
 
-        User locationOwner = (User) userDetailsService.loadUserByUsername(entityDto.getLocationOwnerUsername());
+        User locationOwner = (User) userService.loadUserByUsername(entityDto.getLocationOwnerUsername());
         location.setOwner(locationOwner);
         location.setCreatedOn(LocalDateTime.now());
 
@@ -63,16 +60,17 @@ public class LocationServiceImpl implements LocationService {
         location.setName(entityDto.getName());
         location.setDescription(entityDto.getDescription());
 
-        PersonalInfo locationInfo = PersonalInfoFactory.setPersonalInfo(entityDto, Optional.empty());
+        PersonalInfo locationInfo = PersonalInfoFactory.setPersonalInfo(entityDto, null);
+        locationInfo.setLocation(location);
         location.setLocationInfo(locationInfo);
 
         locationRepository.save(location);
 
-        return LocationDtoMapper.INSTANCE.toDto(location);
+        return (LocationProjection) location;
     }
 
     @Override
-    public LocationDto update(LocationDto entityDto, Long entityId) {
+    public LocationProjection update(LocationDto entityDto, Long entityId) {
         Location location = findLocationOrThrowException(entityId);
 
         if (!location.getOwner().getUsername().equals(entityDto.getLocationOwnerUsername())) {
@@ -82,7 +80,7 @@ public class LocationServiceImpl implements LocationService {
         location.updateLocation(entityDto);
         locationRepository.save(location);
 
-        return LocationDtoMapper.INSTANCE.toDto(location);
+        return (LocationProjection) location;
     }
 
     @Override

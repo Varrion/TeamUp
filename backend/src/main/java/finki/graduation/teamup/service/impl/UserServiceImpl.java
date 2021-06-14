@@ -2,77 +2,70 @@ package finki.graduation.teamup.service.impl;
 
 import finki.graduation.teamup.model.PersonalInfo;
 import finki.graduation.teamup.model.User;
-import finki.graduation.teamup.model.UserRole;
 import finki.graduation.teamup.model.dto.UserDto;
 import finki.graduation.teamup.model.enums.Role;
+import finki.graduation.teamup.model.projection.UserProjection;
 import finki.graduation.teamup.repository.UserRepository;
-import finki.graduation.teamup.service.PersonalInfoFactory;
+import finki.graduation.teamup.service.factory.PersonalInfoFactory;
 import finki.graduation.teamup.service.UserService;
+import org.springframework.data.projection.ProjectionFactory;
+import org.springframework.data.projection.SpelAwareProxyProjectionFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class UserServiceImpl implements UserDetailsService, UserService {
+public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        User user = userRepository.findUserByUsername(userName, Role.User)
+        return userRepository.findByUsername(userName)
                 .orElseThrow(() -> new UsernameNotFoundException("User Name is not Found"));
-
-//            List<Role> roleList = new ArrayList<>();
-//            for (UserRole userRole : user.getRoles()) {
-//                roleList.add(userRole.getRole());
-//            }
-
-        return User.builder()
-                .username(user.getUsername())
-                //change here to store encoded password in db
-                .password(bCryptPasswordEncoder.encode(user.getPassword()))
-                .disabled(user.getDisabled())
-                .accountExpired(user.getAccountExpired())
-                .accountLocked(user.getAccountLocked())
-                .credentialsExpired(user.getCredentialsExpired())
-                .userRole(user.getUserRole())
-                .build();
-
     }
 
     @Override
-    public List<UserDto> getAll(Role role) {
+    public List<UserProjection> getAll(Role role) {
         return userRepository.findAllUsers(role);
     }
 
+
     @Override
-    public UserDto getById(Long id) {
-        return userRepository.findOneUserById(id);
+    public List<UserProjection> getAllMembersInTeam(Long teamId) {
+        return userRepository.findAllMembersInTeam(teamId);
     }
 
     @Override
-    public void deleteById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public List<UserProjection> getAllPendingMembersForTeam(Long teamId) {
+        return userRepository.findAllPendingMembersForTeam(teamId);
+    }
+
+    @Override
+    public UserProjection getById(String username) {
+        return userRepository.takeUserByUsername(username);
+    }
+
+    @Override
+    public void deleteById(String username) {
+        User user = (User) loadUserByUsername(username);
         user.deleteUser();
-
-        userRepository.save(user);
     }
 
     @Override
-    public UserDto save(UserDto entityDto) {
+    public UserProjection save(UserDto entityDto) {
+        if (userRepository.checkIfUsernameAndEmailAreUnique(entityDto.getUsername(), entityDto.getEmail()) != 0) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
+        }
+
         User user = new User();
         LocalDateTime dateTimeNow = LocalDateTime.now();
 
@@ -81,50 +74,43 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         user.setPassword(entityDto.getPassword());
         user.setAge(entityDto.getAge());
         user.setName(entityDto.getName());
+        user.setSurname(entityDto.getSurname());
         user.setDescription(entityDto.getDescription());
 
-        PersonalInfo personalInfo = PersonalInfoFactory.setPersonalInfo(entityDto, Optional.empty());
-        UserRole userRole = setUserRole(entityDto, Optional.empty());
-
-        user.setUserRole(userRole);
+        PersonalInfo personalInfo = PersonalInfoFactory.setPersonalInfo(entityDto, null);
+        personalInfo.setUser(user);
         user.setPersonalInfo(personalInfo);
 
+        if (entityDto.getRoleType() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
+        Role role = Role.valueOf(entityDto.getRoleType());
+        user.setRole(role);
+
         userRepository.save(user);
-        return entityDto;
+
+        ProjectionFactory pf = new SpelAwareProxyProjectionFactory();
+        return pf.createProjection(UserProjection.class, user);
     }
 
     @Override
-    public UserDto update(UserDto entityDto, Long entityId) {
-        User user = userRepository.findById(entityId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public UserProjection update(UserDto entityDto, String username) {
+        User user = (User) loadUserByUsername(username);
         if (user.getDeletedOn() == null) {
             user.updateUser(entityDto);
-            PersonalInfo personalInfo = PersonalInfoFactory.setPersonalInfo(entityDto, Optional.ofNullable(user.getPersonalInfo()));
-            UserRole userRole = setUserRole(entityDto, Optional.ofNullable(user.getUserRole()));
-
+            PersonalInfo personalInfo = PersonalInfoFactory.setPersonalInfo(entityDto, user.getPersonalInfo());
             user.setPersonalInfo(personalInfo);
-            user.setUserRole(userRole);
+
+            Role role = Role.valueOf(entityDto.getRoleType());
+            user.setRole(role);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
         userRepository.save(user);
-        return entityDto;
-    }
 
-    private UserRole setUserRole(UserDto userDto, Optional<UserRole> optionalUserRole) {
-        LocalDateTime dateTimeNow = LocalDateTime.now();
-        UserRole userRole = new UserRole();
-
-        if (!optionalUserRole.isPresent()) {
-            userRole.setCreatedOn(dateTimeNow);
-        } else {
-            userRole = optionalUserRole.get();
-        }
-
-        Role role = Role.valueOf(userDto.getRoleType());
-        userRole.setCreatedOn(dateTimeNow);
-        userRole.setRole(role);
-
-        return userRole;
+        ProjectionFactory pf = new SpelAwareProxyProjectionFactory();
+        return pf.createProjection(UserProjection.class, user);
     }
 }

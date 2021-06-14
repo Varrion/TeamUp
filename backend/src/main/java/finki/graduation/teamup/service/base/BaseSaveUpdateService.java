@@ -1,7 +1,7 @@
 package finki.graduation.teamup.service.base;
 
-public interface BaseSaveUpdateService<T, K> {
-    T save(T entityDto);
+public interface BaseSaveUpdateService<T, K, V> {
+    T save(K k);
 
-    T update(T entityDto, K entityId);
+    T update(K k, V id);
 }

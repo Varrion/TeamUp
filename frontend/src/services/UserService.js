@@ -42,6 +42,10 @@ const DeleteUser = (userId) => {
     return axios.delete(`${defaultPath}/${userId}`);
 }
 
+const BasicAuth = (username, password) => {
+    return 'Basic ' + window.btoa(username + ":" + password);
+}
+
 export {
     UserRole,
     DeleteUser,
@@ -51,5 +55,6 @@ export {
     LoginUser,
     RegisterUser,
     GetTeamMembers,
-    GetTeamPendingMembers
+    GetTeamPendingMembers,
+    BasicAuth
 }

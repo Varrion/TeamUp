@@ -20,7 +20,7 @@ const THEME = createMuiTheme({
     }
 });
 
-const credentials = sessionStorage.getItem("credentials");
+const credentials = sessionStorage.getItem("authData");
 
 axios.defaults.baseURL = 'http://localhost:8080/api';
 axios.defaults.headers.post['Content-Type'] = 'application/json';

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -9,7 +9,8 @@ import Typography from '@material-ui/core/Typography';
 import {makeStyles} from '@material-ui/core/styles';
 import LoginPhoto from "../../assets/images/login-photo.jpg";
 import {Link} from "@reach/router";
-import {LoginUser, RegisterUser} from "../../services/UserService";
+import {BasicAuth, LoginUser} from "../../services/UserService";
+import {AuthConsumer, useAuthContext} from "../../components/AuthContext";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -25,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Login = () => {
+    const {login} = useAuthContext();
     const classes = useStyles();
     const [user, setUser] = useState({
         username: "",
@@ -40,64 +42,68 @@ const Login = () => {
 
         LoginUser(user)
             .then(res => {
-                console.log(res.data);
+                let authData = BasicAuth(res.data.username, res.data.password);
+                sessionStorage.setItem('authData', authData);
+                login(res.data.username);
             })
     }
 
     return (
-        <Grid container component={"main"}>
-            <Grid item xs={false} sm={4} md={7} className={"background-image team-up-login-text"}
-                  style={{backgroundImage: `url(${LoginPhoto})`}}> Team Up </Grid>
-            <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-                <div className={classes.paper}>
-                    <Avatar>
-                        <LockOutlinedIcon/>
-                    </Avatar>
-                    <Typography component="h1" variant="h5">
-                        Sign in
-                    </Typography>
-                    <form className={"full-width mt-1"} onSubmit={handleSubmit}>
-                        <TextField
-                            onChange={handleChange("username")}
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="username"
-                            label="Username"
-                            name="username"
-                            autoFocus
-                        />
-                        <TextField
-                            onChange={handleChange("password")}
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="password"
-                            label="Password"
-                            type="password"
-                            id="password"
-                            autoComplete="current-password"
-                        />
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            color="primary"
-                            className={classes.submit}
-                        >
-                            Sign In
-                        </Button>
-                        <div className={"text-right"}>
-                            <Link to={"/register"}>
-                                Don't have an account? Sign Up
-                            </Link>
-                        </div>
-                    </form>
-                </div>
-            </Grid>
-        </Grid>
+        <AuthConsumer>
+            {({login}) => <Grid container component={"main"}>
+                <Grid item xs={false} sm={4} md={7} className={"background-image team-up-login-text"}
+                      style={{backgroundImage: `url(${LoginPhoto})`}}> Team Up </Grid>
+                <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+                    <div className={classes.paper}>
+                        <Avatar>
+                            <LockOutlinedIcon/>
+                        </Avatar>
+                        <Typography component="h1" variant="h5">
+                            Sign in
+                        </Typography>
+                        <form className={"full-width mt-1"} onSubmit={handleSubmit}>
+                            <TextField
+                                onChange={handleChange("username")}
+                                variant="outlined"
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="username"
+                                label="Username"
+                                name="username"
+                                autoFocus
+                            />
+                            <TextField
+                                onChange={handleChange("password")}
+                                variant="outlined"
+                                margin="normal"
+                                required
+                                fullWidth
+                                name="password"
+                                label="Password"
+                                type="password"
+                                id="password"
+                                autoComplete="current-password"
+                            />
+                            <Button
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                color="primary"
+                                className={classes.submit}
+                            >
+                                Sign In
+                            </Button>
+                            <div className={"text-right"}>
+                                <Link to={"/register"}>
+                                    Don't have an account? Sign Up
+                                </Link>
+                            </div>
+                        </form>
+                    </div>
+                </Grid>
+            </Grid>}
+        </AuthConsumer>
     );
 }
 

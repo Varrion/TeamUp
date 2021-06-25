@@ -9,10 +9,11 @@ import Login from "./pages/user/Login";
 import Footer from "./components/Footer";
 import Profile from "./pages/user/Profile";
 import Route from "./components/Route";
+import {AuthProvider} from "./components/AuthContext";
 
 const App = props => {
     return (
-        <>
+        <AuthProvider>
             <Match path="/">
                 {(props) => props.match
                     ? <Header isTransparent={true}/>
@@ -37,7 +38,7 @@ const App = props => {
                     : <Footer show={false}/>
                 }
             </Match>
-        </>
+        </AuthProvider>
     );
 }
 

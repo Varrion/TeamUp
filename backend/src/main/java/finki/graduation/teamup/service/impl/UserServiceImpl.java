@@ -3,11 +3,13 @@ package finki.graduation.teamup.service.impl;
 import finki.graduation.teamup.model.PersonalInfo;
 import finki.graduation.teamup.model.User;
 import finki.graduation.teamup.model.dto.UserDto;
+import finki.graduation.teamup.model.dto.UserLoginDto;
 import finki.graduation.teamup.model.enums.Role;
+import finki.graduation.teamup.model.exceptions.InvalidArgumentsException;
 import finki.graduation.teamup.model.projection.UserProjection;
 import finki.graduation.teamup.repository.UserRepository;
-import finki.graduation.teamup.service.factory.PersonalInfoFactory;
 import finki.graduation.teamup.service.UserService;
+import finki.graduation.teamup.service.factory.PersonalInfoFactory;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.projection.SpelAwareProxyProjectionFactory;
 import org.springframework.http.HttpStatus;
@@ -38,6 +40,15 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAllUsers(role);
     }
 
+
+    @Override
+    public UserDetails loginUser(UserLoginDto userLoginDto) {
+        if (userLoginDto.getUsername() == null || userLoginDto.getUsername().isEmpty() || userLoginDto.getPassword() == null || userLoginDto.getPassword().isEmpty()) {
+            throw new InvalidArgumentsException();
+        }
+
+        return loadUserByUsername(userLoginDto.getUsername());
+    }
 
     @Override
     public List<UserProjection> getAllMembersInTeam(Long teamId) {

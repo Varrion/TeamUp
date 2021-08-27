@@ -10,4 +10,4 @@ const Route = props => {
     )
 }
 
-export default Route
+export default Route;

@@ -4,6 +4,7 @@ import finki.graduation.teamup.model.PersonalInfo;
 import finki.graduation.teamup.model.User;
 import finki.graduation.teamup.model.dto.UserDto;
 import finki.graduation.teamup.model.dto.UserLoginDto;
+import finki.graduation.teamup.model.enums.Gender;
 import finki.graduation.teamup.model.enums.Role;
 import finki.graduation.teamup.model.exceptions.InvalidArgumentsException;
 import finki.graduation.teamup.model.projection.UserProjection;
@@ -83,12 +84,11 @@ public class UserServiceImpl implements UserService {
         user.setCreatedOn(dateTimeNow);
         user.setUsername(entityDto.getUsername());
         user.setPassword(entityDto.getPassword());
-        user.setAge(entityDto.getAge());
         user.setName(entityDto.getName());
         user.setSurname(entityDto.getSurname());
         user.setDescription(entityDto.getDescription());
 
-        PersonalInfo personalInfo = PersonalInfoFactory.setPersonalInfo(entityDto, null);
+        PersonalInfo personalInfo = PersonalInfoFactory.setPersonalInfo(entityDto, null, false);
         personalInfo.setUser(user);
         user.setPersonalInfo(personalInfo);
 
@@ -110,7 +110,7 @@ public class UserServiceImpl implements UserService {
         User user = (User) loadUserByUsername(username);
         if (user.getDeletedOn() == null) {
             user.updateUser(entityDto);
-            PersonalInfo personalInfo = PersonalInfoFactory.setPersonalInfo(entityDto, user.getPersonalInfo());
+            PersonalInfo personalInfo = PersonalInfoFactory.setPersonalInfo(entityDto, user.getPersonalInfo(), false);
             user.setPersonalInfo(personalInfo);
 
             Role role = Role.valueOf(entityDto.getRoleType());

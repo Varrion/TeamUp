@@ -1,16 +1,8 @@
-import {Dialog, DialogContent, DialogTitle, Grid, IconButton, makeStyles, Typography} from "@material-ui/core";
+import {Dialog, DialogContent, DialogTitle, Grid, IconButton, Typography} from "@material-ui/core";
 import RoleCard from "../RoleCard";
 import CloseIcon from '@material-ui/icons/Close';
 import {UserRole as Role} from "../../services/UserService";
-
-const useStyles = makeStyles((theme) => ({
-    closeButton: {
-        position: 'absolute',
-        right: theme.spacing(1),
-        top: theme.spacing(1),
-        color: theme.palette.grey[500],
-    },
-}));
+import useStyles from "../MaterialStyles";
 
 const ChooseRole = (props) => {
     const classes = useStyles();
@@ -25,14 +17,13 @@ const ChooseRole = (props) => {
             disableBackdropClick
             fullWidth={true}
             maxWidth={"lg"}
-            open={props.show}
-            onClose={() => props.setShow(false)}
+            {...props}
             aria-labelledby="choose-role-title"
         >
             <DialogTitle disableTypography={true} id={"choose-role-title"} className={"text-center"}>
                 <Typography variant={"h4"} className={"font-weight-bolder"}> Choose your
                     team </Typography></DialogTitle>
-            <IconButton aria-label="close" className={classes.closeButton} onClick={() => props.setShow(false)}>
+            <IconButton aria-label="close" className={classes.closeButton} onClick={() => props.onClose()}>
                 <CloseIcon/>
             </IconButton>
             <DialogContent className={"mb-3"}>

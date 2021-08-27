@@ -8,6 +8,12 @@ const UserRole = {
     Admin: 'Admin'
 }
 
+const Gender = {
+    Male: 'Male',
+    Female: 'Female',
+    Other: 'Other'
+}
+
 const GetAllUsers = (role = null) => {
     return axios.get(defaultPath, {
         params: {role: role}
@@ -15,7 +21,7 @@ const GetAllUsers = (role = null) => {
 }
 
 const GetUser = (username) => {
-    return axios.get(`${defaultPath}//${username}`);
+    return axios.get(`${defaultPath}/${username}`);
 }
 
 const GetTeamMembers = (teamId) => {
@@ -48,6 +54,7 @@ const BasicAuth = (username, password) => {
 
 export {
     UserRole,
+    Gender,
     DeleteUser,
     EditUser,
     GetUser,

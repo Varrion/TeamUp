@@ -2,10 +2,9 @@ package finki.graduation.teamup.model;
 
 import finki.graduation.teamup.model.base.BaseDescription;
 import finki.graduation.teamup.model.dto.UserDto;
+import finki.graduation.teamup.model.enums.Gender;
 import finki.graduation.teamup.model.enums.Role;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +18,10 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @NoArgsConstructor
 @AllArgsConstructor
 @Where(clause = "deleted_on is null")
@@ -33,9 +35,8 @@ public class User extends BaseDescription implements UserDetails, Serializable {
     @Column(nullable = false)
     String surname;
 
-    Integer age;
-
     @OneToOne(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
     PersonalInfo personalInfo;
 
     @Enumerated(EnumType.STRING)
@@ -51,9 +52,11 @@ public class User extends BaseDescription implements UserDetails, Serializable {
     boolean isEnabled = true;
 
     @OneToMany(orphanRemoval = true, mappedBy = "owner")
+    @ToString.Exclude
     Set<Location> ownedLocations;
 
     @OneToMany(orphanRemoval = true)
+    @ToString.Exclude
     Set<File> files;
 
     @OneToOne(mappedBy = "teamLead")
@@ -63,6 +66,7 @@ public class User extends BaseDescription implements UserDetails, Serializable {
     @JoinTable(name = "team_join",
             joinColumns = @JoinColumn(name = "member_id"),
             inverseJoinColumns = @JoinColumn(name = "team_id"))
+    @ToString.Exclude
     Set<Team> joiningTeams;
 
     @ManyToOne
@@ -104,8 +108,9 @@ public class User extends BaseDescription implements UserDetails, Serializable {
         setName(userDto.getName());
         setSurname(userDto.getSurname());
         setDescription(userDto.getDescription());
-        setAge(userDto.getAge());
         setPassword(userDto.getPassword());
+
+        Gender gender = Gender.valueOf(userDto.getGender());
     }
 
     @Override
@@ -113,11 +118,11 @@ public class User extends BaseDescription implements UserDetails, Serializable {
         if (this == o) return true;
         if (!(o instanceof User)) return false;
         User user = (User) o;
-        return getUsername().equals(user.getUsername()) && getPassword().equals(user.getPassword()) && getSurname().equals(user.getSurname()) && getAge().equals(user.getAge());
+        return getUsername().equals(user.getUsername()) && getPassword().equals(user.getPassword()) && getSurname().equals(user.getSurname());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUsername(), getPassword(), getSurname(), getAge());
+        return Objects.hash(getUsername(), getPassword(), getSurname());
     }
 }

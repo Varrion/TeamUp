@@ -13,8 +13,6 @@ public class UserDto extends PersonalInfoDto {
 
     String surname;
 
-    Integer age;
-
     String description;
 
     String roleType;

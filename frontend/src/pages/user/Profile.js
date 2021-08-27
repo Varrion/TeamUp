@@ -1,82 +1,98 @@
-import {
-    Card,
-    CardActions,
-    CardContent,
-    CardHeader,
-    CardMedia,
-    Collapse,
-    Container,
-    IconButton
-} from "@material-ui/core";
-import Avatar from "@material-ui/core/Avatar";
+import {Card, CardContent, CardHeader, Grid, IconButton} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import ShareIcon from '@material-ui/icons/Share';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import {useEffect, useState} from "react";
+import {Gender, GetUser} from "../../services/UserService";
+import NoPhotoFemale from "../../assets/images/GirlSiluethee.jpg";
+import NoPhotoMale from "../../assets/images/BoySiluethe2.jpg";
+import NoPhotoOther from "../../assets/images/OtherSiluethe.jpg";
+import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
+import CakeIcon from '@material-ui/icons/Cake';
+import EmailIcon from '@material-ui/icons/Email';
+import HomeIcon from '@material-ui/icons/Home';
+import LocationCityIcon from '@material-ui/icons/LocationCity';
+import CallIcon from '@material-ui/icons/Call';
+import PersonIcon from '@material-ui/icons/Person';
+import IconTextTypography from "../../components/IconTextTypography";
+import UserEditModal from "./modal/UserEditModal";
 
 const User = props => {
-    return (
-        <Card>
-            <CardHeader
-                avatar={
-                    <Avatar aria-label="recipe">
-                        R
-                    </Avatar>
+    const [user, setUser] = useState(null);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+
+    useEffect(() => {
+        GetUser(props.username)
+            .then(res => {
+                setUser(res.data);
+                console.log(res.data);
+            })
+    }, [])
+
+    return (user &&
+        <Grid container>
+            <Grid item xs={12} md={6} lg={4} className={"d-flex flex-column align-items-center justify-content-center"}>
+                {user.personalInfo.gender === Gender.Female ?
+                    <img className={"rounded-cover-image"} width={250} height={250} src={NoPhotoFemale}
+                         alt={Gender.Female}/>
+                    : user.personalInfo.gender === Gender.Male ?
+                        <img className={"rounded-cover-image"} width={250} height={250} src={NoPhotoMale}
+                             alt={Gender.Male}/>
+                        : <img className={"rounded-cover-image"} width={250} height={250} src={NoPhotoOther}
+                               alt={Gender.Other}/>
                 }
-                action={
-                    <IconButton aria-label="settings">
-                        <MoreVertIcon/>
-                    </IconButton>
-                }
-                title="Shrimp and Chorizo Paella"
-                subheader="September 14, 2016"
-            />
-            <CardMedia
-                image="/static/images/cards/paella.jpg"
-                title="Paella dish"
-            />
-            <CardContent>
-                <Typography variant="body2" color="textSecondary" component="p">
-                    This impressive paella is a perfect party dish and a fun meal to cook together with your
-                    guests. Add 1 cup of frozen peas along with the mussels, if you like.
+                <Typography className={"mt-3"} color={"textSecondary"} variant={"h6"}>
+                    @{user.username}
                 </Typography>
-            </CardContent>
-            <CardActions disableSpacing>
-                <IconButton aria-label="add to favorites">
-                    <FavoriteIcon/>
-                </IconButton>
-                <IconButton aria-label="share">
-                    <ShareIcon/>
-                </IconButton>
-            </CardActions>
-            <Collapse timeout="auto" unmountOnExit>
-                <CardContent>
-                    <Typography paragraph>Method:</Typography>
-                    <Typography paragraph>
-                        Heat 1/2 cup of the broth in a pot until simmering, add saffron and set aside for 10
-                        minutes.
-                    </Typography>
-                    <Typography paragraph>
-                        Heat oil in a (14- to 16-inch) paella pan or a large, deep skillet over medium-high
-                        heat. Add chicken, shrimp and chorizo, and cook, stirring occasionally until lightly
-                        browned, 6 to 8 minutes. Transfer shrimp to a large plate and set aside, leaving chicken
-                        and chorizo in the pan. Add pimentón, bay leaves, garlic, tomatoes, onion, salt and
-                        pepper, and cook, stirring often until thickened and fragrant, about 10 minutes. Add
-                        saffron broth and remaining 4 1/2 cups chicken broth; bring to a boil.
-                    </Typography>
-                    <Typography paragraph>
-                        Add rice and stir very gently to distribute. Top with artichokes and peppers, and cook
-                        without stirring, until most of the liquid is absorbed, 15 to 18 minutes. Reduce heat to
-                        medium-low, add reserved shrimp and mussels, tucking them down into the rice, and cook
-                        again without stirring, until mussels have opened and rice is just tender, 5 to 7
-                        minutes more. (Discard any mussels that don’t open.)
-                    </Typography>
-                    <Typography>
-                        Set aside off of the heat to let rest for 10 minutes, and then serve.
-                    </Typography>
-                </CardContent>
-            </Collapse>
-        </Card>
+                <Typography className={"mt-2"} variant={"h4"}>{user.name} {user.surname}</Typography>
+            </Grid>
+            <Grid item xs={12} md={6} lg={8}>
+                <Card>
+                    <CardHeader title={"Personal Info"} action={
+                        <IconButton onClick={() => setShowUpdateModal(true)}>
+                            <EditOutlinedIcon/>
+                        </IconButton>}/>
+                    <CardContent className={"ml-3"}>
+                        <IconTextTypography text={user.personalInfo?.address}
+                                            caption={"Address"}
+                                            icon={<HomeIcon/>}/>
+                        <IconTextTypography text={user.personalInfo?.city}
+                                            caption={"City"}
+                                            class={"mt-3"}
+                                            icon={<LocationCityIcon/>}/>
+                        <IconTextTypography text={user.personalInfo?.email}
+                                            caption={"Email"}
+                                            class={"mt-3"}
+                                            icon={<EmailIcon/>}/>
+                        <IconTextTypography text={user.personalInfo?.phoneNumber}
+                                            caption={"Phone"}
+                                            class={"mt-3"}
+                                            icon={<CallIcon/>}/>
+                        <IconTextTypography text={user.personalInfo?.gender}
+                                            caption={"Gender"}
+                                            class={"mt-3"}
+                                            icon={<PersonIcon/>}/>
+                    </CardContent>
+                </Card>
+
+                <Card className={"mt-4"}>
+                    <CardHeader title={"Bio"}/>
+                    <CardContent>
+                        <IconTextTypography
+                            text={user.personalInfo?.dateOfBirth.split('T')[0].split("-").reverse().join("-")}
+                            caption={"Birth date"}
+                            class={"ml-3"}
+                            icon={<CakeIcon/>}/>
+                        <Typography className={"mt-3"} variant={"body1"}>
+                            {user.description ?? "Nothing here for now"}
+                        </Typography>
+                    </CardContent>
+                </Card>
+            </Grid>
+            {
+                showUpdateModal &&
+                <UserEditModal profile={user} open={showUpdateModal}
+                               onClose={() => setShowUpdateModal(false)}/>
+            }
+        </Grid>
     )
 }
 

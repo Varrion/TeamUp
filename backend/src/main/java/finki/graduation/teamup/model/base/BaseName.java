@@ -11,5 +11,5 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public class BaseName extends BaseCreatedOnDeletedOn {
     @Column(nullable = false)
-    String name;
+    protected String name;
 }

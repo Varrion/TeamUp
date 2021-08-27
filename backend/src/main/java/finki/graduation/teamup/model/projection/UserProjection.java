@@ -13,7 +13,5 @@ public interface UserProjection extends BaseIdNameDescriptionProjection {
 
     String getSurname();
 
-    Integer getAge();
-
     PersonalInfoProjection getPersonalInfo();
 }

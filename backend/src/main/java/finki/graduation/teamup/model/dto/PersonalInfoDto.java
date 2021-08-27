@@ -2,6 +2,8 @@ package finki.graduation.teamup.model.dto;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class PersonalInfoDto {
     String email;
@@ -13,4 +15,8 @@ public class PersonalInfoDto {
     String address;
 
     String infoType;
+
+    Date dateOfBirth;
+
+    String gender;
 }

@@ -52,3 +52,8 @@
 .zoom :hover {
     transform: scale(1.2);
 }
+
+.rounded-cover-image {
+    border-radius: 50%;
+    object-fit: cover;
+}

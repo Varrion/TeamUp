@@ -60,7 +60,7 @@ public class LocationServiceImpl implements LocationService {
         location.setName(entityDto.getName());
         location.setDescription(entityDto.getDescription());
 
-        PersonalInfo locationInfo = PersonalInfoFactory.setPersonalInfo(entityDto, null);
+        PersonalInfo locationInfo = PersonalInfoFactory.setPersonalInfo(entityDto, null, true);
         locationInfo.setLocation(location);
         location.setLocationInfo(locationInfo);
 
@@ -76,6 +76,9 @@ public class LocationServiceImpl implements LocationService {
         if (!location.getOwner().getUsername().equals(entityDto.getLocationOwnerUsername())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
+
+        PersonalInfo locationInfo = PersonalInfoFactory.setPersonalInfo(entityDto, location.getLocationInfo(), true);
+        location.setLocationInfo(locationInfo);
 
         location.updateLocation(entityDto);
         locationRepository.save(location);

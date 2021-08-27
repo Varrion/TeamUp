@@ -1,19 +1,20 @@
 package finki.graduation.teamup.model;
 
 import finki.graduation.teamup.model.base.BaseName;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import java.util.Objects;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @NoArgsConstructor
 @AllArgsConstructor
 @Where(clause = "deleted_on is null")
@@ -33,4 +34,18 @@ public class File extends BaseName {
 
     @Lob
     byte[] data;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        File file = (File) o;
+
+        return Objects.equals(id, file.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return 1061864188;
+    }
 }

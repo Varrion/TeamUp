@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 public abstract class BaseCreatedOnDeletedOn extends BaseId {
     @CreatedDate
-    LocalDateTime createdOn;
+    protected LocalDateTime createdOn;
 
     @LastModifiedDate
-    LocalDateTime deletedOn;
+    protected LocalDateTime deletedOn;
 }

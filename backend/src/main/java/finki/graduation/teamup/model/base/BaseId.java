@@ -1,13 +1,13 @@
 package finki.graduation.teamup.model.base;
 
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
-import java.util.UUID;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public class BaseId {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    protected Long id;
 }

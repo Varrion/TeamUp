@@ -2,17 +2,16 @@ package finki.graduation.teamup.model;
 
 import finki.graduation.teamup.model.base.BaseCreatedOnDeletedOn;
 import finki.graduation.teamup.model.enums.Rating;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.util.Objects;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Where(clause = "deleted_on is null")
@@ -27,4 +26,17 @@ public class UserRating extends BaseCreatedOnDeletedOn {
 
     @ManyToOne
     User user;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserRating)) return false;
+        UserRating that = (UserRating) o;
+        return Objects.equals(getComment(), that.getComment()) && getRating() == that.getRating();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getComment(), getRating());
+    }
 }

@@ -8,16 +8,16 @@ const ChooseRole = (props) => {
     const classes = useStyles();
 
     const handleRole = role => {
-        props.setShow(false);
-        props.setUserRole(role);
+        props.onClose();
+        props.roleset(role);
     }
 
     return (
         <Dialog
+            {...props}
             disableBackdropClick
             fullWidth={true}
             maxWidth={"lg"}
-            {...props}
             aria-labelledby="choose-role-title"
         >
             <DialogTitle disableTypography={true} id={"choose-role-title"} className={"text-center"}>
@@ -31,7 +31,8 @@ const ChooseRole = (props) => {
                     <Grid className={"border-effect"} onClick={() => handleRole(Role.User)} item md={6} lg={6} xs={12}>
                         <RoleCard isOwner={false} chooseRole={true}/>
                     </Grid>
-                    <Grid className={"border-effect"} onClick={() => handleRole(Role.LocationOwner)} item md={6} lg={6} xs={12}>
+                    <Grid className={"border-effect"} onClick={() => handleRole(Role.LocationOwner)} item md={6} lg={6}
+                          xs={12}>
                         <RoleCard isOwner={true} chooseRole={true}/>
                     </Grid>
                 </Grid>

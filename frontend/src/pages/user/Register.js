@@ -56,8 +56,8 @@ const Register = (props) => {
 
 
     return (loggedUser ? <Redirect to={"/"} noThrow/> :
-            showRoleModal && user.roleType === null ?
-                <ChooseRole setUserRole={chooseRole} open={showRoleModal} onClose={setShowRoleModal(false)}/>
+            showRoleModal && !user.roleType ?
+                <ChooseRole open={showRoleModal} onClose={() => setShowRoleModal(false)} roleset={chooseRole}/>
                 : <Container component="main" maxWidth="xs">
                     <Paper elevation={0} className={"d-flex flex-column align-items-center pt-5"}>
                         <Avatar className={classes.avatar}>

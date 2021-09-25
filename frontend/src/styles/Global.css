@@ -57,3 +57,13 @@
     border-radius: 50%;
     object-fit: cover;
 }
+
+.mini-image {
+    position: absolute;
+    right: 20px;
+}
+
+.photo-icon-color {
+    color: white !important;
+    background-color: #343a40 !important;
+}

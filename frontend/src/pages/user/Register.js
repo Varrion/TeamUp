@@ -1,7 +1,6 @@
 import {FormControl, FormControlLabel, FormLabel, Grid, Paper, Radio, RadioGroup, TextField} from "@material-ui/core";
 import {useState} from "react";
 import ChooseRole from "../../components/modals/ChooseRole";
-import {makeStyles} from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Avatar from "@material-ui/core/Avatar";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
@@ -10,20 +9,7 @@ import Button from "@material-ui/core/Button";
 import {Link, navigate, Redirect} from "@reach/router";
 import {Gender, RegisterUser} from "../../services/UserService";
 import {useAuthContext} from "../../components/AuthContext";
-
-const useStyles = makeStyles((theme) => ({
-    avatar: {
-        margin: theme.spacing(1),
-        backgroundColor: theme.palette.secondary.main,
-    },
-    form: {
-        width: '100%',
-        marginTop: theme.spacing(3),
-    },
-    submit: {
-        margin: theme.spacing(3, 0, 2),
-    },
-}));
+import useStyles from "../../components/MaterialStyles";
 
 const Register = (props) => {
     const {loggedUser} = useAuthContext();

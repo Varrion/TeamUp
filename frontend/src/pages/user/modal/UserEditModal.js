@@ -1,9 +1,48 @@
-import {Dialog, DialogContent, DialogTitle, IconButton, Typography} from "@material-ui/core";
+import {
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    FormControl,
+    FormControlLabel,
+    FormLabel,
+    Grid,
+    IconButton,
+    Radio,
+    RadioGroup,
+    TextField,
+    Typography
+} from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import useStyles from "../../../components/MaterialStyles";
+import {EditUser, Gender} from "../../../services/UserService";
+import {useState} from "react";
+import Button from "@material-ui/core/Button";
 
 const UserEditModal = (props) => {
     const classes = useStyles();
+
+    const [user, setUser] = useState({
+        username: props.profile?.username ?? "",
+        password: props.profile?.password ?? "",
+        name: props.profile?.name ?? "",
+        surname: props.profile?.surname ?? "",
+        email: props.profile?.email ?? "",
+        gender: props.profile?.gender ?? "",
+        phoneNumber: props.profile?.phoneNumber ?? "",
+        address: props.profile?.address ?? "",
+        city: props.profile?.city ?? ""
+    });
+
+    const handleChange = name => event => {
+        setUser({...user, [name]: event.target.value});
+    };
+
+    const handleSubmit = event => {
+        event.preventDefault();
+
+        EditUser(user.id, user)
+            .then(() => props.onClose())
+    }
 
     return (
         <Dialog
@@ -20,7 +59,107 @@ const UserEditModal = (props) => {
                 <CloseIcon/>
             </IconButton>
             <DialogContent className={"mb-3"}>
-
+                <form onSubmit={handleSubmit}>
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                required
+                                id="firstName"
+                                name="firstName"
+                                label="First name"
+                                fullWidth
+                                value={user.name}
+                                autoComplete="given-name"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                id="lastName"
+                                name="lastName"
+                                label="Last name"
+                                fullWidth
+                                value={user.surname}
+                                autoComplete="family-name"
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                id="email"
+                                name="email"
+                                label="Email address"
+                                fullWidth
+                                type={"email"}
+                                value={user.email}
+                                autoComplete="email address"
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                id="phone"
+                                name="phone"
+                                label="Phone number"
+                                fullWidth
+                                value={user.phoneNumber}
+                                autoComplete="shipping address-line1"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                id="address"
+                                name="address"
+                                label="Address"
+                                fullWidth
+                                autoComplete="shipping address-level2"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                required
+                                id="city"
+                                name="city"
+                                label="City"
+                                fullWidth
+                                value={user.city}
+                                autoComplete="shipping country"
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <FormControl component="fieldset">
+                                <FormLabel color={user.gender === Gender.Male ? "primary" : "secondary"}
+                                           component="legend">Gender</FormLabel>
+                                <RadioGroup row aria-label="gender" name="gender" value={user.gender}
+                                            onChange={handleChange("gender")}>
+                                    <FormControlLabel value={Gender.Male} control={<Radio color={"primary"}/>}
+                                                      label={Gender.Male}/>
+                                    <FormControlLabel value={Gender.Female} control={<Radio/>}
+                                                      label={Gender.Female}/>
+                                    <FormControlLabel value={Gender.Other} control={<Radio color={"default"}/>}
+                                                      label={Gender.Other}/>
+                                </RadioGroup>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                id="bio"
+                                label="Bio"
+                                multiline
+                                rows={5}
+                                fullWidth
+                                variant="outlined"
+                            />
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={12} className={"text-right"}>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color={user.gender === Gender.Male || !user.gender ? "primary" : user.gender === Gender.Female ? "secondary" : "default"}
+                            className={classes.submit}
+                        >
+                            Update
+                        </Button>
+                    </Grid>
+                </form>
             </DialogContent>
         </Dialog>
     )

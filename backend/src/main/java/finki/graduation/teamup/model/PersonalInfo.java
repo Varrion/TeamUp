@@ -15,8 +15,6 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
 @Where(clause = "deleted_on is null")
 public class PersonalInfo extends BaseCreatedOnDeletedOn {
     @Column(nullable = false)

@@ -48,6 +48,18 @@ const DeleteUser = (userId) => {
     return axios.delete(`${defaultPath}/${userId}`);
 }
 
+const UploadFile = (userId, file) => {
+    return axios.post(`${defaultPath}/${userId}/files`, file, {
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    });
+}
+
+const GetUserFile = (userId) => {
+    return axios.get(`${defaultPath}/${userId}/files`)
+}
+
 const BasicAuth = (username, password) => {
     return 'Basic ' + window.btoa(username + ":" + password);
 }
@@ -61,6 +73,8 @@ export {
     GetAllUsers,
     LoginUser,
     RegisterUser,
+    UploadFile,
+    GetUserFile,
     GetTeamMembers,
     GetTeamPendingMembers,
     BasicAuth

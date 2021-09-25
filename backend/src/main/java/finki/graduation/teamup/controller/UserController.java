@@ -5,10 +5,24 @@ import finki.graduation.teamup.model.dto.UserLoginDto;
 import finki.graduation.teamup.model.enums.Role;
 import finki.graduation.teamup.model.projection.UserProjection;
 import finki.graduation.teamup.service.UserService;
+import jdk.internal.util.xml.impl.Input;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -53,6 +67,16 @@ public class UserController {
     @PutMapping("{username}")
     public UserProjection updateUser(@RequestBody UserDto userDto, @PathVariable String username) {
         return userService.update(userDto, username);
+    }
+
+    @PostMapping(value = "{username}/files")
+    public void uploadFile(@RequestPart("file") MultipartFile multipartFile, @PathVariable String username) throws Exception {
+        userService.saveFileToEntity(username, multipartFile);
+    }
+
+    @GetMapping("{username}/files")
+    public Set<FileSystemResource> getAllFilesForUser(@PathVariable String username) throws IOException {
+        return userService.getFileByEntityId(username);
     }
 
     @DeleteMapping("{username}")

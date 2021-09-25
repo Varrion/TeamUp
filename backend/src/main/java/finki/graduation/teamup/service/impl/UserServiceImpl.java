@@ -1,33 +1,38 @@
 package finki.graduation.teamup.service.impl;
 
+import finki.graduation.teamup.model.File;
 import finki.graduation.teamup.model.PersonalInfo;
 import finki.graduation.teamup.model.User;
 import finki.graduation.teamup.model.dto.UserDto;
 import finki.graduation.teamup.model.dto.UserLoginDto;
-import finki.graduation.teamup.model.enums.Gender;
 import finki.graduation.teamup.model.enums.Role;
 import finki.graduation.teamup.model.exceptions.InvalidArgumentsException;
 import finki.graduation.teamup.model.projection.UserProjection;
 import finki.graduation.teamup.repository.UserRepository;
+import finki.graduation.teamup.service.FileService;
 import finki.graduation.teamup.service.UserService;
 import finki.graduation.teamup.service.factory.PersonalInfoFactory;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.projection.SpelAwareProxyProjectionFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final FileService fileService;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, FileService fileService) {
         this.userRepository = userRepository;
+        this.fileService = fileService;
     }
 
     @Override
@@ -123,5 +128,29 @@ public class UserServiceImpl implements UserService {
 
         ProjectionFactory pf = new SpelAwareProxyProjectionFactory();
         return pf.createProjection(UserProjection.class, user);
+    }
+
+    @Override
+    public void saveFileToEntity(String id, MultipartFile multipartFile) throws Exception {
+        User user = (User) loadUserByUsername(id);
+
+        File file = fileService.save(multipartFile);
+        Set<File> userFiles = user.getFiles();
+        userFiles.add(file);
+        user.setFiles(userFiles);
+
+        userRepository.save(user);
+    }
+
+    @Override
+    public Set<FileSystemResource> getFileByEntityId(String id) {
+        User user = (User) loadUserByUsername(id);
+        Set<FileSystemResource> userFiles = new HashSet<>();
+
+        for (File file : user.getFiles()) {
+            userFiles.add(fileService.find(file.getId()));
+        }
+        
+        return userFiles;
     }
 }

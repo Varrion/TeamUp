@@ -14,26 +14,15 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
 @NoArgsConstructor
 @AllArgsConstructor
 @Where(clause = "deleted_on is null")
 public class File extends BaseName {
-    @ManyToOne
-    Location location;
-
-    @ManyToOne
-    PlayingField playingField;
-
-    @ManyToOne
-    User user;
-
-    String fileLocation;
-
     String type;
 
-    @Lob
-    byte[] data;
+    String filePath;
+
+    String fileType;
 
     @Override
     public boolean equals(Object o) {

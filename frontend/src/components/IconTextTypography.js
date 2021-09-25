@@ -1,6 +1,5 @@
 import Typography from "@material-ui/core/Typography";
 import {Col, Row} from "react-bootstrap";
-import HomeIcon from "@material-ui/icons/Home";
 import {Box} from "@material-ui/core";
 
 const IconTextTypography = (props) => {
@@ -14,7 +13,7 @@ const IconTextTypography = (props) => {
                     <Box>
                         {props.text ?? unknown}
                     </Box>
-                    <Box fontStyle={"normal"}>
+                    <Box className={"font-weight-bold"}>
                         {props.caption}
                     </Box>
                 </Col>

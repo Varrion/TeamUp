@@ -1,7 +1,7 @@
 import {Card, CardContent, CardHeader, Grid, IconButton} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import {useEffect, useState} from "react";
-import {Gender, GetUser} from "../../services/UserService";
+import {Gender, GetUser, GetUserFile, UploadFile} from "../../services/UserService";
 import NoPhotoFemale from "../../assets/images/GirlSiluethee.jpg";
 import NoPhotoMale from "../../assets/images/BoySiluethe2.jpg";
 import NoPhotoOther from "../../assets/images/OtherSiluethe.jpg";
@@ -14,31 +14,49 @@ import CallIcon from '@material-ui/icons/Call';
 import PersonIcon from '@material-ui/icons/Person';
 import IconTextTypography from "../../components/IconTextTypography";
 import UserEditModal from "./modal/UserEditModal";
+import UploadPhotoIcon from "../../components/pictures/UploadPhotoIcon";
+import UploadShowProfilePicture from "../../components/pictures/UploadShowProfilePicture";
 
 const User = props => {
     const [user, setUser] = useState(null);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [myImage, setMyImage] = useState(null)
 
     useEffect(() => {
         GetUser(props.username)
             .then(res => {
                 setUser(res.data);
                 console.log(res.data);
+                GetUserFile(props.username)
+                    .then((r) => {
+                        console.log(r);
+                        setMyImage(r.data.split("///")[0])
+                    })
             })
-    }, [])
+    }, [showUpdateModal])
+
+    const onFileUpload = (event) => {
+        let formData = new FormData();
+        formData.append("file", event.target.files[0]);
+        UploadFile(user.username, formData)
+            .then(r => console.log('vlagam tuka'))
+    }
 
     return (user &&
         <Grid container>
             <Grid item xs={12} md={6} lg={4} className={"d-flex flex-column align-items-center justify-content-center"}>
-                {user.personalInfo.gender === Gender.Female ?
-                    <img className={"rounded-cover-image"} width={250} height={250} src={NoPhotoFemale}
-                         alt={Gender.Female}/>
-                    : user.personalInfo.gender === Gender.Male ?
-                        <img className={"rounded-cover-image"} width={250} height={250} src={NoPhotoMale}
-                             alt={Gender.Male}/>
-                        : <img className={"rounded-cover-image"} width={250} height={250} src={NoPhotoOther}
-                               alt={Gender.Other}/>
-                }
+                {!myImage ? user.personalInfo.gender === Gender.Female ?
+                        <div>
+                            <img className={"rounded-cover-image"} width={250} height={250} src={NoPhotoFemale}
+                                 alt={Gender.Female}/>
+                            <UploadPhotoIcon/>
+                        </div>
+                        : user.personalInfo.gender === Gender.Male ?
+                            <UploadShowProfilePicture width={250} height={250} src={NoPhotoMale} alt={Gender.Male}
+                                                      onUpload={onFileUpload}/>
+                            : <img className={"rounded-cover-image"} width={250} height={250} src={NoPhotoOther}
+                                   alt={Gender.Other}/>
+                    : <img src={myImage} alt={"User Photo"}/>}
                 <Typography className={"mt-3"} color={"textSecondary"} variant={"h6"}>
                     @{user.username}
                 </Typography>

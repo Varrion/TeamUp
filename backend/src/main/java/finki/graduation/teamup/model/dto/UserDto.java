@@ -1,6 +1,7 @@
 package finki.graduation.teamup.model.dto;
 
 import lombok.*;
+import org.springframework.lang.Nullable;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -15,5 +16,6 @@ public class UserDto extends PersonalInfoDto {
 
     String description;
 
+    @Nullable
     String roleType;
 }

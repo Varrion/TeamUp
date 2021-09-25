@@ -1,7 +1,6 @@
 package finki.graduation.teamup.controller;
 
 import finki.graduation.teamup.model.File;
-import finki.graduation.teamup.model.dto.FileDto;
 import finki.graduation.teamup.service.FileService;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +22,7 @@ public class FileController {
     }
 
     @PostMapping()
-    File uploadFile(@RequestPart("file") MultipartFile file, @RequestPart("fileDto") FileDto fileDto) throws Exception {
-        return fileService.save(file, fileDto);
+    File uploadFile(@RequestBody MultipartFile file) throws Exception {
+        return fileService.save(file);
     }
 }

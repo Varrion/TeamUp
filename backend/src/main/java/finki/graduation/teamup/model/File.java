@@ -6,8 +6,6 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.Entity;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
 import java.util.Objects;
 
 @Entity
@@ -18,8 +16,6 @@ import java.util.Objects;
 @AllArgsConstructor
 @Where(clause = "deleted_on is null")
 public class File extends BaseName {
-    String type;
-
     String filePath;
 
     String fileType;

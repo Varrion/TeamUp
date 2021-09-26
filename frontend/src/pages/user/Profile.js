@@ -29,8 +29,8 @@ const User = props => {
                 console.log(res.data);
                 GetUserFile(props.username)
                     .then((r) => {
-                        console.log(r);
-                        setMyImage(r.data.split("///")[0])
+                        console.log(r.data.filter(x => x.fileType === "image/jpeg")[0].filePath);
+                        setMyImage(r.data.filter(x => x.fileType === "image/jpeg")[0].filePath);
                     })
             })
     }, [showUpdateModal])
@@ -95,7 +95,7 @@ const User = props => {
                     <CardHeader title={"Bio"}/>
                     <CardContent>
                         <IconTextTypography
-                            text={user.personalInfo?.dateOfBirth.split('T')[0].split("-").reverse().join("-")}
+                            text={user.personalInfo?.dateOfBirth?.split('T')[0].split("-").reverse().join("-")}
                             caption={"Birth date"}
                             class={"ml-3"}
                             icon={<CakeIcon/>}/>

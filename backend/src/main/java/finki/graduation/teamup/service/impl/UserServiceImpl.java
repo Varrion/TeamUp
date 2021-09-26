@@ -143,14 +143,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Set<FileSystemResource> getFileByEntityId(String id) {
+    public Set<File> getFileByEntityId(String id) {
         User user = (User) loadUserByUsername(id);
-        Set<FileSystemResource> userFiles = new HashSet<>();
-
-        for (File file : user.getFiles()) {
-            userFiles.add(fileService.find(file.getId()));
-        }
-        
-        return userFiles;
+        return user.getFiles();
     }
 }

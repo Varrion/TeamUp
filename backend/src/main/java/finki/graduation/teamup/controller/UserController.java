@@ -1,26 +1,15 @@
 package finki.graduation.teamup.controller;
 
+import finki.graduation.teamup.model.File;
 import finki.graduation.teamup.model.dto.UserDto;
 import finki.graduation.teamup.model.dto.UserLoginDto;
 import finki.graduation.teamup.model.enums.Role;
 import finki.graduation.teamup.model.projection.UserProjection;
 import finki.graduation.teamup.service.UserService;
-import jdk.internal.util.xml.impl.Input;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 
@@ -75,7 +64,7 @@ public class UserController {
     }
 
     @GetMapping("{username}/files")
-    public Set<FileSystemResource> getAllFilesForUser(@PathVariable String username) throws IOException {
+    public Set<File> getAllFilesForUser(@PathVariable String username) {
         return userService.getFileByEntityId(username);
     }
 

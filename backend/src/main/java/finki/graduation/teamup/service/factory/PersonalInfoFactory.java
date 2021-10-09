@@ -21,6 +21,7 @@ public class PersonalInfoFactory {
         personalInfo.setCity(infoDto.getCity());
         personalInfo.setEmail(infoDto.getEmail());
         personalInfo.setDateOfBirth(infoDto.getDateOfBirth());
+        personalInfo.setPhoneNumber(infoDto.getPhoneNumber());
 
         Gender gender = Gender.valueOf(infoDto.getGender());
         if (isLocation) {

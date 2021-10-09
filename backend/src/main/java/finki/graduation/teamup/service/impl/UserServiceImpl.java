@@ -117,9 +117,6 @@ public class UserServiceImpl implements UserService {
             user.updateUser(entityDto);
             PersonalInfo personalInfo = PersonalInfoFactory.setPersonalInfo(entityDto, user.getPersonalInfo(), false);
             user.setPersonalInfo(personalInfo);
-
-            Role role = Role.valueOf(entityDto.getRoleType());
-            user.setRole(role);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }

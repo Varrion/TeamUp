@@ -27,11 +27,11 @@ const User = props => {
             .then(res => {
                 setUser(res.data);
                 console.log(res.data);
-                GetUserFile(props.username)
-                    .then((r) => {
-                        console.log(r.data.filter(x => x.fileType === "image/jpeg")[0].filePath);
-                        setMyImage(r.data.filter(x => x.fileType === "image/jpeg")[0].filePath);
-                    })
+                // GetUserFile(props.username)
+                //     .then((r) => {
+                //         console.log(r.data.filter(x => x.fileType === "image/jpeg")[0].filePath);
+                //         setMyImage(r.data.filter(x => x.fileType === "image/jpeg")[0].filePath);
+                //     })
             })
     }, [showUpdateModal])
 
@@ -46,16 +46,13 @@ const User = props => {
         <Grid container>
             <Grid item xs={12} md={6} lg={4} className={"d-flex flex-column align-items-center justify-content-center"}>
                 {!myImage ? user.personalInfo.gender === Gender.Female ?
-                        <div>
-                            <img className={"rounded-cover-image"} width={250} height={250} src={NoPhotoFemale}
-                                 alt={Gender.Female}/>
-                            <UploadPhotoIcon/>
-                        </div>
+                        <UploadShowProfilePicture width={250} height={250} src={NoPhotoFemale} alt={Gender.Female}
+                                                  onUpload={onFileUpload}/>
                         : user.personalInfo.gender === Gender.Male ?
                             <UploadShowProfilePicture width={250} height={250} src={NoPhotoMale} alt={Gender.Male}
                                                       onUpload={onFileUpload}/>
-                            : <img className={"rounded-cover-image"} width={250} height={250} src={NoPhotoOther}
-                                   alt={Gender.Other}/>
+                            : <UploadShowProfilePicture width={250} height={250} src={NoPhotoOther} alt={Gender.Other}
+                                                        onUpload={onFileUpload}/>
                     : <img src={myImage} alt={"User Photo"}/>}
                 <Typography className={"mt-3"} color={"textSecondary"} variant={"h6"}>
                     @{user.username}

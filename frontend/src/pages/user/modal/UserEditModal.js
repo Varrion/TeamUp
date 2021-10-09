@@ -17,6 +17,8 @@ import useStyles from "../../../components/MaterialStyles";
 import {EditUser, Gender} from "../../../services/UserService";
 import {useState} from "react";
 import Button from "@material-ui/core/Button";
+import {KeyboardDatePicker, MuiPickersUtilsProvider,} from '@material-ui/pickers';
+import MomentUtils from '@date-io/moment';
 
 const UserEditModal = (props) => {
     const classes = useStyles();
@@ -26,21 +28,28 @@ const UserEditModal = (props) => {
         password: props.profile?.password ?? "",
         name: props.profile?.name ?? "",
         surname: props.profile?.surname ?? "",
-        email: props.profile?.email ?? "",
-        gender: props.profile?.gender ?? "",
-        phoneNumber: props.profile?.phoneNumber ?? "",
-        address: props.profile?.address ?? "",
-        city: props.profile?.city ?? ""
+        email: props.profile?.personalInfo?.email,
+        gender: props.profile?.personalInfo?.gender ?? "",
+        phoneNumber: props.profile?.personalInfo?.phoneNumber ?? "",
+        address: props.profile?.personalInfo?.address ?? "",
+        city: props.profile?.personalInfo?.city ?? "",
+        dateOfBirth: props.profile?.personalInfo?.dateOfBirth ? new Date(props.profile.personalInfo.dateOfBirth) : new Date(),
+        description: props.profile?.description ?? ""
     });
 
     const handleChange = name => event => {
+        if (name === "dateOfBirth") {
+            setUser({...user, dateOfBirth: event.toDate()})
+            return;
+        }
+
         setUser({...user, [name]: event.target.value});
     };
 
     const handleSubmit = event => {
         event.preventDefault();
 
-        EditUser(user.id, user)
+        EditUser(user.username, user)
             .then(() => props.onClose())
     }
 
@@ -70,6 +79,7 @@ const UserEditModal = (props) => {
                                 fullWidth
                                 value={user.name}
                                 autoComplete="given-name"
+                                onChange={handleChange("name")}
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -80,6 +90,7 @@ const UserEditModal = (props) => {
                                 fullWidth
                                 value={user.surname}
                                 autoComplete="family-name"
+                                onChange={handleChange("surname")}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -91,6 +102,8 @@ const UserEditModal = (props) => {
                                 type={"email"}
                                 value={user.email}
                                 autoComplete="email address"
+                                onChange={handleChange("email")}
+
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -100,7 +113,8 @@ const UserEditModal = (props) => {
                                 label="Phone number"
                                 fullWidth
                                 value={user.phoneNumber}
-                                autoComplete="shipping address-line1"
+                                onChange={handleChange("phoneNumber")}
+                                autoComplete="phone number"
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -109,20 +123,32 @@ const UserEditModal = (props) => {
                                 name="address"
                                 label="Address"
                                 fullWidth
-                                autoComplete="shipping address-level2"
+                                value={user.address}
+                                onChange={handleChange("address")}
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <TextField
-                                required
                                 id="city"
                                 name="city"
                                 label="City"
                                 fullWidth
                                 value={user.city}
-                                autoComplete="shipping country"
+                                onChange={handleChange("city")}
                             />
                         </Grid>
+                        <MuiPickersUtilsProvider utils={MomentUtils}>
+                            <Grid item xs={12}>
+                                <KeyboardDatePicker
+                                    variant="inline"
+                                    label="Date of Birth"
+                                    format="DD/MM/YYYY"
+                                    value={user.dateOfBirth}
+                                    InputAdornmentProps={{ position: "start" }}
+                                    onChange={handleChange("dateOfBirth")}
+                                />
+                            </Grid>
+                        </MuiPickersUtilsProvider>
                         <Grid item xs={12}>
                             <FormControl component="fieldset">
                                 <FormLabel color={user.gender === Gender.Male ? "primary" : "secondary"}
@@ -146,6 +172,8 @@ const UserEditModal = (props) => {
                                 rows={5}
                                 fullWidth
                                 variant="outlined"
+                                value={user.description}
+                                onChange={handleChange("description")}
                             />
                         </Grid>
                     </Grid>

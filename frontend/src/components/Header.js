@@ -53,7 +53,7 @@ const Header = props => {
                         <Link to={"/register"} className={"nav-link h6 mr-3"}>REGISTER</Link>
                     </> :
                     <>
-                        <Link to={`/user/${loggedUser}`} className={"nav-link h6"}>
+                        <Link to={`/users/${loggedUser}`} className={"nav-link h6"}>
                             Welcome {loggedUser}
                         </Link>
                         <Button onClick={logout}>logout</Button>

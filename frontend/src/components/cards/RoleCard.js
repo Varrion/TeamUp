@@ -1,9 +1,9 @@
 import React from "react";
 import {Button, Card, CardContent, Typography} from "@material-ui/core";
-import Sportsman from "./../assets/images/sportsman.jpg";
-import LocationOwner from "./../assets/images/business-owner.jpg";
-import SportTeam from "./../assets/images/SportTeam.png";
-import OwnersTeam from "./../assets/images/OwnersTeam.png";
+import Sportsman from "../../assets/images/sportsman.jpg";
+import LocationOwner from "../../assets/images/business-owner.jpg";
+import SportTeam from "../../assets/images/SportTeam.png";
+import OwnersTeam from "../../assets/images/OwnersTeam.png";
 
 const RoleCard = (props) => {
     return (

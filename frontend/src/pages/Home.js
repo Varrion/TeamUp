@@ -3,8 +3,8 @@ import BackgroundVideo from "../components/BackgroundVideo";
 import {Grid, Typography} from "@material-ui/core";
 import "../styles/Home.css";
 import TeamUpLogo from "../assets/images/TeamUpLogo2Transparent.png";
-import AttributeCard from "../components/AttributeCard";
-import RoleCard from "../components/RoleCard";
+import AttributeCard from "../components/cards/AttributeCard";
+import RoleCard from "../components/cards/RoleCard";
 
 const Home = () => {
     let attributes = ["Stamina", "Speed", "Strength", "Skills", "Spirit"];

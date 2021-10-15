@@ -1,9 +1,9 @@
 import {Card, CardContent, Typography} from "@material-ui/core";
-import Speed from "../assets/images/speed.png";
-import Stamina from "../assets/images/stamina.png";
-import Spirit from "../assets/images/spirit.png";
-import Skills from "../assets/images/skills.png";
-import Strength from "../assets/images/strenght.png";
+import Speed from "../../assets/images/speed.png";
+import Stamina from "../../assets/images/stamina.png";
+import Spirit from "../../assets/images/spirit.png";
+import Skills from "../../assets/images/skills.png";
+import Strength from "../../assets/images/strenght.png";
 import React from "react";
 
 const AttributeCard = (props) => {

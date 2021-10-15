@@ -1,5 +1,5 @@
 import {Dialog, DialogContent, DialogTitle, Grid, IconButton, Typography} from "@material-ui/core";
-import RoleCard from "../RoleCard";
+import RoleCard from "../cards/RoleCard";
 import CloseIcon from '@material-ui/icons/Close';
 import {UserRole as Role} from "../../services/UserService";
 import useStyles from "../MaterialStyles";

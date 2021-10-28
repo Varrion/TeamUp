@@ -69,6 +69,7 @@ public class TeamServiceImpl implements TeamService {
             User member = (User) userService.loadUserByUsername(username);
             teamUsers.add(member);
         }
+
         team.setMembers(teamUsers);
         team.setSize(requestDto.getMaxSize());
 

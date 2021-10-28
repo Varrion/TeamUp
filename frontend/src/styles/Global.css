@@ -74,3 +74,13 @@
     position: absolute;
     left: 50%;
 }
+
+.profile-avatar {
+    width: 60px !important;
+    height: 60px !important;
+    margin: auto;
+}
+
+.bold {
+    font-weight: 600;
+}

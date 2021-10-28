@@ -1,7 +1,7 @@
-import {Card, CardContent, CardHeader, Grid, IconButton} from "@material-ui/core";
+import {Button, Card, CardContent, CardHeader, Grid, IconButton} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import {useEffect, useState} from "react";
-import {Gender, GetUser, GetUserFile, UploadFile} from "../../services/UserService";
+import {Gender, GetUser, UploadFile} from "../../services/UserService";
 import NoPhotoFemale from "../../assets/images/GirlSiluethee.jpg";
 import NoPhotoMale from "../../assets/images/BoySiluethe2.jpg";
 import NoPhotoOther from "../../assets/images/OtherSiluethe.jpg";
@@ -14,13 +14,15 @@ import CallIcon from '@material-ui/icons/Call';
 import PersonIcon from '@material-ui/icons/Person';
 import IconTextTypography from "../../components/IconTextTypography";
 import UserEditModal from "./modal/UserEditModal";
-import UploadPhotoIcon from "../../components/pictures/UploadPhotoIcon";
 import UploadShowProfilePicture from "../../components/pictures/UploadShowProfilePicture";
+import {useAuthContext} from "../../components/AuthContext";
+import SportsIcon from '@material-ui/icons/Sports';
 
 const User = props => {
     const [user, setUser] = useState(null);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
-    const [myImage, setMyImage] = useState(null)
+    const [myImage, setMyImage] = useState(null);
+    const {loggedUser} = useAuthContext();
 
     useEffect(() => {
         GetUser(props.username)
@@ -58,11 +60,13 @@ const User = props => {
                     @{user.username}
                 </Typography>
                 <Typography className={"mt-2"} variant={"h4"}>{user.name} {user.surname}</Typography>
+
+                <Button variant={"contained"} color={"secondary"}><SportsIcon/> Team Up</Button>
             </Grid>
             <Grid item xs={12} md={6} lg={8}>
                 <Card>
                     <CardHeader title={"Personal Info"} action={
-                        <IconButton onClick={() => setShowUpdateModal(true)}>
+                        loggedUser === user.username && <IconButton onClick={() => setShowUpdateModal(true)}>
                             <EditOutlinedIcon/>
                         </IconButton>}/>
                     <CardContent className={"ml-3"}>

@@ -5,7 +5,9 @@ import finki.graduation.teamup.model.projection.base.BaseIdNameDescriptionProjec
 import finki.graduation.teamup.model.projection.base.PersonalInfoProjection;
 import org.springframework.data.rest.core.config.Projection;
 
-@Projection(name = "user", types = { User.class })
+import java.util.Set;
+
+@Projection(name = "user", types = {User.class})
 public interface UserProjection extends BaseIdNameDescriptionProjection {
     String getUsername();
 
@@ -14,4 +16,6 @@ public interface UserProjection extends BaseIdNameDescriptionProjection {
     String getSurname();
 
     PersonalInfoProjection getPersonalInfo();
+
+    Set<FileProjection> getFiles();
 }

@@ -45,6 +45,6 @@ public class FileUploadServiceImpl implements FileUploadService {
             System.out.println("Error occurred: " + e);
         }
 
-        return minIOUrl + bucketName + "/file" + file.getOriginalFilename();
+        return minIOUrl + "/" +bucketName + "/" + file.getOriginalFilename();
     }
 }

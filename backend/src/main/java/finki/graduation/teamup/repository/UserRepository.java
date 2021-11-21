@@ -53,6 +53,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = "SELECT user " +
             "FROM User user " +
             "   INNER JOIN FETCH user.personalInfo personalInfo " +
+            "   LEFT JOIN FETCH user.files userFile " +
             "WHERE user.username = :username " +
             "   AND user.deletedOn IS NULL " +
             "   AND personalInfo.deletedOn IS NULL")

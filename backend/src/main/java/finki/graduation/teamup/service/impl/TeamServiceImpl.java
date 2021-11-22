@@ -1,11 +1,14 @@
 package finki.graduation.teamup.service.impl;
 
 import finki.graduation.teamup.model.Team;
+import finki.graduation.teamup.model.TeamMember;
 import finki.graduation.teamup.model.User;
-import finki.graduation.teamup.model.dto.AddRemoveTeamMemberRequestDto;
-import finki.graduation.teamup.model.dto.CreateUpdateTeamMemberRequestDto;
+import finki.graduation.teamup.model.dto.ChangeTeamMemberStatusRequestDto;
+import finki.graduation.teamup.model.dto.CreateUpdateTeamRequestDto;
+import finki.graduation.teamup.model.enums.TeamMemberStatus;
 import finki.graduation.teamup.model.enums.TeamStatus;
 import finki.graduation.teamup.model.projection.TeamProjection;
+import finki.graduation.teamup.repository.TeamMemberRepository;
 import finki.graduation.teamup.repository.TeamRepository;
 import finki.graduation.teamup.service.TeamService;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,10 +28,12 @@ import java.util.Set;
 public class TeamServiceImpl implements TeamService {
     private final TeamRepository teamRepository;
     private final UserDetailsService userService;
+    private final TeamMemberRepository teamMemberRepository;
 
-    public TeamServiceImpl(TeamRepository teamRepository, @Qualifier("userServiceImpl") UserDetailsService userService) {
+    public TeamServiceImpl(TeamRepository teamRepository, @Qualifier("userServiceImpl") UserDetailsService userService, TeamMemberRepository teamMemberRepository) {
         this.teamRepository = teamRepository;
         this.userService = userService;
+        this.teamMemberRepository = teamMemberRepository;
     }
 
     @Override
@@ -52,26 +57,30 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public TeamProjection create(CreateUpdateTeamMemberRequestDto requestDto) {
+    public TeamProjection create(CreateUpdateTeamRequestDto requestDto) {
         Team team = new Team();
-
-        team.setCreatedOn(LocalDateTime.now());
         team.setTeamStatus(TeamStatus.Active);
         team.setName(requestDto.getName());
         team.setDescription(requestDto.getDescription());
 
-        Set<User> teamUsers = new HashSet<>();
+        Set<TeamMember> teamMembers = new HashSet<>();
 
         User lead = (User) userService.loadUserByUsername(requestDto.getTeamLead());
-        team.setTeamLead(lead);
+        TeamMember teamLead = new TeamMember(team, lead, TeamMemberStatus.Accepted, true);
+        teamMembers.add(teamLead);
 
         for (String username : requestDto.getMembersUsernames()) {
+            if (username.equals(lead.getUsername())) {
+                continue;
+            }
+
             User member = (User) userService.loadUserByUsername(username);
-            teamUsers.add(member);
+            TeamMember teamMember = new TeamMember(team, member, TeamMemberStatus.PendingToAcceptTeamInvitation, false);
+            teamMembers.add(teamMember);
         }
 
-        team.setMembers(teamUsers);
         team.setSize(requestDto.getMaxSize());
+        team.setTeamMembers(teamMembers);
 
         teamRepository.save(team);
 
@@ -80,11 +89,12 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public TeamProjection update(CreateUpdateTeamMemberRequestDto requestDto, Long id) {
+    public TeamProjection update(CreateUpdateTeamRequestDto requestDto, Long id) {
         Team team = findTeamOrThrowException(id);
 
         User teamLead = (User) userService.loadUserByUsername(requestDto.getTeamLead());
-        if (teamLead != team.getTeamLead()) {
+        TeamMember teamMember = findTeamMemberOrThrowException(team.getId(), teamLead.getId());
+        if (!teamMember.isTeamLead()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 
@@ -112,62 +122,48 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public TeamProjection approveMemberInTeam(AddRemoveTeamMemberRequestDto requestDto, Long id) {
+    public TeamProjection changeMemberStatusInTeam(ChangeTeamMemberStatusRequestDto requestDto, Long id, TeamMemberStatus changeStatus) {
         Team team = findTeamOrThrowException(id);
-        validate(requestDto, team, true);
+        TeamMember teamMember = findTeamMemberOrThrowException(team.getId(), requestDto.getTeamLeadId());
+        Set<TeamMember> teamMembers = teamMemberRepository.findTeamMembersByTeamIdAndMemberStatus(team.getId(), TeamMemberStatus.Accepted);
+        TeamMember memberToChange = findTeamMemberOrThrowException(team.getId(), requestDto.getMemberIdToChange());
 
-        User memberToAdd = (User) userService.loadUserByUsername(requestDto.getUsername());
+        validate(teamMember, team, teamMembers, memberToChange);
 
-        Set<User> teamMembers = team.getMembers();
-        Set<User> awaitingApproval = team.getPendingMembers();
+        switch (changeStatus) {
+            case Accepted: {
+                teamMembers.add(memberToChange);
 
-        if (!teamMembers.contains(memberToAdd) && awaitingApproval.contains(memberToAdd) && teamMembers.size() < team.getSize()) {
-            teamMembers.add(memberToAdd);
-            awaitingApproval.remove(memberToAdd);
+                if (team.getSize() == teamMembers.size()) {
+                    team.setTeamStatus(TeamStatus.Full);
+                }
+                break;
+            }
+            case Rejected: {
+                if (memberToChange.getMemberStatus() != TeamMemberStatus.PendingToBeAcceptedInTeam) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+                }
+
+                break;
+            }
         }
 
-        if (teamMembers.size() == team.getSize()) {
-            team.setTeamStatus(TeamStatus.Full);
-        }
+        memberToChange.setMemberStatus(changeStatus);
 
-        team.setMembers(teamMembers);
-        team.setPendingMembers(awaitingApproval);
         teamRepository.save(team);
+        teamMemberRepository.save(memberToChange);
 
         ProjectionFactory pf = new SpelAwareProxyProjectionFactory();
         return pf.createProjection(TeamProjection.class, team);
     }
 
     @Override
-    public TeamProjection removeUserFromTeam(AddRemoveTeamMemberRequestDto requestDto, Long id, boolean isUserPending) {
-        Team team = findTeamOrThrowException(id);
-        validate(requestDto, team, false);
+    public void applyInTeam(String username, Long teamId) {
+        Team team = findTeamOrThrowException(teamId);
+        User user = (User) userService.loadUserByUsername(username);
 
-        User memberToRemove = (User) userService.loadUserByUsername(requestDto.getUsername());
-
-        Set<User> teamMembers = team.getMembers();
-        Set<User> awaitingApproval = team.getPendingMembers();
-
-        if (!isUserPending) {
-            if (!teamMembers.contains(memberToRemove)) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-            }
-
-            teamMembers.remove(memberToRemove);
-        } else {
-            if (!awaitingApproval.contains(memberToRemove)) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-            }
-
-            awaitingApproval.remove(memberToRemove);
-        }
-
-        team.setMembers(teamMembers);
-        team.setPendingMembers(awaitingApproval);
-        teamRepository.save(team);
-
-        ProjectionFactory pf = new SpelAwareProxyProjectionFactory();
-        return pf.createProjection(TeamProjection.class, team);
+        TeamMember teamMember = new TeamMember(team, user, TeamMemberStatus.PendingToBeAcceptedInTeam, false);
+        teamMemberRepository.save(teamMember);
     }
 
     private Team findTeamOrThrowException(Long id) {
@@ -175,14 +171,22 @@ public class TeamServiceImpl implements TeamService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    private void validate(AddRemoveTeamMemberRequestDto requestDto, Team team, boolean isStatusImportant) {
-        User teamLead = (User) userService.loadUserByUsername(requestDto.getTeamLeadUsername());
+    private TeamMember findTeamMemberOrThrowException(Long teamId, Long teamLeadId) {
+        return teamMemberRepository.findTeamMemberByTeamIdAndTeamMemberId(teamId, teamLeadId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
 
-        if (teamLead != team.getTeamLead()) {
+    private void validate(TeamMember teamMember, Team team, Set<TeamMember> teamMembers, TeamMember memberToChange) {
+        if (!teamMembers.contains(memberToChange)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
+        if (team.getSize() < teamMembers.size() || team.getTeamStatus() != TeamStatus.LookingForMore || (!teamMember.isTeamLead() && teamMember != memberToChange)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 
-        if (team.getTeamStatus() != TeamStatus.LookingForMore && isStatusImportant) {
+        if (teamMember != memberToChange && memberToChange.getMemberStatus() != TeamMemberStatus.PendingToBeAcceptedInTeam ||
+                teamMember == memberToChange && memberToChange.getMemberStatus() != TeamMemberStatus.PendingToAcceptTeamInvitation) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
     }

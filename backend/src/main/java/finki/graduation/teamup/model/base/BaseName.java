@@ -2,6 +2,7 @@ package finki.graduation.teamup.model.base;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;

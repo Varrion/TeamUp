@@ -5,7 +5,7 @@ import lombok.Value;
 import java.util.List;
 
 @Value
-public class CreateUpdateTeamMemberRequestDto {
+public class CreateUpdateTeamRequestDto {
     String name;
 
     String description;

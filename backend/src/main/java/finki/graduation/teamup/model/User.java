@@ -2,9 +2,11 @@ package finki.graduation.teamup.model;
 
 import finki.graduation.teamup.model.base.BaseDescription;
 import finki.graduation.teamup.model.dto.UserDto;
-import finki.graduation.teamup.model.enums.Gender;
 import finki.graduation.teamup.model.enums.Role;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,7 +22,6 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Where(clause = "deleted_on is null")
@@ -35,12 +36,23 @@ public class User extends BaseDescription implements UserDetails, Serializable {
     String surname;
 
     @OneToOne(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @ToString.Exclude
     PersonalInfo personalInfo;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     Role role;
+
+    @OneToMany(orphanRemoval = true, mappedBy = "owner")
+    Set<Location> ownedLocations;
+
+    @OneToMany(orphanRemoval = true)
+    Set<File> files;
+
+    @ManyToOne
+    Game game;
+
+    @OneToMany(mappedBy = "teamMember")
+    Set<TeamMember> teamMembers;
 
     boolean isAccountNonExpired = true;
 
@@ -49,27 +61,6 @@ public class User extends BaseDescription implements UserDetails, Serializable {
     boolean isCredentialsNonExpired = true;
 
     boolean isEnabled = true;
-
-    @OneToMany(orphanRemoval = true, mappedBy = "owner")
-    @ToString.Exclude
-    Set<Location> ownedLocations;
-
-    @OneToMany(orphanRemoval = true)
-    @ToString.Exclude
-    Set<File> files;
-
-    @OneToOne(mappedBy = "teamLead")
-    Team teamLead;
-
-    @ManyToMany
-    @JoinTable(name = "team_join",
-            joinColumns = @JoinColumn(name = "member_id"),
-            inverseJoinColumns = @JoinColumn(name = "team_id"))
-    @ToString.Exclude
-    Set<Team> joiningTeams;
-
-    @ManyToOne
-    Game game;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -108,8 +99,6 @@ public class User extends BaseDescription implements UserDetails, Serializable {
         setSurname(userDto.getSurname());
         setDescription(userDto.getDescription());
         setPassword(userDto.getPassword());
-
-        Gender gender = Gender.valueOf(userDto.getGender());
     }
 
     @Override

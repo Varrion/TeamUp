@@ -17,11 +17,13 @@ import UserEditModal from "./modal/UserEditModal";
 import UploadShowProfilePicture from "../../components/pictures/UploadShowProfilePicture";
 import {useAuthContext} from "../../components/AuthContext";
 import SportsIcon from '@material-ui/icons/Sports';
+import CreateEditTeamModal from "../team/modal/CreateEditTeamModal";
 
 const User = props => {
     const [user, setUser] = useState(null);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [myImage, setMyImage] = useState(null);
+    const [showTeamModal, setShowTeamModal] = useState(false);
     const {loggedUser} = useAuthContext();
 
     useEffect(() => {
@@ -61,7 +63,10 @@ const User = props => {
                 </Typography>
                 <Typography className={"mt-2"} variant={"h4"}>{user.name} {user.surname}</Typography>
 
-                <Button variant={"contained"} color={"secondary"}><SportsIcon/> Team Up</Button>
+                <Button variant={"contained"} color={"secondary"}
+                        onClick={() => setShowTeamModal(true)}>
+                    <SportsIcon/> Team Up
+                </Button>
             </Grid>
             <Grid item xs={12} md={6} lg={8}>
                 <Card>
@@ -106,11 +111,12 @@ const User = props => {
                     </CardContent>
                 </Card>
             </Grid>
-            {
-                showUpdateModal &&
-                <UserEditModal profile={user} open={showUpdateModal}
-                               onClose={() => setShowUpdateModal(false)}/>
-            }
+
+            <UserEditModal profile={user} open={showUpdateModal}
+                           onClose={() => setShowUpdateModal(false)}/>
+            <CreateEditTeamModal team={user?.team} open={showTeamModal}
+                                 onClose={() => setShowTeamModal(false)}/>
+
         </Grid>
     )
 }

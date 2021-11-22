@@ -1,7 +1,8 @@
 package finki.graduation.teamup.controller;
 
-import finki.graduation.teamup.model.dto.AddRemoveTeamMemberRequestDto;
-import finki.graduation.teamup.model.dto.CreateUpdateTeamMemberRequestDto;
+import finki.graduation.teamup.model.dto.ChangeTeamMemberStatusRequestDto;
+import finki.graduation.teamup.model.dto.CreateUpdateTeamRequestDto;
+import finki.graduation.teamup.model.enums.TeamMemberStatus;
 import finki.graduation.teamup.model.enums.TeamStatus;
 import finki.graduation.teamup.model.projection.TeamProjection;
 import finki.graduation.teamup.service.TeamService;
@@ -30,13 +31,13 @@ public class TeamController {
     }
 
     @PostMapping
-    public TeamProjection createTeam(@RequestBody CreateUpdateTeamMemberRequestDto createUpdateTeamMemberRequestDto) {
-        return teamService.create(createUpdateTeamMemberRequestDto);
+    public TeamProjection createTeam(@RequestBody CreateUpdateTeamRequestDto createUpdateTeamRequestDto) {
+        return teamService.create(createUpdateTeamRequestDto);
     }
 
     @PutMapping("{id}")
-    public TeamProjection updateTeam(@RequestBody CreateUpdateTeamMemberRequestDto createUpdateTeamMemberRequestDto, @PathVariable Long id) {
-        return teamService.update(createUpdateTeamMemberRequestDto, id);
+    public TeamProjection updateTeam(@RequestBody CreateUpdateTeamRequestDto createUpdateTeamRequestDto, @PathVariable Long id) {
+        return teamService.update(createUpdateTeamRequestDto, id);
     }
 
     @PatchMapping("{id}")
@@ -50,14 +51,18 @@ public class TeamController {
     }
 
     @PostMapping("{id}/members/add")
-    public TeamProjection addUserInTeam(@RequestBody AddRemoveTeamMemberRequestDto addRemoveTeamMemberRequestDto, @PathVariable Long id) {
-        return teamService.approveMemberInTeam(addRemoveTeamMemberRequestDto, id);
+    public TeamProjection addUserInTeam(@RequestBody ChangeTeamMemberStatusRequestDto changeTeamMemberStatusRequestDto, @PathVariable Long id) {
+        return teamService.changeMemberStatusInTeam(changeTeamMemberStatusRequestDto, id, TeamMemberStatus.Accepted);
     }
 
     @PostMapping("{id}/members/remove")
-    public TeamProjection removeUserFromTeam(@RequestBody AddRemoveTeamMemberRequestDto addRemoveTeamMemberRequestDto,
-                                      @PathVariable Long id,
-                                      @RequestParam(value = "isUserPending") boolean isUserPending) {
-        return teamService.removeUserFromTeam(addRemoveTeamMemberRequestDto, id, isUserPending);
+    public TeamProjection removeUserFromTeam(@RequestBody ChangeTeamMemberStatusRequestDto changeTeamMemberStatusRequestDto,
+                                             @PathVariable Long id) {
+        return teamService.changeMemberStatusInTeam(changeTeamMemberStatusRequestDto, id, TeamMemberStatus.Rejected);
+    }
+
+    @PostMapping("{id}/members/apply")
+    public void applyToJoinInTeam(@RequestBody String memberToJoin, @PathVariable Long id) {
+        teamService.applyInTeam(memberToJoin, id);
     }
 }

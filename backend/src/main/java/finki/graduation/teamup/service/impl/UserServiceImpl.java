@@ -6,13 +6,13 @@ import finki.graduation.teamup.model.User;
 import finki.graduation.teamup.model.dto.UserDto;
 import finki.graduation.teamup.model.dto.UserLoginDto;
 import finki.graduation.teamup.model.enums.Role;
+import finki.graduation.teamup.model.enums.TeamMemberStatus;
 import finki.graduation.teamup.model.exceptions.InvalidArgumentsException;
 import finki.graduation.teamup.model.projection.UserProjection;
 import finki.graduation.teamup.repository.UserRepository;
 import finki.graduation.teamup.service.FileService;
 import finki.graduation.teamup.service.UserService;
 import finki.graduation.teamup.service.factory.PersonalInfoFactory;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.projection.SpelAwareProxyProjectionFactory;
 import org.springframework.http.HttpStatus;
@@ -23,7 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -58,12 +59,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserProjection> getAllMembersInTeam(Long teamId) {
-        return userRepository.findAllMembersInTeam(teamId);
+        return userRepository.findAllMembersInTeamByStatus(teamId, TeamMemberStatus.Accepted);
     }
 
     @Override
     public List<UserProjection> getAllPendingMembersForTeam(Long teamId) {
-        return userRepository.findAllPendingMembersForTeam(teamId);
+        return userRepository.findAllMembersInTeamByStatus(teamId, TeamMemberStatus.PendingToBeAcceptedInTeam);
     }
 
     @Override

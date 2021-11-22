@@ -2,6 +2,7 @@ package finki.graduation.teamup.repository;
 
 import finki.graduation.teamup.model.User;
 import finki.graduation.teamup.model.enums.Role;
+import finki.graduation.teamup.model.enums.TeamMemberStatus;
 import finki.graduation.teamup.model.projection.UserProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,12 +20,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
 
     @Transactional
-    @Query(value = "SELECT user " +
-                   "FROM User user " +
-                   "INNER JOIN FETCH user.personalInfo personalInfo " +
-                   "WHERE user.deletedOn IS NULL " +
-                   "   AND personalInfo.deletedOn IS NULL " +
-                   "   AND (user.role = :role OR :role IS NULL) ")
+    @Query("SELECT user " +
+            "FROM User user " +
+            "INNER JOIN FETCH user.personalInfo personalInfo " +
+            "WHERE user.deletedOn IS NULL " +
+            "   AND personalInfo.deletedOn IS NULL " +
+            "   AND (user.role = :role OR :role IS NULL) ")
     List<UserProjection> findAllUsers(@Param("role") Role role);
 
     @Transactional

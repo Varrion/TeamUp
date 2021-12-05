@@ -13,6 +13,10 @@ import finki.graduation.teamup.repository.UserRepository;
 import finki.graduation.teamup.service.FileService;
 import finki.graduation.teamup.service.UserService;
 import finki.graduation.teamup.service.factory.PersonalInfoFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.projection.SpelAwareProxyProjectionFactory;
 import org.springframework.http.HttpStatus;
@@ -22,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -49,12 +52,12 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserDetails loginUser(UserLoginDto userLoginDto) {
+    public void loginUser(UserLoginDto userLoginDto) {
         if (userLoginDto.getUsername() == null || userLoginDto.getUsername().isEmpty() || userLoginDto.getPassword() == null || userLoginDto.getPassword().isEmpty()) {
             throw new InvalidArgumentsException();
         }
 
-        return loadUserByUsername(userLoginDto.getUsername());
+        loadUserByUsername(userLoginDto.getUsername());
     }
 
     @Override
@@ -69,7 +72,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserProjection getById(String username) {
-        return userRepository.takeUserByUsername(username);
+        int pageNo = 0;
+        int pageSize = 1;
+        String sortBy = "id";
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).descending());
+        Slice<UserProjection> user = userRepository.takeUserByUsername(username, paging);
+        return user.getContent().get(0);
     }
 
     @Override
@@ -85,9 +93,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = new User();
-        LocalDateTime dateTimeNow = LocalDateTime.now();
 
-        user.setCreatedOn(dateTimeNow);
         user.setUsername(entityDto.getUsername());
         user.setPassword(entityDto.getPassword());
         user.setName(entityDto.getName());

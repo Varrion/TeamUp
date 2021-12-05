@@ -4,17 +4,21 @@ import finki.graduation.teamup.model.User;
 import finki.graduation.teamup.model.enums.Role;
 import finki.graduation.teamup.model.enums.TeamMemberStatus;
 import finki.graduation.teamup.model.projection.UserProjection;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Pageable;
+
 
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long>, PagingAndSortingRepository<User,Long> {
 
     @Transactional
     Optional<User> findByUsername(String username);
@@ -45,14 +49,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT user " +
             "FROM User user " +
             "   INNER JOIN FETCH user.personalInfo personalInfo " +
-            "   LEFT JOIN user.teamMembers teamMember " +
-            "   INNER JOIN teamMember.team team " +
             "   LEFT JOIN FETCH user.files userFile " +
             "WHERE user.username = :username " +
             "   AND user.deletedOn IS NULL " +
-            "   AND team.deletedOn IS NULL" +
             "   AND personalInfo.deletedOn IS NULL")
-    UserProjection takeUserByUsername(@Param("username") String username);
+    Slice<UserProjection> takeUserByUsername(@Param("username") String username, Pageable paging);
 
     @Transactional
     @Query("SELECT COUNT(user.id) " +

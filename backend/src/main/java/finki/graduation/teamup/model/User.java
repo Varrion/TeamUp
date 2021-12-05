@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,10 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -51,8 +49,9 @@ public class User extends BaseDescription implements UserDetails, Serializable {
     @ManyToOne
     Game game;
 
-    @OneToMany(mappedBy = "teamMember")
-    Set<TeamMember> teamMembers;
+    @OneToMany(mappedBy = "teamMember", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    Set<TeamMember> teamMembers = new HashSet<>();
 
     boolean isAccountNonExpired = true;
 

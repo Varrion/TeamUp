@@ -11,6 +11,7 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -30,7 +31,7 @@ public class Team extends BaseDescription {
     Set<Game> games;
 
     @OneToMany(mappedBy = "team")
-    Set<TeamMember> teamMembers;
+    Set<TeamMember> teamMembers = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

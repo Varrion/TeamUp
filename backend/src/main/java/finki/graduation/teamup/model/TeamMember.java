@@ -8,10 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -20,10 +17,10 @@ import javax.persistence.ManyToOne;
 @AllArgsConstructor
 @Where(clause = "deleted_on is null")
 public class TeamMember extends BaseCreatedOnDeletedOn {
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     Team team;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     User teamMember;
 
     @Enumerated(EnumType.STRING)

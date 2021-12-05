@@ -83,6 +83,7 @@ public class TeamServiceImpl implements TeamService {
         team.setTeamMembers(teamMembers);
 
         teamRepository.save(team);
+        teamMemberRepository.saveAll(teamMembers);
 
         ProjectionFactory pf = new SpelAwareProxyProjectionFactory();
         return pf.createProjection(TeamProjection.class, team);

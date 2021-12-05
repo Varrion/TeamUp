@@ -4,12 +4,12 @@ import CloseIcon from '@material-ui/icons/Close';
 import {UserRole as Role} from "../../services/UserService";
 import useStyles from "../MaterialStyles";
 
-const ChooseRole = (props) => {
+const ChooseRole = ({roleset, ...props}) => {
     const classes = useStyles();
 
     const handleRole = role => {
         props.onClose();
-        props.roleset(role);
+        roleset(role);
     }
 
     return (

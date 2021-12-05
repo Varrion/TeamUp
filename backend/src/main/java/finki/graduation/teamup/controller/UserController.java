@@ -49,8 +49,8 @@ public class UserController {
     }
 
     @PostMapping("login")
-    public UserDetails loginUser(@RequestBody UserLoginDto userLoginDto) {
-        return userService.loginUser(userLoginDto);
+    public void loginUser(@RequestBody UserLoginDto userLoginDto) {
+        userService.loginUser(userLoginDto);
     }
 
     @PutMapping("{username}")

@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import java.util.List;
 
 public interface UserService extends UserDetailsService, BaseGetDeleteService<UserProjection, String, Role>, BaseSaveUpdateService<UserProjection, UserDto, String>, BaseFileService<String> {
-    UserDetails loginUser(UserLoginDto userLoginDto);
+    void loginUser(UserLoginDto userLoginDto);
 
     List<UserProjection> getAllMembersInTeam(Long teamId);
 

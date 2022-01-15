@@ -8,4 +8,8 @@ public interface FileProjection {
     String getName();
 
     String getFilePath();
+
+    String getContentType();
+
+    String getFileType();
 }

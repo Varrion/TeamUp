@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const defaultPath = "/users";
+const usersRoute = "/users";
 
 const UserRole = {
     User: 'User',
@@ -15,49 +15,37 @@ const Gender = {
 }
 
 const GetAllUsers = (role = null) => {
-    return axios.get(defaultPath, {
+    return axios.get(usersRoute, {
         params: {role: role}
     });
 }
 
 const GetUser = (username) => {
-    return axios.get(`${defaultPath}/${username}`);
+    return axios.get(`${usersRoute}/${username}`);
 }
 
 const GetTeamMembers = (teamId) => {
-    return axios.get(`${defaultPath}/teams/${teamId}/members`);
+    return axios.get(`${usersRoute}/teams/${teamId}/members`);
 }
 
 const GetTeamPendingMembers = (teamId) => {
-    return axios.get(`${defaultPath}/teams/${teamId}/pending`);
+    return axios.get(`${usersRoute}/teams/${teamId}/pending`);
 }
 
 const LoginUser = (loginForm) => {
-    return axios.post(`${defaultPath}/login`, loginForm)
+    return axios.post(`${usersRoute}/login`, loginForm)
 }
 
 const RegisterUser = (userForm) => {
-    return axios.post(`${defaultPath}`, userForm);
+    return axios.post(`${usersRoute}`, userForm);
 }
 
 const EditUser = (userId, userForm) => {
-    return axios.put(`${defaultPath}/${userId}`, userForm);
+    return axios.put(`${usersRoute}/${userId}`, userForm);
 }
 
 const DeleteUser = (userId) => {
-    return axios.delete(`${defaultPath}/${userId}`);
-}
-
-const UploadFile = (userId, file) => {
-    return axios.post(`${defaultPath}/${userId}/files`, file, {
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-    });
-}
-
-const GetUserFile = (userId) => {
-    return axios.get(`${defaultPath}/${userId}/files`)
+    return axios.delete(`${usersRoute}/${userId}`);
 }
 
 const BasicAuth = (username, password) => {
@@ -67,14 +55,13 @@ const BasicAuth = (username, password) => {
 export {
     UserRole,
     Gender,
+    usersRoute,
     DeleteUser,
     EditUser,
     GetUser,
     GetAllUsers,
     LoginUser,
     RegisterUser,
-    UploadFile,
-    GetUserFile,
     GetTeamMembers,
     GetTeamPendingMembers,
     BasicAuth

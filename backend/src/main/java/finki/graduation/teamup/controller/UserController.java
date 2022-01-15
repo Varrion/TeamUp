@@ -6,7 +6,6 @@ import finki.graduation.teamup.model.dto.UserLoginDto;
 import finki.graduation.teamup.model.enums.Role;
 import finki.graduation.teamup.model.projection.UserProjection;
 import finki.graduation.teamup.service.UserService;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -59,8 +58,8 @@ public class UserController {
     }
 
     @PostMapping(value = "{username}/files")
-    public void uploadFile(@RequestPart("file") MultipartFile multipartFile, @PathVariable String username) throws Exception {
-        userService.saveFileToEntity(username, multipartFile);
+    public void uploadFile(@RequestPart("file") MultipartFile multipartFile, @RequestParam(name = "FileType") String fileType, @PathVariable String username) throws Exception {
+        userService.saveFileToEntity(username, multipartFile, fileType);
     }
 
     @GetMapping("{username}/files")

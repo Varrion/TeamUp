@@ -34,5 +34,17 @@ const DeleteTeam = (teamId) => {
     return axios.delete(`${defaultPath}/${teamId}`);
 }
 
+const GetTeamsByMemberUsername = (username) => {
+    return axios.get(`${defaultPath}/members/${username}`)
+}
 
-export {TeamStatus, GetAllTeams, GetOneTeam, CreateTeam, DeleteTeam, EditTeam, UpdateTeamStatus}
+export {
+    TeamStatus,
+    GetAllTeams,
+    GetOneTeam,
+    CreateTeam,
+    DeleteTeam,
+    EditTeam,
+    UpdateTeamStatus,
+    GetTeamsByMemberUsername
+}

@@ -1,11 +1,14 @@
 package finki.graduation.teamup.model;
 
 import finki.graduation.teamup.model.base.BaseName;
+import finki.graduation.teamup.model.enums.FileType;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.util.Objects;
 
 @Entity
@@ -18,7 +21,10 @@ import java.util.Objects;
 public class File extends BaseName {
     String filePath;
 
-    String fileType;
+    String contentType;
+
+    @Enumerated(EnumType.STRING)
+    FileType fileType;
 
     @Override
     public boolean equals(Object o) {

@@ -1,6 +1,7 @@
 package finki.graduation.teamup.service.impl;
 
 import finki.graduation.teamup.model.File;
+import finki.graduation.teamup.model.enums.FileType;
 import finki.graduation.teamup.repository.FileRepository;
 import finki.graduation.teamup.repository.FileSystemRepository;
 import finki.graduation.teamup.service.FileService;
@@ -10,8 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.time.LocalDateTime;
 
 @Service
 public class FileServiceImpl implements FileService {
@@ -30,13 +29,13 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public File save(MultipartFile multipartFile) throws Exception {
+    public File save(MultipartFile multipartFile, FileType fileType) throws Exception {
         String filePath = fileUploadService.uploadFile(multipartFile);
         File file = new File();
 
-        file.setCreatedOn(LocalDateTime.now());
         file.setFilePath(filePath);
-        file.setFileType(multipartFile.getContentType());
+        file.setContentType(multipartFile.getContentType());
+        file.setFileType(fileType);
         file.setName(multipartFile.getOriginalFilename());
 
         return fileRepository.save(file);

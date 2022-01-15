@@ -3,6 +3,7 @@ package finki.graduation.teamup.repository;
 import finki.graduation.teamup.model.User;
 import finki.graduation.teamup.model.enums.Role;
 import finki.graduation.teamup.model.enums.TeamMemberStatus;
+import finki.graduation.teamup.model.projection.TeamProjection;
 import finki.graduation.teamup.model.projection.UserProjection;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -53,7 +54,7 @@ public interface UserRepository extends JpaRepository<User, Long>, PagingAndSort
             "WHERE user.username = :username " +
             "   AND user.deletedOn IS NULL " +
             "   AND personalInfo.deletedOn IS NULL")
-    Slice<UserProjection> takeUserByUsername(@Param("username") String username, Pageable paging);
+    UserProjection takeUserByUsername(@Param("username") String username);
 
     @Transactional
     @Query("SELECT COUNT(user.id) " +
@@ -61,6 +62,6 @@ public interface UserRepository extends JpaRepository<User, Long>, PagingAndSort
             "INNER JOIN user.personalInfo personalInfo " +
             "WHERE user.deletedOn IS NULL " +
             "   AND personalInfo.deletedOn IS NULL " +
-            "   AND (user.username = :username or personalInfo.email = :email) ")
+            "   AND (user.username = :username OR personalInfo.email = :email) ")
     int checkIfUsernameAndEmailAreUnique(@Param("username") String username, @Param("email") String email);
 }

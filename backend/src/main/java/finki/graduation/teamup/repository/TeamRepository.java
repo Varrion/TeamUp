@@ -19,4 +19,13 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
             "WHERE team.deletedOn IS NULL " +
             "      AND (:status IS NULL OR team.teamStatus = :status)")
     List<TeamProjection> getAllTeams(@Param("status") TeamStatus status);
+
+    @Transactional
+    @Query("SELECT team " +
+            "FROM Team team " +
+            "INNER JOIN team.teamMembers teamMember " +
+            "WHERE team.deletedOn IS NULL " +
+            "   AND teamMember.deletedOn IS NULL " +
+            "   AND teamMember.teamMember.username = :username ")
+    List<TeamProjection> getAllTeamsByMemberUsername(@Param("username") String username);
 }

@@ -159,6 +159,11 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
+    public List<TeamProjection> getAllTeamsByMemberUsername(String username) {
+        return teamRepository.getAllTeamsByMemberUsername(username);
+    }
+
+    @Override
     public void applyInTeam(String username, Long teamId) {
         Team team = findTeamOrThrowException(teamId);
         User user = (User) userService.loadUserByUsername(username);

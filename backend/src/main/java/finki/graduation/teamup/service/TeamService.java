@@ -7,6 +7,8 @@ import finki.graduation.teamup.model.enums.TeamStatus;
 import finki.graduation.teamup.model.projection.TeamProjection;
 import finki.graduation.teamup.service.base.BaseGetDeleteService;
 
+import java.util.List;
+
 public interface TeamService extends BaseGetDeleteService<TeamProjection, Long, TeamStatus> {
     TeamProjection create(CreateUpdateTeamRequestDto requestDto);
 
@@ -15,6 +17,8 @@ public interface TeamService extends BaseGetDeleteService<TeamProjection, Long, 
     TeamProjection changeStatus(String status, Long id);
 
     TeamProjection changeMemberStatusInTeam(ChangeTeamMemberStatusRequestDto requestDto, Long id, TeamMemberStatus changeStatus);
+
+    List<TeamProjection> getAllTeamsByMemberUsername(String username);
 
     void applyInTeam(String username, Long teamId);
 

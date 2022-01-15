@@ -5,6 +5,7 @@ import finki.graduation.teamup.model.PersonalInfo;
 import finki.graduation.teamup.model.User;
 import finki.graduation.teamup.model.dto.UserDto;
 import finki.graduation.teamup.model.dto.UserLoginDto;
+import finki.graduation.teamup.model.enums.FileType;
 import finki.graduation.teamup.model.enums.Role;
 import finki.graduation.teamup.model.enums.TeamMemberStatus;
 import finki.graduation.teamup.model.exceptions.InvalidArgumentsException;
@@ -13,10 +14,6 @@ import finki.graduation.teamup.repository.UserRepository;
 import finki.graduation.teamup.service.FileService;
 import finki.graduation.teamup.service.UserService;
 import finki.graduation.teamup.service.factory.PersonalInfoFactory;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.projection.SpelAwareProxyProjectionFactory;
 import org.springframework.http.HttpStatus;
@@ -72,12 +69,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserProjection getById(String username) {
-        int pageNo = 0;
-        int pageSize = 1;
-        String sortBy = "id";
-        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).descending());
-        Slice<UserProjection> user = userRepository.takeUserByUsername(username, paging);
-        return user.getContent().get(0);
+        return userRepository.takeUserByUsername(username);
     }
 
     @Override
@@ -135,10 +127,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveFileToEntity(String id, MultipartFile multipartFile) throws Exception {
+    public void saveFileToEntity(String id, MultipartFile multipartFile, String fileType) throws Exception {
         User user = (User) loadUserByUsername(id);
+        FileType type = FileType.valueOf(fileType);
 
-        File file = fileService.save(multipartFile);
+        File file = fileService.save(multipartFile, type);
         Set<File> userFiles = user.getFiles();
         userFiles.add(file);
         user.setFiles(userFiles);
@@ -152,4 +145,3 @@ public class UserServiceImpl implements UserService {
         return user.getFiles();
     }
 }
-//        String file = fileUploadService.uploadFile((File)multipartFile);

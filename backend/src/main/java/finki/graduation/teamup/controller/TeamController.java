@@ -25,6 +25,11 @@ public class TeamController {
         return teamService.getAll(teamStatus);
     }
 
+    @GetMapping("members/{username}")
+    public List<TeamProjection> getTeamsByMemberUsername(@PathVariable String username) {
+        return teamService.getAllTeamsByMemberUsername(username);
+    }
+
     @GetMapping("{id}")
     public TeamProjection getTeam(@PathVariable Long id) {
         return teamService.getById(id);

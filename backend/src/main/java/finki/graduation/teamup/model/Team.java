@@ -33,6 +33,9 @@ public class Team extends BaseDescription {
     @OneToMany(mappedBy = "team")
     Set<TeamMember> teamMembers = new HashSet<>();
 
+    @OneToOne
+    File logo;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

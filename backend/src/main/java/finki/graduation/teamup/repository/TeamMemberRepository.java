@@ -5,15 +5,12 @@ import finki.graduation.teamup.model.enums.TeamMemberStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import javax.transaction.Transactional;
 import java.util.Optional;
 import java.util.Set;
 
 @Repository
 public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
-    @Transactional
-    Optional<TeamMember> findTeamMemberByTeamIdAndTeamMemberId(Long teamId, Long memberId);
+    Optional<TeamMember> findUserByTeamIdAndUserUsername(Long teamId, String username);
 
-    @Transactional
-    Set<TeamMember> findTeamMembersByTeamIdAndMemberStatus(Long teamId, TeamMemberStatus memberStatus);
+    Set<TeamMember> findUsersByTeamIdAndMemberStatus(Long teamId, TeamMemberStatus memberStatus);
 }

@@ -16,7 +16,7 @@ import useStyles from "../../../components/MaterialStyles";
 import {useAuthContext} from "../../../components/AuthContext";
 import {GetAllUsers, UserRole} from "../../../services/UserService";
 import StyledTextField from "../../../components/StyledTextField";
-import {CreateTeam} from "../../../services/TeamService";
+import {CreateTeam, DeleteTeam, EditTeam} from "../../../services/TeamService";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -42,9 +42,9 @@ const CreateEditTeamModal = (props) => {
     const [team, setTeam] = useState({
         name: props.team?.name ?? "",
         description: props.team?.description ?? "",
-        maxSize: props.team?.maxSize ?? 2,
+        maxSize: props.team?.size ?? 2,
         teamLead: props.team?.teamLead ?? loggedUser,
-        membersUsernames: [loggedUser]
+        membersUsernames: props.team?.teamMembers.map(teamMember => teamMember.user.username) ?? [loggedUser]
     });
 
     const handleChange = name => event => {
@@ -61,9 +61,21 @@ const CreateEditTeamModal = (props) => {
         setTeam({...team, [name]: event.target.value});
     };
 
-    const handleSubmit = () => {
-        CreateTeam(team)
-            .then(() => props.onClose())
+    const handleDelete = () => {
+        DeleteTeam(props.team.id)
+            .then(() => props.onClose(true));
+    }
+
+    const handleSubmit = event => {
+        event.preventDefault();
+        if (props.team) {
+            EditTeam(props.team.id, team)
+                .then(() => props.onClose())
+        } else {
+            CreateTeam(team)
+                .then(() => props.onClose())
+                .catch(err => console.log(err))
+        }
     }
 
     return (
@@ -75,7 +87,8 @@ const CreateEditTeamModal = (props) => {
             aria-labelledby="choose-role-title"
         >
             <DialogTitle disableTypography={true} id={"choose-role-title"} className={"text-center"}>
-                <Typography variant={"h4"} className={"font-weight-bolder"}> Create Team </Typography>
+                <Typography variant={"h4"}
+                            className={"font-weight-bolder"}> {props.team ? "Update Team " : "Create Team"}  </Typography>
             </DialogTitle>
             <IconButton aria-label="close" className={classes.closeButton} onClick={() => props.onClose()}>
                 <CloseIcon/>
@@ -139,6 +152,7 @@ const CreateEditTeamModal = (props) => {
                                     )}>
                                     {players && players.length > 0 && players.map(player => (
                                         <MenuItem
+                                            disabled={player.username === loggedUser}
                                             key={player.id}
                                             value={player.username}>
                                             {<div>
@@ -151,14 +165,27 @@ const CreateEditTeamModal = (props) => {
                                 </Select>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} className={"text-right"}>
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                className={classes.submit}
-                            >
-                                Create Team
-                            </Button>
+                        <Grid container>
+                            <Grid item lg={6}>
+                                {props.team &&
+                                    <Button
+                                        color={"secondary"}
+                                        variant="contained"
+                                        onClick={() => handleDelete()}
+                                        className={classes.submit}
+                                    >
+                                        Remove
+                                    </Button>}
+                            </Grid>
+                            <Grid item lg={6} className={"text-right"}>
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    className={classes.submit}
+                                >
+                                    {props.team ? "Update" : "Create"}
+                                </Button>
+                            </Grid>
                         </Grid>
                     </Grid>
                 </form>

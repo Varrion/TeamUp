@@ -4,7 +4,7 @@ import lombok.Value;
 
 @Value
 public class ChangeTeamMemberStatusRequestDto {
-    Long teamLeadId;
+    String teamLeadUsername;
 
-    Long memberIdToChange;
+    String memberUsernameToChange;
 }

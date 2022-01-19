@@ -17,6 +17,9 @@ import finki.graduation.teamup.service.factory.PersonalInfoFactory;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.projection.SpelAwareProxyProjectionFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -38,8 +41,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        return userRepository.findByUsername(userName)
+        User user = userRepository.findByUsername(userName)
                 .orElseThrow(() -> new UsernameNotFoundException("User Name is not Found"));
+
+        AuthorityUtils.createAuthorityList(String.valueOf(user.getRole()));
+        return user;
     }
 
     @Override
@@ -80,7 +86,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserProjection save(UserDto entityDto) {
-        if (userRepository.checkIfUsernameAndEmailAreUnique(entityDto.getUsername(), entityDto.getEmail()) != 0) {
+        if (userRepository.existsByUsernameAndPersonalInfoEmail(entityDto.getUsername(), entityDto.getEmail())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
 
@@ -104,6 +110,10 @@ public class UserServiceImpl implements UserService {
         user.setRole(role);
 
         userRepository.save(user);
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(),
+                        AuthorityUtils.createAuthorityList(String.valueOf(user.getRole()))));
 
         ProjectionFactory pf = new SpelAwareProxyProjectionFactory();
         return pf.createProjection(UserProjection.class, user);

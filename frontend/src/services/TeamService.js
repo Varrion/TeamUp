@@ -8,6 +8,13 @@ const TeamStatus = {
     Full: 'Full'
 }
 
+const TeamMemberStatus = {
+    PendingToBeAcceptedInTeam: 'PendingToBeAcceptedInTeam',
+    PendingToAcceptTeamInvitation: 'PendingToAcceptTeamInvitation',
+    Rejected: 'Rejected',
+    Accepted: 'Accepted'
+}
+
 const GetAllTeams = (status = null) => {
     return axios.get(defaultPath, {
         params: {status: status}
@@ -40,6 +47,7 @@ const GetTeamsByMemberUsername = (username) => {
 
 export {
     TeamStatus,
+    TeamMemberStatus,
     GetAllTeams,
     GetOneTeam,
     CreateTeam,

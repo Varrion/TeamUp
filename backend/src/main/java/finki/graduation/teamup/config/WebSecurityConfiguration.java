@@ -1,7 +1,6 @@
 package finki.graduation.teamup.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,9 +13,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final UsernamePasswordAuthProvider authProvider;
+    private final RestAuthEntryPoint restAuthEntryPoint;
 
-    public WebSecurityConfiguration(UsernamePasswordAuthProvider authProvider) {
+    public WebSecurityConfiguration(UsernamePasswordAuthProvider authProvider, RestAuthEntryPoint restAuthEntryPoint) {
         this.authProvider = authProvider;
+        this.restAuthEntryPoint = restAuthEntryPoint;
     }
 
     @Override
@@ -35,16 +36,23 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 //                .anyRequest().authenticated()
 //                .and()
 //                .httpBasic();
+//        http.csrf().disable()
+//                .authorizeRequests()
+//                .antMatchers("/", "/assets/**", "/register", "/login", "/api/**").permitAll()
+//                .antMatchers("/admin/**").hasRole("ADMIN")
+//                .anyRequest()
+//                .authenticated()
+//                .and()
+//                .formLogin()
+//                .loginProcessingUrl("/login");
         http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/", "/assets/**", "/register", "/login", "/api/**").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
-                .anyRequest()
-                .authenticated()
                 .and()
-                .formLogin()
-                .loginPage("/login").permitAll()
-                .failureUrl("/login?error=BadCredentials");
-
+                .exceptionHandling()
+                .authenticationEntryPoint(restAuthEntryPoint)
+                .and()
+                .formLogin().loginProcessingUrl("/login");
     }
 }

@@ -16,7 +16,7 @@ const Gender = {
 
 const GetAllUsers = (role = null) => {
     return axios.get(usersRoute, {
-        params: {role: role}
+        params: {userRole: role}
     });
 }
 

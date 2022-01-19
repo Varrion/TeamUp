@@ -49,7 +49,7 @@ public class User extends BaseDescription implements UserDetails, Serializable {
     @ManyToOne
     Game game;
 
-    @OneToMany(mappedBy = "teamMember", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     Set<TeamMember> teamMembers = new HashSet<>();
 

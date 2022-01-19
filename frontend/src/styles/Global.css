@@ -18,6 +18,10 @@
     width: 100%;
 }
 
+.half-width {
+    width: 50%;
+}
+
 .background-image {
     background-repeat: no-repeat;
     background-size: cover;
@@ -83,4 +87,34 @@
 
 .bold {
     font-weight: 600;
+}
+
+.card-height {
+    min-height: 360px;
+}
+
+.her-default-colors {
+    background-color: #f50057;
+    color: #ffff;
+}
+
+.his-default-colors {
+    color: #fff;
+    background-color: #3f51b5;
+}
+
+.card-description {
+    overflow-wrap: break-word;
+    inline-size: 260px;
+    height: 55px;
+    margin: 10px !important;
+}
+
+.card-zoom {
+    cursor: pointer;
+    transition: transform 0.15s ease-in-out;
+}
+
+.card-zoom:hover {
+    transform: scale(1.05);
 }

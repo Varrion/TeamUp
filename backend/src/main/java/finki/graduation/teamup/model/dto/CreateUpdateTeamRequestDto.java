@@ -2,7 +2,7 @@ package finki.graduation.teamup.model.dto;
 
 import lombok.Value;
 
-import java.util.List;
+import java.util.Set;
 
 @Value
 public class CreateUpdateTeamRequestDto {
@@ -14,5 +14,5 @@ public class CreateUpdateTeamRequestDto {
 
     String teamLead;
 
-    List<String> membersUsernames;
+    Set<String> membersUsernames;
 }

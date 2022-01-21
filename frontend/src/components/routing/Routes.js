@@ -6,6 +6,8 @@ import Login from "../../pages/user/Login";
 import Profile from "../../pages/user/Profile";
 import React from "react";
 import UserList from "../../pages/user/UserList";
+import TeamList from "../../pages/team/TeamList";
+import TeamDetails from "../../pages/team/TeamDetails";
 
 const Routes = () => {
     return <Router>
@@ -17,7 +19,11 @@ const Routes = () => {
         </Route>
         <Route container={true} path={"/users"}>
             <UserList path={"/"}/>
-            <Profile path={"/:username"}/>
+            <Profile path={":username"}/>
+        </Route>
+        <Route container={true} path={"/teams"}>
+            <TeamList path={"/"}/>
+            <TeamDetails path={":id"}/>
         </Route>
     </Router>
 }

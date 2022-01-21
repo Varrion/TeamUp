@@ -37,6 +37,7 @@ const Header = props => {
         <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="mr-auto">
                 <Link to={"/users"} className={"nav-link"}>Users</Link>
+                <Link to={"/teams"} className={"nav-link"}>Teams</Link>
             </Nav>
             <Nav>
                 {!loggedUser ?

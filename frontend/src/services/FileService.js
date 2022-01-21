@@ -3,7 +3,6 @@ import axios from "axios";
 const FileType = {
     Profile: 'Profile',
     Cover: 'Cover',
-    Logo: 'Logo',
     Document: 'Document',
     Video: 'Video',
     Other: 'Other'

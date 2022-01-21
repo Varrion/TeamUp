@@ -1,11 +1,12 @@
 import axios from "axios";
 
-const defaultPath = "/teams";
+const teamsRoute = "/teams";
 
 const TeamStatus = {
-    Active: 'Active',
     LookingForMore: 'LookingForMore',
-    Full: 'Full'
+    Full: 'Full',
+    Playing: 'Playing',
+    Passive: 'Passive'
 }
 
 const TeamMemberStatus = {
@@ -16,36 +17,37 @@ const TeamMemberStatus = {
 }
 
 const GetAllTeams = (status = null) => {
-    return axios.get(defaultPath, {
+    return axios.get(teamsRoute, {
         params: {status: status}
     });
 }
 
 const GetOneTeam = (teamId) => {
-    return axios.get(`${defaultPath}//${teamId}`);
+    return axios.get(`${teamsRoute}/${teamId}`);
 }
 
 const CreateTeam = (teamForm) => {
-    return axios.post(`${defaultPath}`, teamForm);
+    return axios.post(`${teamsRoute}`, teamForm);
 }
 
 const EditTeam = (teamId, teamForm) => {
-    return axios.put(`${defaultPath}/${teamId}`, teamForm);
+    return axios.put(`${teamsRoute}/${teamId}`, teamForm);
 }
 
 const UpdateTeamStatus = (teamId, teamStatus) => {
-    return axios.patch(`${defaultPath}/${teamId}`, teamStatus)
+    return axios.patch(`${teamsRoute}/${teamId}`, teamStatus)
 }
 
 const DeleteTeam = (teamId) => {
-    return axios.delete(`${defaultPath}/${teamId}`);
+    return axios.delete(`${teamsRoute}/${teamId}`);
 }
 
 const GetTeamsByMemberUsername = (username) => {
-    return axios.get(`${defaultPath}/members/${username}`)
+    return axios.get(`${teamsRoute}/members/${username}`)
 }
 
 export {
+    teamsRoute,
     TeamStatus,
     TeamMemberStatus,
     GetAllTeams,

@@ -13,10 +13,11 @@ import java.util.List;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping(value = "api/teams")
-public class TeamController {
+public class TeamController extends FileController<Long> {
     private final TeamService teamService;
 
     public TeamController(TeamService teamService) {
+        super(teamService);
         this.teamService = teamService;
     }
 
@@ -36,13 +37,13 @@ public class TeamController {
     }
 
     @PostMapping
-    public TeamProjection createTeam(@RequestBody CreateUpdateTeamRequestDto createUpdateTeamRequestDto) {
-        return teamService.create(createUpdateTeamRequestDto);
+    public Long createTeam(@RequestBody CreateUpdateTeamRequestDto createUpdateTeamRequestDto) {
+        return teamService.save(createUpdateTeamRequestDto);
     }
 
     @PutMapping("{id}")
-    public TeamProjection updateTeam(@RequestBody CreateUpdateTeamRequestDto createUpdateTeamRequestDto, @PathVariable Long id) {
-        return teamService.update(createUpdateTeamRequestDto, id);
+    public void updateTeam(@RequestBody CreateUpdateTeamRequestDto createUpdateTeamRequestDto, @PathVariable Long id) {
+        teamService.update(createUpdateTeamRequestDto, id);
     }
 
     @PatchMapping("{id}")

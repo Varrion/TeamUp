@@ -14,12 +14,8 @@ import finki.graduation.teamup.repository.UserRepository;
 import finki.graduation.teamup.service.FileService;
 import finki.graduation.teamup.service.UserService;
 import finki.graduation.teamup.service.factory.PersonalInfoFactory;
-import org.springframework.data.projection.ProjectionFactory;
-import org.springframework.data.projection.SpelAwareProxyProjectionFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -85,7 +81,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserProjection save(UserDto entityDto) {
+    public String save(UserDto entityDto) {
         if (userRepository.existsByUsernameAndPersonalInfoEmail(entityDto.getUsername(), entityDto.getEmail())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
@@ -110,17 +106,11 @@ public class UserServiceImpl implements UserService {
         user.setRole(role);
 
         userRepository.save(user);
-
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(),
-                        AuthorityUtils.createAuthorityList(String.valueOf(user.getRole()))));
-
-        ProjectionFactory pf = new SpelAwareProxyProjectionFactory();
-        return pf.createProjection(UserProjection.class, user);
+        return user.getUsername();
     }
 
     @Override
-    public UserProjection update(UserDto entityDto, String username) {
+    public void update(UserDto entityDto, String username) {
         User user = (User) loadUserByUsername(username);
         if (user.getDeletedOn() == null) {
             user.updateUser(entityDto);
@@ -131,9 +121,6 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.save(user);
-
-        ProjectionFactory pf = new SpelAwareProxyProjectionFactory();
-        return pf.createProjection(UserProjection.class, user);
     }
 
     @Override

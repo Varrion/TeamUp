@@ -6,6 +6,6 @@ import finki.graduation.teamup.model.projection.LocationProjection;
 import finki.graduation.teamup.service.base.BaseGetDeleteService;
 import finki.graduation.teamup.service.base.BaseSaveUpdateService;
 
-public interface LocationService extends BaseGetDeleteService<LocationProjection, Long, Void>, BaseSaveUpdateService<LocationProjection, LocationDto, Long> {
+public interface LocationService extends BaseGetDeleteService<LocationProjection, Long, Void>, BaseSaveUpdateService<LocationDto, Long> {
     Location findLocationOrThrowException(Long id);
 }

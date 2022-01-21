@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 
-public interface UserService extends UserDetailsService, BaseGetDeleteService<UserProjection, String, Role>, BaseSaveUpdateService<UserProjection, UserDto, String>, BaseFileService<String> {
+public interface UserService extends UserDetailsService, BaseGetDeleteService<UserProjection, String, Role>, BaseSaveUpdateService<UserDto, String>, BaseFileService<String> {
     void loginUser(UserLoginDto userLoginDto);
 
     List<UserProjection> getAllMembersInTeam(Long teamId);

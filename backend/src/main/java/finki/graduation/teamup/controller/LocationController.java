@@ -28,13 +28,13 @@ public class LocationController {
     }
 
     @PostMapping
-    public LocationProjection createLocation(@RequestBody LocationDto locationDto) {
+    public Long createLocation(@RequestBody LocationDto locationDto) {
         return locationService.save(locationDto);
     }
 
     @PutMapping("{id}")
-    public LocationProjection updateLocation(@RequestBody LocationDto locationDto, @PathVariable Long id) {
-        return locationService.update(locationDto, id);
+    public void updateLocation(@RequestBody LocationDto locationDto, @PathVariable Long id) {
+        locationService.update(locationDto, id);
     }
 
     @DeleteMapping("{id}")

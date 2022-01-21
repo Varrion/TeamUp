@@ -1,24 +1,22 @@
 package finki.graduation.teamup.controller;
 
-import finki.graduation.teamup.model.File;
 import finki.graduation.teamup.model.dto.UserDto;
 import finki.graduation.teamup.model.dto.UserLoginDto;
 import finki.graduation.teamup.model.enums.Role;
 import finki.graduation.teamup.model.projection.UserProjection;
 import finki.graduation.teamup.service.UserService;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping(value = "api/users")
-public class UserController {
+public class UserController extends FileController<String> {
     private final UserService userService;
 
     public UserController(UserService userService) {
+        super(userService);
         this.userService = userService;
     }
 
@@ -43,7 +41,7 @@ public class UserController {
     }
 
     @PostMapping
-    public UserProjection registerUser(@RequestBody UserDto userDto) {
+    public String registerUser(@RequestBody UserDto userDto) {
         return userService.save(userDto);
     }
 
@@ -53,18 +51,8 @@ public class UserController {
     }
 
     @PutMapping("{username}")
-    public UserProjection updateUser(@RequestBody UserDto userDto, @PathVariable String username) {
-        return userService.update(userDto, username);
-    }
-
-    @PostMapping(value = "{username}/files")
-    public void uploadFile(@RequestPart("file") MultipartFile multipartFile, @RequestParam(name = "FileType") String fileType, @PathVariable String username) throws Exception {
-        userService.saveFileToEntity(username, multipartFile, fileType);
-    }
-
-    @GetMapping("{username}/files")
-    public Set<File> getAllFilesForUser(@PathVariable String username) {
-        return userService.getFileByEntityId(username);
+    public void updateUser(@RequestBody UserDto userDto, @PathVariable String username) {
+        userService.update(userDto, username);
     }
 
     @DeleteMapping("{username}")

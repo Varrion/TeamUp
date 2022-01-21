@@ -1,6 +1,6 @@
 package finki.graduation.teamup.service.impl;
 
-import finki.graduation.teamup.facade.IAuthenticationFacade;
+import finki.graduation.teamup.model.File;
 import finki.graduation.teamup.model.Team;
 import finki.graduation.teamup.model.TeamMember;
 import finki.graduation.teamup.model.User;
@@ -11,6 +11,7 @@ import finki.graduation.teamup.model.enums.TeamStatus;
 import finki.graduation.teamup.model.projection.TeamProjection;
 import finki.graduation.teamup.repository.TeamMemberRepository;
 import finki.graduation.teamup.repository.TeamRepository;
+import finki.graduation.teamup.service.FileService;
 import finki.graduation.teamup.service.TeamService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.projection.ProjectionFactory;
@@ -18,6 +19,7 @@ import org.springframework.data.projection.SpelAwareProxyProjectionFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
@@ -30,13 +32,13 @@ public class TeamServiceImpl implements TeamService {
     private final TeamRepository teamRepository;
     private final UserDetailsService userService;
     private final TeamMemberRepository teamMemberRepository;
-    private final IAuthenticationFacade authenticationFacade;
+    private final FileService fileService;
 
-    public TeamServiceImpl(TeamRepository teamRepository, @Qualifier("userServiceImpl") UserDetailsService userService, TeamMemberRepository teamMemberRepository, IAuthenticationFacade authenticationFacade) {
+    public TeamServiceImpl(TeamRepository teamRepository, @Qualifier("userServiceImpl") UserDetailsService userService, TeamMemberRepository teamMemberRepository, FileService fileService) {
         this.teamRepository = teamRepository;
         this.userService = userService;
         this.teamMemberRepository = teamMemberRepository;
-        this.authenticationFacade = authenticationFacade;
+        this.fileService = fileService;
     }
 
     @Override
@@ -47,7 +49,9 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public TeamProjection getById(Long id) {
         Team team = findTeamOrThrowException(id);
-        return (TeamProjection) team;
+
+        ProjectionFactory pf = new SpelAwareProxyProjectionFactory();
+        return pf.createProjection(TeamProjection.class, team);
     }
 
     @Override
@@ -65,28 +69,25 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public TeamProjection create(CreateUpdateTeamRequestDto requestDto) {
+    public Long save(CreateUpdateTeamRequestDto requestDto) {
         if (teamRepository.existsByName(requestDto.getName())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 
         Team team = new Team();
-        team.setTeamStatus(TeamStatus.Active);
+        team.setTeamStatus(TeamStatus.LookingForMore);
         team.setName(requestDto.getName());
         team.setDescription(requestDto.getDescription());
 
-
         team.setSize(requestDto.getMaxSize());
-//        team.setTeamMembers(teamMembers);
         teamRepository.save(team);
         updateTeamMembersInTeam(team, requestDto.getMembersUsernames(), requestDto.getTeamLead());
 
-        ProjectionFactory pf = new SpelAwareProxyProjectionFactory();
-        return pf.createProjection(TeamProjection.class, team);
+        return team.getId();
     }
 
     @Override
-    public TeamProjection update(CreateUpdateTeamRequestDto requestDto, Long id) {
+    public void update(CreateUpdateTeamRequestDto requestDto, Long id) {
         Team team = findTeamOrThrowException(id);
 
         if (!requestDto.getName().equals(team.getName()) && teamRepository.existsByName(requestDto.getName())) {
@@ -105,9 +106,6 @@ public class TeamServiceImpl implements TeamService {
         team.setSize(requestDto.getMaxSize());
 
         teamRepository.save(team);
-
-        ProjectionFactory pf = new SpelAwareProxyProjectionFactory();
-        return pf.createProjection(TeamProjection.class, team);
     }
 
     @Override
@@ -126,15 +124,17 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public TeamProjection changeMemberStatusInTeam(ChangeTeamMemberStatusRequestDto requestDto, Long id, TeamMemberStatus changeStatus) {
         Team team = findTeamOrThrowException(id);
-        TeamMember teamMember = findTeamMemberOrThrowException(team.getId(), requestDto.getTeamLeadUsername());
+        TeamMember teamLead = findTeamMemberOrThrowException(team.getId(), requestDto.getTeamLeadUsername());
         Set<TeamMember> teamMembers = teamMemberRepository.findUsersByTeamIdAndMemberStatus(team.getId(), TeamMemberStatus.Accepted);
         TeamMember memberToChange = findTeamMemberOrThrowException(team.getId(), requestDto.getMemberUsernameToChange());
 
-        validate(teamMember, team, teamMembers, memberToChange);
+        validate(teamLead, team, teamMembers, memberToChange);
 
         switch (changeStatus) {
             case Accepted: {
-                teamMembers.add(memberToChange);
+                if (team.getTeamStatus() != TeamStatus.LookingForMore) {
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+                }
 
                 if (team.getSize() == teamMembers.size()) {
                     team.setTeamStatus(TeamStatus.Full);
@@ -142,7 +142,7 @@ public class TeamServiceImpl implements TeamService {
                 break;
             }
             case Rejected: {
-                if (memberToChange.getMemberStatus() != TeamMemberStatus.PendingToBeAcceptedInTeam) {
+                if (memberToChange.getMemberStatus() != TeamMemberStatus.PendingToBeAcceptedInTeam || memberToChange.getMemberStatus() != TeamMemberStatus.Accepted) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
                 }
 
@@ -241,5 +241,15 @@ public class TeamServiceImpl implements TeamService {
         }
 
         teamMemberRepository.saveAll(teamMembers);
+    }
+
+    @Override
+    public void saveFileToEntity(Long id, MultipartFile multipartFile, String fileType) throws Exception {
+
+    }
+
+    @Override
+    public Set<File> getFileByEntityId(Long id) {
+        return null;
     }
 }

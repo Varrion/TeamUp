@@ -1,7 +1,10 @@
 package finki.graduation.teamup.service.base;
 
-public interface BaseSaveUpdateService<T, K, V> {
-    T save(K k);
+import org.springframework.transaction.annotation.Transactional;
 
-    T update(K k, V id);
+@Transactional
+public interface BaseSaveUpdateService<T, K> {
+    K save(T t);
+
+    void update(T t, K id);
 }

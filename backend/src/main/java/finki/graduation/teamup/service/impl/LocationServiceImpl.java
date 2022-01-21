@@ -48,7 +48,7 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public LocationProjection save(LocationDto entityDto) {
+    public Long save(LocationDto entityDto) {
         Location location = new Location();
 
         User locationOwner = (User) userService.loadUserByUsername(entityDto.getLocationOwnerUsername());
@@ -65,12 +65,11 @@ public class LocationServiceImpl implements LocationService {
         location.setLocationInfo(locationInfo);
 
         locationRepository.save(location);
-
-        return (LocationProjection) location;
+        return location.getId();
     }
 
     @Override
-    public LocationProjection update(LocationDto entityDto, Long entityId) {
+    public void update(LocationDto entityDto, Long entityId) {
         Location location = findLocationOrThrowException(entityId);
 
         if (!location.getOwner().getUsername().equals(entityDto.getLocationOwnerUsername())) {
@@ -82,8 +81,6 @@ public class LocationServiceImpl implements LocationService {
 
         location.updateLocation(entityDto);
         locationRepository.save(location);
-
-        return (LocationProjection) location;
     }
 
     @Override

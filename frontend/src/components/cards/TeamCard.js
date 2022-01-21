@@ -2,10 +2,12 @@ import {Card, CardContent, Typography} from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import {truncate} from "../Functions";
 import TeamMemberGrid from "../grids/TeamMemberGrid";
+import {navigate} from "@reach/router";
 
 const TeamCard = ({team}) => {
     return (
         <Card
+            onClick={() => navigate(`/teams/${team.id}`)}
             className={`card-zoom card-height m-2`}>
             <CardContent>
                 <Avatar className={"profile-avatar"} src={'https://i.pravatar.cc/300'}/>

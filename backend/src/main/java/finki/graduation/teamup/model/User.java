@@ -1,12 +1,12 @@
 package finki.graduation.teamup.model;
 
-import finki.graduation.teamup.model.base.BaseDescription;
 import finki.graduation.teamup.model.dto.UserDto;
+import finki.graduation.teamup.model.enums.Gender;
 import finki.graduation.teamup.model.enums.Role;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,12 +18,12 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
-@Getter
-@Setter
+@Data
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Where(clause = "deleted_on is null")
-public class User extends BaseDescription implements UserDetails, Serializable {
+public class User extends PersonalInfo implements UserDetails, Serializable {
     @Column(nullable = false)
     String username;
 
@@ -33,12 +33,12 @@ public class User extends BaseDescription implements UserDetails, Serializable {
     @Column(nullable = false)
     String surname;
 
-    @OneToOne(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    PersonalInfo personalInfo;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     Role role;
+
+    @Enumerated(EnumType.STRING)
+    Gender gender;
 
     @OneToMany(orphanRemoval = true, mappedBy = "owner")
     Set<Location> ownedLocations;
@@ -88,9 +88,7 @@ public class User extends BaseDescription implements UserDetails, Serializable {
 
     public void deleteUser() {
         LocalDateTime dateTimeNow = LocalDateTime.now();
-
         setDeletedOn(dateTimeNow);
-        personalInfo.setDeletedOn(dateTimeNow);
     }
 
     public void updateUser(UserDto userDto) {
@@ -98,13 +96,15 @@ public class User extends BaseDescription implements UserDetails, Serializable {
         setSurname(userDto.getSurname());
         setDescription(userDto.getDescription());
         setPassword(userDto.getPassword());
+        setGender(Gender.valueOf(userDto.getGender()));
+
+        updatePersonalInfo(userDto);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof User)) return false;
-        User user = (User) o;
+        if (!(o instanceof User user)) return false;
         return getUsername().equals(user.getUsername()) && getPassword().equals(user.getPassword()) && getSurname().equals(user.getSurname());
     }
 

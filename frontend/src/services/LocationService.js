@@ -7,7 +7,11 @@ const GetAllLocations = () => {
 }
 
 const GetOneLocation = (locationId) => {
-    return axios.get(`${defaultPath}//${locationId}`);
+    return axios.get(`${defaultPath}/${locationId}`);
+}
+
+const GetLocationByOwnerUsername = (username) => {
+    return axios.get(`${defaultPath}/owner/${username}`)
 }
 
 const AddLocation = (locationForm) => {
@@ -22,4 +26,4 @@ const DeleteLocation = (locationId) => {
     return axios.delete(`${defaultPath}/${locationId}`);
 }
 
-export {GetAllLocations, GetOneLocation, AddLocation, EditLocation, DeleteLocation}
+export {GetAllLocations, GetOneLocation, GetLocationByOwnerUsername, AddLocation, EditLocation, DeleteLocation}

@@ -19,22 +19,22 @@ const ProfileInfoGrid = ({user, loggedUser, showUpdateInfoModal}) => {
                         <EditOutlinedIcon/>
                     </IconButton>}/>
                 <CardContent className={"ml-3"}>
-                    <IconTextTypography text={user.personalInfo?.address}
+                    <IconTextTypography text={user?.address}
                                         caption={"Address"}
                                         icon={<HomeIcon/>}/>
-                    <IconTextTypography text={user.personalInfo?.city}
+                    <IconTextTypography text={user?.city}
                                         caption={"City"}
                                         class={"mt-3"}
                                         icon={<LocationCityIcon/>}/>
-                    <IconTextTypography text={user.personalInfo?.email}
+                    <IconTextTypography text={user?.email}
                                         caption={"Email"}
                                         class={"mt-3"}
                                         icon={<EmailIcon/>}/>
-                    <IconTextTypography text={user.personalInfo?.phoneNumber}
+                    <IconTextTypography text={user?.phoneNumber}
                                         caption={"Phone"}
                                         class={"mt-3"}
                                         icon={<CallIcon/>}/>
-                    <IconTextTypography text={user.personalInfo?.gender}
+                    <IconTextTypography text={user?.gender}
                                         caption={"Gender"}
                                         class={"mt-3"}
                                         icon={<PersonIcon/>}/>
@@ -45,7 +45,7 @@ const ProfileInfoGrid = ({user, loggedUser, showUpdateInfoModal}) => {
                 <CardHeader title={"Bio"}/>
                 <CardContent>
                     <IconTextTypography
-                        text={user.personalInfo?.dateOfBirth?.split('T')[0].split("-").reverse().join("-")}
+                        text={user?.dateOfBirth?.split('T')[0].split("-").reverse().join("-")}
                         caption={"Birth date"}
                         class={"ml-3"}
                         icon={<CakeIcon/>}/>

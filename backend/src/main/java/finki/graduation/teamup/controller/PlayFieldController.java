@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/fields")
+@CrossOrigin(origins = "http://localhost:3000")
 public class PlayFieldController {
     private final PlayingFieldService playingFieldService;
 

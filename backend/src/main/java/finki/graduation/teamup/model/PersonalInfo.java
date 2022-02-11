@@ -1,56 +1,38 @@
 package finki.graduation.teamup.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import finki.graduation.teamup.model.base.BaseCreatedOnDeletedOn;
-import finki.graduation.teamup.model.enums.Gender;
-import lombok.*;
-import org.hibernate.Hibernate;
-import org.hibernate.annotations.Where;
+import finki.graduation.teamup.model.base.BaseDescription;
+import finki.graduation.teamup.model.dto.PersonalInfoDto;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
 import java.util.Date;
-import java.util.Objects;
 
-@Entity
-@Getter
-@Setter
-@ToString
-@Where(clause = "deleted_on is null")
-public class PersonalInfo extends BaseCreatedOnDeletedOn {
+@EqualsAndHashCode(callSuper = true)
+@Data
+@SuperBuilder
+@NoArgsConstructor
+@MappedSuperclass
+public class PersonalInfo extends BaseDescription {
     @Column(nullable = false)
-    String email;
+    protected String email;
 
-    String phoneNumber;
+    protected String phoneNumber;
 
-    String city;
+    protected String address;
 
-    String address;
+    protected String city;
 
-    Date dateOfBirth;
+    protected Date dateOfBirth;
 
-    @Enumerated(EnumType.STRING)
-    Gender gender;
-
-    @OneToOne
-    @JsonIgnore
-    User user;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JsonIgnore
-    @ToString.Exclude
-    Location location;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        PersonalInfo that = (PersonalInfo) o;
-
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return 691437475;
+    public void updatePersonalInfo(PersonalInfoDto personalInfoDto) {
+        setAddress(personalInfoDto.getAddress());
+        setCity(personalInfoDto.getCity());
+        setEmail(personalInfoDto.getEmail());
+        setDateOfBirth(personalInfoDto.getDateOfBirth());
+        setPhoneNumber(personalInfoDto.getPhoneNumber());
     }
 }

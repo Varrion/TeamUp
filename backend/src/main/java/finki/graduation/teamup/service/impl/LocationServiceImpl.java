@@ -36,7 +36,7 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public LocationProjection getById(Long id) {
-        return locationRepository.findLocationById(id);
+        return locationRepository.findLocationByIdOrOwner(id, null);
     }
 
     @Override
@@ -49,20 +49,20 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public Long save(LocationDto entityDto) {
-        Location location = new Location();
+        User locationOwner = (User) userService.loadUserByUsername(entityDto.getOwnerUsername());
 
-        User locationOwner = (User) userService.loadUserByUsername(entityDto.getLocationOwnerUsername());
-        location.setOwner(locationOwner);
-        location.setCreatedOn(LocalDateTime.now());
-
-        location.setLatitude(entityDto.getLatitude());
-        location.setLongitude(entityDto.getLongitude());
-        location.setName(entityDto.getName());
-        location.setDescription(entityDto.getDescription());
-
-        PersonalInfo locationInfo = PersonalInfoFactory.setPersonalInfo(entityDto, null, true);
-        locationInfo.setLocation(location);
-        location.setLocationInfo(locationInfo);
+        Location location = Location.builder()
+                .owner(locationOwner)
+                .latitude(entityDto.getLatitude())
+                .longitude(entityDto.getLongitude())
+                .name(entityDto.getName())
+                .description(entityDto.getDescription())
+                .address(entityDto.getAddress())
+                .city(entityDto.getCity())
+                .email(entityDto.getEmail())
+                .dateOfBirth(entityDto.getDateOfBirth())
+                .phoneNumber(entityDto.getPhoneNumber())
+                .build();
 
         locationRepository.save(location);
         return location.getId();
@@ -72,12 +72,9 @@ public class LocationServiceImpl implements LocationService {
     public void update(LocationDto entityDto, Long entityId) {
         Location location = findLocationOrThrowException(entityId);
 
-        if (!location.getOwner().getUsername().equals(entityDto.getLocationOwnerUsername())) {
+        if (!location.getOwner().getUsername().equals(entityDto.getOwnerUsername())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
-
-        PersonalInfo locationInfo = PersonalInfoFactory.setPersonalInfo(entityDto, location.getLocationInfo(), true);
-        location.setLocationInfo(locationInfo);
 
         location.updateLocation(entityDto);
         locationRepository.save(location);
@@ -93,5 +90,10 @@ public class LocationServiceImpl implements LocationService {
         }
 
         return location;
+    }
+
+    @Override
+    public LocationProjection findLocationByOwnerUsername(String username) {
+        return locationRepository.findLocationByIdOrOwner(null, username);
     }
 }

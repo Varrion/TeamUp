@@ -13,5 +13,5 @@ public class LocationDto extends PersonalInfoDto {
 
     Double longitude;
 
-    String locationOwnerUsername;
+    String ownerUsername;
 }

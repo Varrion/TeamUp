@@ -1,11 +1,11 @@
 package finki.graduation.teamup.service.impl;
 
 import finki.graduation.teamup.model.File;
-import finki.graduation.teamup.model.PersonalInfo;
 import finki.graduation.teamup.model.User;
 import finki.graduation.teamup.model.dto.UserDto;
 import finki.graduation.teamup.model.dto.UserLoginDto;
 import finki.graduation.teamup.model.enums.FileType;
+import finki.graduation.teamup.model.enums.Gender;
 import finki.graduation.teamup.model.enums.Role;
 import finki.graduation.teamup.model.enums.TeamMemberStatus;
 import finki.graduation.teamup.model.exceptions.InvalidArgumentsException;
@@ -13,7 +13,6 @@ import finki.graduation.teamup.model.projection.UserProjection;
 import finki.graduation.teamup.repository.UserRepository;
 import finki.graduation.teamup.service.FileService;
 import finki.graduation.teamup.service.UserService;
-import finki.graduation.teamup.service.factory.PersonalInfoFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,7 +37,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(userName)
-                .orElseThrow(() -> new UsernameNotFoundException("User Name is not Found"));
+                .orElse(userRepository.findByEmail(userName)
+                        .orElseThrow(() -> new UsernameNotFoundException("User Name is not Found")));
 
         AuthorityUtils.createAuthorityList(String.valueOf(user.getRole()));
         return user;
@@ -51,12 +51,12 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public void loginUser(UserLoginDto userLoginDto) {
-        if (userLoginDto.getUsername() == null || userLoginDto.getUsername().isEmpty() || userLoginDto.getPassword() == null || userLoginDto.getPassword().isEmpty()) {
+    public UserDetails loginUser(UserLoginDto userLoginDto) {
+        if (userLoginDto.getUsername().isEmpty() || userLoginDto.getPassword().isEmpty()) {
             throw new InvalidArgumentsException();
         }
 
-        loadUserByUsername(userLoginDto.getUsername());
+        return loadUserByUsername(userLoginDto.getUsername());
     }
 
     @Override
@@ -82,28 +82,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String save(UserDto entityDto) {
-        if (userRepository.existsByUsernameAndPersonalInfoEmail(entityDto.getUsername(), entityDto.getEmail())) {
+        if (userRepository.existsUserByUsernameOrEmail(entityDto.getUsername(), entityDto.getEmail())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
-
-        User user = new User();
-
-        user.setUsername(entityDto.getUsername());
-        user.setPassword(entityDto.getPassword());
-        user.setName(entityDto.getName());
-        user.setSurname(entityDto.getSurname());
-        user.setDescription(entityDto.getDescription());
-
-        PersonalInfo personalInfo = PersonalInfoFactory.setPersonalInfo(entityDto, null, false);
-        personalInfo.setUser(user);
-        user.setPersonalInfo(personalInfo);
 
         if (entityDto.getRoleType() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
-        Role role = Role.valueOf(entityDto.getRoleType());
-        user.setRole(role);
+        User user = User.builder()
+                .name(entityDto.getName())
+                .surname(entityDto.getSurname())
+                .description(entityDto.getDescription())
+                .username(entityDto.getUsername())
+                .password(entityDto.getPassword())
+                .gender(Gender.valueOf(entityDto.getGender()))
+                .role(Role.valueOf(entityDto.getRoleType()))
+                .address(entityDto.getAddress())
+                .city(entityDto.getCity())
+                .email(entityDto.getEmail())
+                .dateOfBirth(entityDto.getDateOfBirth())
+                .phoneNumber(entityDto.getPhoneNumber())
+                .build();
 
         userRepository.save(user);
         return user.getUsername();
@@ -112,14 +112,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public void update(UserDto entityDto, String username) {
         User user = (User) loadUserByUsername(username);
-        if (user.getDeletedOn() == null) {
-            user.updateUser(entityDto);
-            PersonalInfo personalInfo = PersonalInfoFactory.setPersonalInfo(entityDto, user.getPersonalInfo(), false);
-            user.setPersonalInfo(personalInfo);
-        } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
+        if (!user.getUsername().equals(entityDto.getUsername())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 
+        user.updateUser(entityDto);
         userRepository.save(user);
     }
 

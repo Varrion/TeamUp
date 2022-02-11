@@ -5,6 +5,7 @@ import finki.graduation.teamup.model.dto.UserLoginDto;
 import finki.graduation.teamup.model.enums.Role;
 import finki.graduation.teamup.model.projection.UserProjection;
 import finki.graduation.teamup.service.UserService;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,8 +47,8 @@ public class UserController extends FileController<String> {
     }
 
     @PostMapping("login")
-    public void loginUser(@RequestBody UserLoginDto userLoginDto) {
-        userService.loginUser(userLoginDto);
+    public UserDetails loginUser(@RequestBody UserLoginDto userLoginDto) {
+        return userService.loginUser(userLoginDto);
     }
 
     @PutMapping("{username}")

@@ -7,12 +7,13 @@ import finki.graduation.teamup.model.projection.UserProjection;
 import finki.graduation.teamup.service.base.BaseFileService;
 import finki.graduation.teamup.service.base.BaseGetDeleteService;
 import finki.graduation.teamup.service.base.BaseSaveUpdateService;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 
 public interface UserService extends UserDetailsService, BaseGetDeleteService<UserProjection, String, Role>, BaseSaveUpdateService<UserDto, String>, BaseFileService<String> {
-    void loginUser(UserLoginDto userLoginDto);
+    UserDetails loginUser(UserLoginDto userLoginDto);
 
     List<UserProjection> getAllMembersInTeam(Long teamId);
 

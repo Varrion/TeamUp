@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/locations")
-@CrossOrigin("localhost: 3000")
+@CrossOrigin(origins = "http://localhost:3000")
 public class LocationController {
     private final LocationService locationService;
 
@@ -25,6 +25,11 @@ public class LocationController {
     @GetMapping("{id}")
     public LocationProjection getLocation(@PathVariable Long id) {
         return locationService.getById(id);
+    }
+
+    @GetMapping("owner/{username}")
+    public LocationProjection getLocationByOwnerUsername(@PathVariable String username) {
+        return locationService.findLocationByOwnerUsername(username);
     }
 
     @PostMapping

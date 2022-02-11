@@ -41,10 +41,10 @@ const Login = () => {
         event.preventDefault();
 
         LoginUser(user)
-            .then(() => {
-                let authData = BasicAuth(user.username, user.password);
+            .then((res) => {
+                let authData = BasicAuth(res.data.username, res.data.password);
                 sessionStorage.setItem('authData', authData);
-                login(user.username);
+                login(res.data.username);
             })
     }
 

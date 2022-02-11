@@ -8,4 +8,6 @@ import finki.graduation.teamup.service.base.BaseSaveUpdateService;
 
 public interface LocationService extends BaseGetDeleteService<LocationProjection, Long, Void>, BaseSaveUpdateService<LocationDto, Long> {
     Location findLocationOrThrowException(Long id);
+
+    LocationProjection findLocationByOwnerUsername(String username);
 }

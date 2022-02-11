@@ -22,6 +22,10 @@
     width: 50%;
 }
 
+.width-80 {
+    width: 80%
+}
+
 .background-image {
     background-repeat: no-repeat;
     background-size: cover;
@@ -117,4 +121,49 @@
 
 .card-zoom:hover {
     transform: scale(1.05);
+}
+
+.autocomplete-wrapper {
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
+    text-align:center;
+}
+
+.marker-wrapper {
+    position: absolute;
+    width: 38px;
+    height: 37px;
+    background-image: url(https://icon-library.com/images/pin-icon-png/pin-icon-png-9.jpg);
+    background-size: contain;
+    background-repeat: no-repeat;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+    cursor: grab;
+}
+
+.main-wrapper {
+    height: 60vh;
+    margin: 10px 50px;
+    filter: drop-shadow(-1px 5px 3px #ccc);
+}
+.info-wrapper {
+    margin-top: 15px;
+}
+.map-details {
+    text-align: center;
+    font-size: 1.2em;
+}
+.map-details span {
+    font-weight: bold;
+}
+.search-input {
+    font-size: 1.2em;
+    width: 80%;
 }

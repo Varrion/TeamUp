@@ -1,7 +1,6 @@
 package finki.graduation.teamup.service.impl;
 
 import finki.graduation.teamup.model.Location;
-import finki.graduation.teamup.model.PersonalInfo;
 import finki.graduation.teamup.model.User;
 import finki.graduation.teamup.model.dto.LocationDto;
 import finki.graduation.teamup.model.projection.LocationProjection;
@@ -9,7 +8,6 @@ import finki.graduation.teamup.repository.LocationRepository;
 import finki.graduation.teamup.service.FileService;
 import finki.graduation.teamup.service.LocationService;
 import finki.graduation.teamup.service.UserService;
-import finki.graduation.teamup.service.factory.PersonalInfoFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;

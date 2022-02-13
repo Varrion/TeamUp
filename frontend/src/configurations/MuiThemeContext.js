@@ -9,7 +9,7 @@ const CustomThemeContext = React.createContext(null);
 
 const CustomThemeProvider = ({children}) => {
     const [dark, setDark] = useState(false);
-    const [loggedUserGender, setLoggedUserGender] = useState(Gender.Female);
+    const [loggedUserGender, setLoggedUserGender] = useState(Gender.Male);
 
     const myTheme = {
         palette: {
@@ -33,13 +33,11 @@ const CustomThemeProvider = ({children}) => {
     }
 
     const changeMainColorByUserGender = (gender) => {
-        console.log('menuvam gender');
         setLoggedUserGender(gender);
     }
 
     const theme = useMemo(
         () => {
-            console.log(myTheme.palette.main);
             return createMuiTheme(myTheme)
         }, [dark, loggedUserGender]);
 

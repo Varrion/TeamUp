@@ -19,4 +19,6 @@ public interface UserProjection extends PersonalInfoProjection {
     Role getRole();
 
     Set<FileProjection> getFiles();
+
+    String getGender();
 }

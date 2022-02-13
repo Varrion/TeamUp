@@ -16,6 +16,4 @@ public interface PersonalInfoProjection extends BaseNameDescriptionProjection {
     String getAddress();
 
     Date getDateOfBirth();
-
-    String getGender();
 }

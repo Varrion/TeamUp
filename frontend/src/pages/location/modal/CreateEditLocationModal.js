@@ -1,7 +1,6 @@
 import {Dialog, DialogContent, DialogTitle, Grid, IconButton, TextField, Typography} from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-import Button from "@material-ui/core/Button";
-import {useState} from "react";
+import {useRef, useState} from "react";
 import useStyles from "../../../components/MaterialStyles";
 import {useAuthContext} from "../../../configurations/AuthContext";
 import {DeleteTeam} from "../../../services/TeamService";
@@ -16,32 +15,45 @@ import MomentUtils from "@date-io/moment";
 const CreateEditLocationModal = (props) => {
     const classes = useStyles();
     const {loggedUser} = useAuthContext();
-    const steps = [
-        {
-            title: "Location",
-            optional: false,
-            action: () => handleSubmit
-        },
-        {
-            title: "Personal Info",
-            optional: true
-        },
-        {
-            title: "Place Logo",
-            optional: true
-        }]
-
+    const [createdLocationId, setCreatedLocationId] = useState(null);
     const [location, setLocation] = useState({
         name: props.location?.name ?? "",
+        email: props.location?.email ?? "",
         description: props.location?.description ?? "",
         ownerUsername: props.location?.ownerUsername ?? loggedUser,
-        address: "",
-        city: "",
-        longitude: null,
-        latitude: null
+        address: props.location?.address ?? "",
+        city: props.location?.city ?? "",
+        longitude: props.location?.longitude ?? null,
+        latitude: props.location?.latitude ?? null,
+        phoneNumber: props.location?.phoneNumber ?? "",
+        dateOfBirth: props.location?.dateOfBirth ? new Date(props.profile.dateOfBirth) : new Date()
     });
 
+    const horizontalStepperHandleNext = useRef(null);
+
+    const steps = [
+        {
+            title: "Location Info",
+            optional: false,
+            actionForm: "location-info"
+        },
+        {
+            title: "Location Map",
+            optional: false,
+            actionForm: "location-map"
+        },
+        {
+            title: "Location Logo",
+            optional: true,
+            actionForm: "location-logo"
+        }]
+
     const handleChange = name => event => {
+        if (name === "dateOfBirth") {
+            setLocation({...location, dateOfBirth: event.toDate()})
+            return;
+        }
+
         setLocation({...location, [name]: event.target.value});
     };
 
@@ -50,16 +62,25 @@ const CreateEditLocationModal = (props) => {
             .then(() => props.onClose(true));
     }
 
-    const handleSubmit = event => {
+    const handleFirstStepSubmit = event => {
         event.preventDefault();
-        if (props.location) {
-            EditLocation(props.location.id, location)
-                .then(() => props.onClose())
-        } else {
-            AddLocation(location)
-                .then(() => props.onClose())
-                .catch(err => console.log(err))
-        }
+
+        AddLocation(location)
+            .then(res => {
+                console.log("asdfada safsa", res.data);
+                setCreatedLocationId(res.data);
+                horizontalStepperHandleNext.current();
+            })
+            .catch(err => console.log(err))
+    }
+
+    const handleSecondStepSubmit = event => {
+        event.preventDefault();
+        console.log('vlagam tuka')
+
+        EditLocation(createdLocationId, location)
+            .then(() => horizontalStepperHandleNext.current())
+            .catch(err => console.log(err))
     }
 
     return (
@@ -78,121 +99,109 @@ const CreateEditLocationModal = (props) => {
                 <CloseIcon/>
             </IconButton>
             <DialogContent className={"mb-3"}>
-                <HorizontalStepper steps={steps} onComplete={() => props.onClose()}>
+                <HorizontalStepper steps={steps} onComplete={() => props.onClose()}
+                                   horizontalStepperHandleNext={horizontalStepperHandleNext}>
                     <CustomStep>
-                        <form onSubmit={handleSubmit}>
-                            <Grid container direction={"column"}>
-                                <Grid item xs={12} className={"mb-4"}>
+                        <form id={"location-info"} onSubmit={handleFirstStepSubmit}>
+                            <Grid container justify={"center"}>
+                                <Grid item xs={5}>
+                                    <TextField
+                                        required
+                                        id="name"
+                                        label="Name"
+                                        fullWidth
+                                        value={location.name}
+                                        onChange={handleChange("name")}
+                                    />
+                                    <TextField
+                                        id="email"
+                                        name="email"
+                                        label="Email address"
+                                        fullWidth
+                                        required
+                                        type={"email"}
+                                        value={location.email}
+                                        className={"mt-3"}
+                                        autoComplete="email address"
+                                        onChange={handleChange("email")}
 
+                                    />
+                                    <TextField
+                                        id="phone"
+                                        name="phone"
+                                        label="Phone number"
+                                        fullWidth
+                                        value={location.phoneNumber}
+                                        className={"mt-3"}
+                                        onChange={handleChange("phoneNumber")}
+                                        autoComplete="phone number"
+                                    />
+                                    <MuiPickersUtilsProvider utils={MomentUtils}>
+                                        <Grid item xs={12} className={"mt-3"}>
+                                            <KeyboardDatePicker
+                                                variant="inline"
+                                                label="Since"
+                                                format="DD/MM/YYYY"
+                                                fullWidth
+                                                className={"mt-2"}
+                                                value={location.dateOfBirth}
+                                                InputAdornmentProps={{position: "start"}}
+                                                onChange={handleChange("dateOfBirth")}
+                                            />
+                                        </Grid>
+                                    </MuiPickersUtilsProvider>
                                 </Grid>
-                                <Grid container>
-                                    <Grid item xs={6} className={"mb-4"}>
-                                        <TextField
-                                            required
-                                            id="name"
-                                            label="Name"
-                                            fullWidth
-                                            value={location.name}
-                                            onChange={handleChange("name")}
-                                        />
-                                        <TextField
-                                            id="info"
-                                            label="Location Info"
-                                            multiline
-                                            rows={10}
-                                            fullWidth
-                                            variant="outlined"
-                                            className={"mt-4"}
-                                            value={location.description}
-                                            onChange={handleChange("description")}
-                                        />
-                                        <TextField
-                                            id="address"
-                                            label="Address"
-                                            fullWidth
-                                            className={"mt-3"}
-                                            value={location.address}
-                                            onChange={handleChange("address")}
-                                        />
-                                        <TextField
-                                            id="address"
-                                            label="City"
-                                            fullWidth
-                                            className={"mt-3"}
-                                            value={location.city}
-                                            onChange={handleChange("address")}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <GoogleMap onMarkerChange={(longitude, latitude) => setLocation({
-                                            ...location,
-                                            longitude: longitude,
-                                            latitude: latitude
-                                        })}/>
-                                    </Grid>
-                                </Grid>
-                                <Grid container className={"text-center"}>
-                                    <Grid item xs={6}>
-
-                                    </Grid>
-                                    <Grid item xs={6}>
-
-                                    </Grid>
-                                </Grid>
-                                <Grid container>
-                                    <Grid item lg={6}>
-                                        {props.team &&
-                                            <Button
-                                                color={"secondary"}
-                                                variant="contained"
-                                                onClick={() => handleDelete()}
-                                                className={classes.submit}
-                                            >
-                                                Remove
-                                            </Button>}
-                                    </Grid>
+                                <Grid item xs={6} className={"pl-4"}>
+                                    <TextField
+                                        id="info"
+                                        label="Location Info"
+                                        multiline
+                                        rows={10}
+                                        fullWidth
+                                        variant="outlined"
+                                        className={"mt-4"}
+                                        value={location.description}
+                                        onChange={handleChange("description")}
+                                    />
                                 </Grid>
                             </Grid>
                         </form>
                     </CustomStep>
                     <CustomStep>
-                        <form>
-                            <Grid item xs={12}>
-                                <TextField
-                                    id="email"
-                                    name="email"
-                                    label="Email address"
-                                    fullWidth
-                                    type={"email"}
-                                    value={location.email}
-                                    autoComplete="email address"
-                                    onChange={handleChange("email")}
-
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    id="phone"
-                                    name="phone"
-                                    label="Phone number"
-                                    fullWidth
-                                    value={location.phoneNumber}
-                                    onChange={handleChange("phoneNumber")}
-                                    autoComplete="phone number"
-                                />
-                            </Grid>
-                            <MuiPickersUtilsProvider utils={MomentUtils}>
-                                <Grid item xs={12}>
-                                    <KeyboardDatePicker
-                                        variant="inline"
-                                        label="Date of Birth"
-                                        format="DD/MM/YYYY"
-                                        value={location.dateOfBirth}
-                                        InputAdornmentProps={{ position: "start" }}
-                                        onChange={handleChange("dateOfBirth")}
-                                    />
+                        <form id={"location-map"} onSubmit={handleSecondStepSubmit}>
+                            <Grid container>
+                                <Grid item xs={6}>
+                                    <GoogleMap hideLongitudeLatitude={true}
+                                               onMarkerChange={(longitude, latitude) => setLocation({
+                                                   ...location,
+                                                   longitude: longitude,
+                                                   latitude: latitude
+                                               })}/>
                                 </Grid>
-                            </MuiPickersUtilsProvider>
+                                <Grid className={"mt-2"} item xs={6}>
+                                    <Typography variant={"h3"} className={"text-center"}>{location.name}</Typography>
+                                    <TextField
+                                        id="address"
+                                        label="Address"
+                                        fullWidth
+                                        className={"mt-3"}
+                                        value={location.address}
+                                        onChange={handleChange("address")}
+                                    />
+                                    <TextField
+                                        id="address"
+                                        label="City"
+                                        fullWidth
+                                        className={"mt-3"}
+                                        value={location.city}
+                                        onChange={handleChange("city")}
+                                    />
+                                    <Typography className={"mt-4"}
+                                                variant={"h6"}>Latitude: {location.latitude}</Typography>
+                                    <Typography className={"mt-2"}
+                                                variant={"h6"}>Longitude: {location.longitude}</Typography>
+                                </Grid>
+                            </Grid>
                         </form>
                     </CustomStep>
                     <CustomStep>

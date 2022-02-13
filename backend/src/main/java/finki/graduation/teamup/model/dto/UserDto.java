@@ -16,6 +16,8 @@ public class UserDto extends PersonalInfoDto {
 
     String description;
 
+    String gender;
+
     @Nullable
     String roleType;
 }

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
@@ -10,12 +10,16 @@ const HorizontalStepper = (props) => {
     const [skipped, setSkipped] = useState(new Set());
     const steps = props.steps;
 
+    useEffect(() => {
+        props.horizontalStepperHandleNext.current = handleNext
+    }, [])
+
     const isStepSkipped = (step) => {
         return skipped.has(step);
     };
 
     const handleNext = () => {
-        if (activeStep === steps.length -1) {
+        if (activeStep === steps.length - 1) {
             return props.onComplete();
         }
 
@@ -40,7 +44,7 @@ const HorizontalStepper = (props) => {
             throw new Error("You can't skip a step that isn't optional.");
         }
 
-        if (activeStep === steps.length -1) {
+        if (activeStep === steps.length - 1) {
             return props.onComplete();
         }
 
@@ -100,7 +104,8 @@ const HorizontalStepper = (props) => {
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={handleNext}
+                    type={"submit"}
+                    form={steps[activeStep].actionForm}
                 >
                     {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
                 </Button>

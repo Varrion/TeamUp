@@ -3,7 +3,7 @@ import GoogleMapReact from 'google-map-react';
 import Marker from "./Marker";
 import {CircularProgress} from "@material-ui/core";
 
-const GoogleMap = ({onMarkerChange}) => {
+const GoogleMap = ({onMarkerChange, hideLongitudeLatitude}) => {
     const [googleMap, setGoogleMap] = useState({
         mapApiLoaded: false,
         mapInstance: null,
@@ -98,12 +98,12 @@ const GoogleMap = ({onMarkerChange}) => {
                     />
                 </GoogleMapReact>
 
-                <div className="info-wrapper">
+                {!hideLongitudeLatitude && <div className="info-wrapper">
                     <div className="map-details">Latitude: <span>{googleMap.lat}</span>,
                         Longitude: <span>{googleMap.lng}</span>
                     </div>
                     {/*<div className="map-details">Zoom: <span>{googleMap.zoom}</span></div>*/}
-                </div>
+                </div>}
             </>}
         </div>
     )

@@ -5,20 +5,9 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/Global.css';
-import {createMuiTheme, MuiThemeProvider} from "@material-ui/core";
 import axios from "axios";
 import {ToastProvider} from "react-toast-notifications";
-
-const THEME = createMuiTheme({
-    typography: {
-        h3: {
-            fontFamily: ["Trirong", "serif"].join(','),
-            textTransform: "uppercase",
-            fontStyle: "oblique",
-            fontWeight: "bold"
-        }
-    }
-});
+import CustomThemeProvider from "./configurations/MuiThemeContext";
 
 const credentials = sessionStorage.getItem("authData");
 
@@ -29,11 +18,11 @@ if (credentials) {
 }
 
 ReactDOM.render(
-    <MuiThemeProvider theme={THEME}>
+    <CustomThemeProvider>
         <ToastProvider autoDismiss autoDismissTimeout={4000} placement={"bottom-right"}>
             <App/>
         </ToastProvider>
-    </MuiThemeProvider>,
+    </CustomThemeProvider>,
     document.getElementById('root')
 );
 

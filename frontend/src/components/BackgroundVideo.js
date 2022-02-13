@@ -3,7 +3,7 @@ import "../styles/BackgroundImage.css";
 import VideoSource from "../assets/videos/TeamUpVideo.mp4"
 import {Button, Typography} from "@material-ui/core";
 import {navigate} from "@reach/router";
-import {useAuthContext} from "./AuthContext";
+import {useAuthContext} from "../configurations/AuthContext";
 
 const BackgroundVideo = () => {
     const {loggedUser} = useAuthContext();

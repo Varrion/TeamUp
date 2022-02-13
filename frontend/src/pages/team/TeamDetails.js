@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {GetOneTeam, teamsRoute} from "../../services/TeamService";
-import {Card, CardContent, CardHeader, Grid, IconButton} from "@material-ui/core";
+import {Grid, IconButton} from "@material-ui/core";
 import UploadShowProfilePicture from "../../components/pictures/UploadShowProfilePicture";
 import NoPhotoFemale from "../../assets/images/GirlSiluethee.jpg";
 import {FileType, UploadFile} from "../../services/FileService";
@@ -8,7 +8,7 @@ import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
 import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
 import TeamMemberGrid from "../../components/grids/TeamMemberGrid";
-import {useAuthContext} from "../../components/AuthContext";
+import {useAuthContext} from "../../configurations/AuthContext";
 
 const TeamDetails = ({id}) => {
     const {loggedUser} = useAuthContext();
@@ -46,9 +46,7 @@ const TeamDetails = ({id}) => {
             <Typography className={"text-left mb-2"} variant={"subtitle1"}>
                 {team.description}
             </Typography>
-
             <TeamMemberGrid team={team}/>
-
         </Grid>
     )
 }

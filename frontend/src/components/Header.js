@@ -3,7 +3,7 @@ import {Nav, Navbar} from "react-bootstrap";
 import Logo from "../assets/images/TeamupTransparent.png";
 import {isMobile} from 'react-device-detect';
 import {Link, navigate} from "@reach/router";
-import {useAuthContext} from "./AuthContext"
+import {useAuthContext} from "../configurations/AuthContext"
 import Button from "@material-ui/core/Button";
 
 const Header = props => {

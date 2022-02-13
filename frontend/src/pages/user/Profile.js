@@ -2,7 +2,7 @@ import {Grid} from "@material-ui/core";
 import React, {useEffect, useState} from "react";
 import {GetUser, UserRole, usersRoute} from "../../services/UserService";
 import UserEditModal from "./modal/UserEditModal";
-import {useAuthContext} from "../../components/AuthContext";
+import {useAuthContext} from "../../configurations/AuthContext";
 import CreateEditTeamModal from "../team/modal/CreateEditTeamModal";
 import {GetTeamsByMemberUsername, TeamMemberStatus} from "../../services/TeamService";
 import {FileType, UploadFile} from "../../services/FileService";

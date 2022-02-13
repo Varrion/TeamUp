@@ -3,7 +3,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import Button from "@material-ui/core/Button";
 import {useState} from "react";
 import useStyles from "../../../components/MaterialStyles";
-import {useAuthContext} from "../../../components/AuthContext";
+import {useAuthContext} from "../../../configurations/AuthContext";
 import {DeleteTeam} from "../../../services/TeamService";
 import {AddLocation, EditLocation} from "../../../services/LocationService";
 import GoogleMap from "../../../components/maps/GoogleMap";

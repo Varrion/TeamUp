@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(userName)
-                .orElse(userRepository.findByEmail(userName)
+                .orElseGet(() -> userRepository.findByEmail(userName)
                         .orElseThrow(() -> new UsernameNotFoundException("User Name is not Found")));
 
         AuthorityUtils.createAuthorityList(String.valueOf(user.getRole()));

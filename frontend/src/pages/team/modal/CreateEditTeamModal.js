@@ -13,7 +13,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import Button from "@material-ui/core/Button";
 import {useEffect, useState} from "react";
 import useStyles from "../../../components/MaterialStyles";
-import {useAuthContext} from "../../../components/AuthContext";
+import {useAuthContext} from "../../../configurations/AuthContext";
 import {GetAllUsers, UserRole} from "../../../services/UserService";
 import StyledTextField from "../../../components/StyledTextField";
 import {CreateTeam, DeleteTeam, EditTeam} from "../../../services/TeamService";

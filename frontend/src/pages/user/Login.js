@@ -10,7 +10,8 @@ import {makeStyles} from '@material-ui/core/styles';
 import LoginPhoto from "../../assets/images/login-photo.jpg";
 import {Link, Redirect} from "@reach/router";
 import {BasicAuth, LoginUser} from "../../services/UserService";
-import {useAuthContext} from "../../components/AuthContext";
+import {useAuthContext} from "../../configurations/AuthContext";
+import {useToggleTheme} from "../../configurations/MuiThemeContext";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -27,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Login = () => {
     const {loggedUser, login} = useAuthContext();
+    const {changeMainColorByUserGender} = useToggleTheme();
     const classes = useStyles();
     const [user, setUser] = useState({
         username: "",
@@ -44,6 +46,7 @@ const Login = () => {
             .then((res) => {
                 let authData = BasicAuth(res.data.username, res.data.password);
                 sessionStorage.setItem('authData', authData);
+                changeMainColorByUserGender(res.data.gender);
                 login(res.data.username);
             })
     }

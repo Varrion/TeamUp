@@ -45,7 +45,7 @@ const AuthConsumer = AuthContext.Consumer
 const useAuthContext = () => {
     const context = useContext(AuthContext)
     if (!context) {
-        throw new Error('useCount must be used within a CountProvider')
+        throw new Error('authContext must be used within a AuthProvider')
     }
     return context
 }

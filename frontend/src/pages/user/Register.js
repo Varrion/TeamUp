@@ -8,7 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import {Link, navigate, Redirect} from "@reach/router";
 import {Gender, RegisterUser} from "../../services/UserService";
-import {useAuthContext} from "../../components/AuthContext";
+import {useAuthContext} from "../../configurations/AuthContext";
 import useStyles from "../../components/MaterialStyles";
 
 const Register = (props) => {

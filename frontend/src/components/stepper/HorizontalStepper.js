@@ -40,6 +40,10 @@ const HorizontalStepper = (props) => {
             throw new Error("You can't skip a step that isn't optional.");
         }
 
+        if (activeStep === steps.length -1) {
+            return props.onComplete();
+        }
+
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
         setSkipped((prevSkipped) => {
             const newSkipped = new Set(prevSkipped.values());

@@ -19,21 +19,24 @@ import {useState} from "react";
 import Button from "@material-ui/core/Button";
 import {KeyboardDatePicker, MuiPickersUtilsProvider,} from '@material-ui/pickers';
 import MomentUtils from '@date-io/moment';
+import {useToggleTheme} from "../../../configurations/MuiThemeContext";
 
 const UserEditModal = (props) => {
     const classes = useStyles();
+
+    const {changeMainColorByUserGender} = useToggleTheme();
 
     const [user, setUser] = useState({
         username: props.profile?.username ?? "",
         password: props.profile?.password ?? "",
         name: props.profile?.name ?? "",
         surname: props.profile?.surname ?? "",
-        email: props.profile?.personalInfo?.email,
-        gender: props.profile?.personalInfo?.gender ?? "",
-        phoneNumber: props.profile?.personalInfo?.phoneNumber ?? "",
-        address: props.profile?.personalInfo?.address ?? "",
-        city: props.profile?.personalInfo?.city ?? "",
-        dateOfBirth: props.profile?.personalInfo?.dateOfBirth ? new Date(props.profile.personalInfo.dateOfBirth) : new Date(),
+        email: props.profile?.email,
+        gender: props.profile?.gender ?? "",
+        phoneNumber: props.profile?.phoneNumber ?? "",
+        address: props.profile?.address ?? "",
+        city: props.profile?.city ?? "",
+        dateOfBirth: props.profile?.dateOfBirth ? new Date(props.profile.dateOfBirth) : new Date(),
         description: props.profile?.description ?? ""
     });
 
@@ -50,7 +53,10 @@ const UserEditModal = (props) => {
         event.preventDefault();
 
         EditUser(user.username, user)
-            .then(() => props.onClose())
+            .then(() => {
+                changeMainColorByUserGender(user.gender);
+                return props.onClose()
+            })
     }
 
     return (
@@ -144,7 +150,7 @@ const UserEditModal = (props) => {
                                     label="Date of Birth"
                                     format="DD/MM/YYYY"
                                     value={user.dateOfBirth}
-                                    InputAdornmentProps={{ position: "start" }}
+                                    InputAdornmentProps={{position: "start"}}
                                     onChange={handleChange("dateOfBirth")}
                                 />
                             </Grid>

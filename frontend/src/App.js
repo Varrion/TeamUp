@@ -4,7 +4,7 @@ import {Match} from "@reach/router";
 import React, {Suspense} from "react";
 import {CircularProgress} from "@material-ui/core";
 import Footer from "./components/Footer";
-import {AuthProvider} from "./components/AuthContext";
+import {AuthProvider} from "./configurations/AuthContext";
 import Routes from "./components/routing/Routes";
 
 const App = props => {

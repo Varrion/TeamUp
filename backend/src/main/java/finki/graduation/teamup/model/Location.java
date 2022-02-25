@@ -8,9 +8,8 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 
@@ -21,7 +20,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Where(clause = "deleted_on is null")
-public class Location extends PersonalInfo {
+public class Location extends PersonalInfo implements Serializable {
     @OneToMany(orphanRemoval = true, mappedBy = "location")
     @ToString.Exclude
     Set<PlayingField> playingFields;
@@ -30,7 +29,7 @@ public class Location extends PersonalInfo {
 
     Double longitude;
 
-    @ManyToOne
+    @OneToOne
     User owner;
 
     @OneToMany(orphanRemoval = true)

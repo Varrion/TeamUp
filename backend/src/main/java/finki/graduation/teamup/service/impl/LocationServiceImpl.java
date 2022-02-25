@@ -1,8 +1,10 @@
 package finki.graduation.teamup.service.impl;
 
+import finki.graduation.teamup.model.File;
 import finki.graduation.teamup.model.Location;
 import finki.graduation.teamup.model.User;
 import finki.graduation.teamup.model.dto.LocationDto;
+import finki.graduation.teamup.model.enums.FileType;
 import finki.graduation.teamup.model.projection.LocationProjection;
 import finki.graduation.teamup.repository.LocationRepository;
 import finki.graduation.teamup.service.FileService;
@@ -10,10 +12,14 @@ import finki.graduation.teamup.service.LocationService;
 import finki.graduation.teamup.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+
+import static finki.graduation.teamup.model.enums.FileType.valueOf;
 
 @Service
 public class LocationServiceImpl implements LocationService {
@@ -34,7 +40,7 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public LocationProjection getById(Long id) {
-        return locationRepository.findLocationByIdOrOwner(id, null);
+        return locationRepository.findByIdOrOwnerUsername(id, null);
     }
 
     @Override
@@ -92,6 +98,25 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public LocationProjection findLocationByOwnerUsername(String username) {
-        return locationRepository.findLocationByIdOrOwner(null, username);
+        return locationRepository.findByIdOrOwnerUsername(null, username);
+    }
+
+    @Override
+    public void saveFileToEntity(Long id, MultipartFile multipartFile, String fileType) throws Exception {
+        Location location = findLocationOrThrowException(id);
+        FileType type = valueOf(fileType);
+
+        File file = fileService.save(multipartFile, type);
+        Set<File> locationFiles = location.getFiles();
+        locationFiles.add(file);
+        location.setFiles(locationFiles);
+
+        locationRepository.save(location);
+    }
+
+    @Override
+    public Set<File> getFileByEntityId(Long id) {
+        Location location = findLocationOrThrowException(id);
+        return location.getFiles();
     }
 }

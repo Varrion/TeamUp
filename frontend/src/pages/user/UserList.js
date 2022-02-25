@@ -49,7 +49,7 @@ const UserList = (props) => {
 
     return (
         <Grid container>
-            {users && users.length > 0 && users.map(user => <Grid item lg={3} xs={6}>
+            {users && users.length > 0 && users.map(user => <Grid key={user.id} item lg={3} xs={6}>
                 <UserCard user={user}/>
             </Grid>)}
         </Grid>

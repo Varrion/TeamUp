@@ -27,12 +27,17 @@ const AuthProvider = props => {
         setLoggedUser(null);
     }
 
+    const isAuthorized = (username) => {
+        return username === loggedUser;
+    }
+
     return (
         <AuthContext.Provider
             value={{
                 loggedUser: loggedUser,
                 login: login,
-                logout: logout
+                logout: logout,
+                isAuthorized: isAuthorized
             }}
         >
             {props.children}

@@ -3,19 +3,22 @@ import CloseIcon from "@material-ui/icons/Close";
 import {useRef, useState} from "react";
 import useStyles from "../../../components/MaterialStyles";
 import {useAuthContext} from "../../../configurations/AuthContext";
-import {DeleteTeam} from "../../../services/TeamService";
-import {AddLocation, EditLocation} from "../../../services/LocationService";
+import {AddLocation, EditLocation, locationRoute} from "../../../services/LocationService";
 import GoogleMap from "../../../components/maps/GoogleMap";
 import HorizontalStepper from "../../../components/stepper/HorizontalStepper";
 import CustomStep from "../../../components/stepper/StepContent";
 import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
+import UploadShowProfilePicture from "../../../components/pictures/UploadShowProfilePicture";
+import NoPhotoFemale from "../../../assets/images/GirlSiluethee.jpg";
+import {Gender} from "../../../services/UserService";
+import {FileType, UploadFile} from "../../../services/FileService";
 
 
 const CreateEditLocationModal = (props) => {
     const classes = useStyles();
     const {loggedUser} = useAuthContext();
-    const [createdLocationId, setCreatedLocationId] = useState(null);
+    const [createdLocationId, setCreatedLocationId] = useState(props.location?.id ?? null);
     const [location, setLocation] = useState({
         name: props.location?.name ?? "",
         email: props.location?.email ?? "",
@@ -26,7 +29,7 @@ const CreateEditLocationModal = (props) => {
         longitude: props.location?.longitude ?? null,
         latitude: props.location?.latitude ?? null,
         phoneNumber: props.location?.phoneNumber ?? "",
-        dateOfBirth: props.location?.dateOfBirth ? new Date(props.profile.dateOfBirth) : new Date()
+        dateOfBirth: props.location?.dateOfBirth ? new Date(props.location.dateOfBirth) : new Date()
     });
 
     const horizontalStepperHandleNext = useRef(null);
@@ -34,12 +37,12 @@ const CreateEditLocationModal = (props) => {
     const steps = [
         {
             title: "Location Info",
-            optional: false,
+            optional: props.location ?? false,
             actionForm: "location-info"
         },
         {
             title: "Location Map",
-            optional: false,
+            optional: props.location ?? false,
             actionForm: "location-map"
         },
         {
@@ -57,30 +60,40 @@ const CreateEditLocationModal = (props) => {
         setLocation({...location, [name]: event.target.value});
     };
 
-    const handleDelete = () => {
-        DeleteTeam(props.location.id)
-            .then(() => props.onClose(true));
-    }
-
     const handleFirstStepSubmit = event => {
         event.preventDefault();
 
-        AddLocation(location)
-            .then(res => {
-                console.log("asdfada safsa", res.data);
-                setCreatedLocationId(res.data);
-                horizontalStepperHandleNext.current();
-            })
-            .catch(err => console.log(err))
+        !props.location ?
+            AddLocation(location)
+                .then(res => {
+                    setCreatedLocationId(res.data);
+                    horizontalStepperHandleNext.current();
+                })
+                .catch(err => console.log(err))
+            : EditLocation(createdLocationId, location)
+                .then(() => horizontalStepperHandleNext.current())
+                .catch(err => console.log(err))
+
     }
 
     const handleSecondStepSubmit = event => {
         event.preventDefault();
-        console.log('vlagam tuka')
 
         EditLocation(createdLocationId, location)
             .then(() => horizontalStepperHandleNext.current())
             .catch(err => console.log(err))
+    }
+
+    const handleThirdStepSubmit = event => {
+        event.preventDefault();
+        props.onClose();
+    }
+
+    const onFileUpload = (event) => {
+        let formData = new FormData();
+        formData.append("file", event.target.files[0]);
+        UploadFile(locationRoute, createdLocationId, formData, FileType.Profile)
+            .then(() => console.log('vlagam tuka'))
     }
 
     return (
@@ -93,7 +106,7 @@ const CreateEditLocationModal = (props) => {
         >
             <DialogTitle disableTypography={true} id={"choose-role-title"} className={"text-center"}>
                 <Typography variant={"h4"}
-                            className={"font-weight-bolder"}> {props.team ? "Update Location " : "Add Location"}  </Typography>
+                            className={"font-weight-bolder"}> {props.location ? "Update Location " : "Add Location"}  </Typography>
             </DialogTitle>
             <IconButton aria-label="close" className={classes.closeButton} onClick={() => props.onClose()}>
                 <CloseIcon/>
@@ -171,12 +184,15 @@ const CreateEditLocationModal = (props) => {
                         <form id={"location-map"} onSubmit={handleSecondStepSubmit}>
                             <Grid container>
                                 <Grid item xs={6}>
-                                    <GoogleMap hideLongitudeLatitude={true}
-                                               onMarkerChange={(longitude, latitude) => setLocation({
-                                                   ...location,
-                                                   longitude: longitude,
-                                                   latitude: latitude
-                                               })}/>
+                                    <GoogleMap
+                                        longitude={location.longitude}
+                                        latitude={location.latitude}
+                                        hideLongitudeLatitude={true}
+                                        onMarkerChange={(longitude, latitude) => setLocation({
+                                            ...location,
+                                            longitude: longitude,
+                                            latitude: latitude
+                                        })}/>
                                 </Grid>
                                 <Grid className={"mt-2"} item xs={6}>
                                     <Typography variant={"h3"} className={"text-center"}>{location.name}</Typography>
@@ -205,7 +221,11 @@ const CreateEditLocationModal = (props) => {
                         </form>
                     </CustomStep>
                     <CustomStep>
-                        <div>bla bla</div>
+                        <form id={"location-logo"} onSubmit={handleThirdStepSubmit}
+                              className={"d-flex justify-content-center"}>
+                            <UploadShowProfilePicture width={250} height={250} src={NoPhotoFemale} alt={Gender.Female}
+                                                      onUpload={onFileUpload}/>
+                        </form>
                     </CustomStep>
                 </HorizontalStepper>
             </DialogContent>

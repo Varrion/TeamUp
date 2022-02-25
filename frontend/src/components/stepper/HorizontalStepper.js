@@ -18,6 +18,10 @@ const HorizontalStepper = (props) => {
         return skipped.has(step);
     };
 
+    const handleDelete = () => {
+        return props.onDelete();
+    }
+
     const handleNext = () => {
         if (activeStep === steps.length - 1) {
             return props.onComplete();
@@ -31,10 +35,6 @@ const HorizontalStepper = (props) => {
 
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
         setSkipped(newSkipped);
-    };
-
-    const handleBack = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
 
     const handleSkip = () => {
@@ -94,8 +94,9 @@ const HorizontalStepper = (props) => {
                 {steps[activeStep].optional && (
                     <Button
                         variant="contained"
-                        color="primary"
+                        color="default"
                         onClick={handleSkip}
+                        className={"mr-3"}
                     >
                         Skip
                     </Button>
@@ -109,6 +110,15 @@ const HorizontalStepper = (props) => {
                 >
                     {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
                 </Button>
+
+                {props.showDeleteButton && <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={handleDelete}
+                    className={"float-right"}
+                >
+                    Delete
+                </Button>}
             </div>
         </div>
     );

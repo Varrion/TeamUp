@@ -3,17 +3,49 @@ import GoogleMapReact from 'google-map-react';
 import Marker from "./Marker";
 import {CircularProgress} from "@material-ui/core";
 
-const GoogleMap = ({onMarkerChange, hideLongitudeLatitude}) => {
+const mapOptions = (maps) => {
+    return {
+        streetViewControl: false,
+        scaleControl: true,
+        fullscreenControl: false,
+        styles: [{
+            featureType: "poi.business",
+            elementType: "labels",
+            stylers: [{
+                visibility: "off"
+            }]
+        }],
+        gestureHandling: "greedy",
+
+        mapTypeControl: true,
+        mapTypeId: maps.MapTypeId.ROADMAP,
+        mapTypeControlOptions: {
+            style: maps.MapTypeControlStyle.HORIZONTAL_BAR,
+            position: maps.ControlPosition.BOTTOM_CENTER,
+            mapTypeIds: [
+                maps.MapTypeId.ROADMAP,
+                maps.MapTypeId.SATELLITE,
+                maps.MapTypeId.HYBRID
+            ]
+        },
+
+        zoomControl: true,
+        clickableIcons: false
+    };
+}
+
+
+
+const GoogleMap = ({longitude, latitude, onMarkerChange, hideLongitudeLatitude, height}) => {
     const [googleMap, setGoogleMap] = useState({
         mapApiLoaded: false,
         mapInstance: null,
         mapApi: null,
         places: [],
         center: [],
-        zoom: 9,
-        address: '',
-        lat: null,
-        lng: null
+        zoom: 15,
+        lat: latitude ?? null,
+        lng: longitude ?? null
     });
 
     useEffect(() => {
@@ -25,24 +57,24 @@ const GoogleMap = ({onMarkerChange, hideLongitudeLatitude}) => {
             navigator.geolocation.getCurrentPosition((position) => {
                 setGoogleMap({
                     ...googleMap,
-                    center: [position.coords.latitude, position.coords.longitude],
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
+                    center: [googleMap.lat ?? position.coords.latitude, googleMap.lng ?? position.coords.longitude],
+                    lat: googleMap.lat ?? position.coords.latitude,
+                    lng: googleMap.lng ??position.coords.longitude
                 });
 
-                onMarkerChange(googleMap.lng, googleMap.lat)
+                onMarkerChange && onMarkerChange(googleMap.lng, googleMap.lat)
             });
         }
     }
 
     const onMarkerInteraction = (childKey, childProps, mouse) => {
-        setGoogleMap({
+        onMarkerChange && setGoogleMap({
             ...googleMap,
             lat: mouse.lat,
             lng: mouse.lng
         });
 
-        onMarkerChange(googleMap.lng, googleMap.lat)
+        onMarkerChange && onMarkerChange(googleMap.lng, googleMap.lat)
     }
 
     const onMapChange = ({center, zoom}) => {
@@ -54,13 +86,13 @@ const GoogleMap = ({onMarkerChange, hideLongitudeLatitude}) => {
     }
 
     const onMapClick = (value) => {
-        setGoogleMap({
+        onMarkerChange && setGoogleMap({
             ...googleMap,
             lat: value.lat,
             lng: value.lng
         });
 
-        onMarkerChange(googleMap.lng, googleMap.lat)
+        onMarkerChange && onMarkerChange(googleMap.lng, googleMap.lat)
     }
 
     const apiHasLoaded = (map, maps) => {
@@ -77,7 +109,8 @@ const GoogleMap = ({onMarkerChange, hideLongitudeLatitude}) => {
             {!googleMap.lng ? <CircularProgress/> : <>
                 {/*<LocationSearchInput/>*/}
                 <GoogleMapReact
-                    style={{height: "400px", position: "relative"}}
+                    options={mapOptions}
+                    style={{height: height ?? "400px", position: "relative"}}
                     center={{lat: googleMap.lat, lng: googleMap.lng}}
                     zoom={googleMap.zoom}
                     draggable={true}

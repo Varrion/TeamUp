@@ -24,6 +24,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.Set;
 
+import static finki.graduation.teamup.model.enums.FileType.valueOf;
+
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
@@ -124,7 +126,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void saveFileToEntity(String id, MultipartFile multipartFile, String fileType) throws Exception {
         User user = (User) loadUserByUsername(id);
-        FileType type = FileType.valueOf(fileType);
+        FileType type = valueOf(fileType);
 
         File file = fileService.save(multipartFile, type);
         Set<File> userFiles = user.getFiles();

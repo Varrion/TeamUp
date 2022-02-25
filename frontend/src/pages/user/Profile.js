@@ -2,18 +2,16 @@ import {Grid} from "@material-ui/core";
 import React, {useEffect, useState} from "react";
 import {GetUser, UserRole, usersRoute} from "../../services/UserService";
 import UserEditModal from "./modal/UserEditModal";
-import {useAuthContext} from "../../configurations/AuthContext";
 import CreateEditTeamModal from "../team/modal/CreateEditTeamModal";
 import {GetTeamsByMemberUsername, TeamMemberStatus} from "../../services/TeamService";
 import {FileType, UploadFile} from "../../services/FileService";
 import ProfileInfoGrid from "../../components/grids/ProfileInfoGrid";
 import ProfileTeamsGrid from "../../components/grids/ProfileTeamsGrid";
 import ProfileLeftDetailsGrid from "../../components/grids/ProfileLeftDetailsGrid";
-import {GetLocationByOwnerUsername} from "../../services/LocationService";
+import {DeleteLocation, GetLocationByOwnerUsername} from "../../services/LocationService";
 import CreateEditLocationModal from "../location/modal/CreateEditLocationModal";
 
 const User = props => {
-    const {loggedUser} = useAuthContext();
     const [user, setUser] = useState(null);
     const [profileImage, setProfileImage] = useState(null);
 
@@ -26,6 +24,7 @@ const User = props => {
 
     //location
     const [myLocation, setMyLocation] = useState(null);
+    const [locationDeleted, setLocationDeleted] = useState(false);
 
     //modals
     const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -68,7 +67,7 @@ const User = props => {
                     setMyLocation(r.data);
                 });
         }
-    }, [user, showTeamModal, showLocationModal])
+    }, [user, showTeamModal, showLocationModal, locationDeleted])
 
     const onFileUpload = (event) => {
         let formData = new FormData();
@@ -82,17 +81,23 @@ const User = props => {
         isTeamDeleted && !isMemberOfTeam && setToggleTeams(!toggleTeams);
     }
 
+    const handleDeleteLocation = () => {
+        DeleteLocation(myLocation.id)
+            .then(() => setLocationDeleted(true));
+    }
+
     return (user &&
         <Grid container>
-            <ProfileLeftDetailsGrid profileImage={profileImage} user={user} isMemberOfTeam={isMemberOfTeam}
-                                    isLocationOwner={myLocation}
+            <ProfileLeftDetailsGrid profileImage={profileImage} user={user} isMemberOfTeam={isMemberOfTeam} isTeamLeader={myTeam ?? false}
+                                    ownedLocation={myLocation}
                                     showLocationModal={() => setShowLocationModal(true)}
                                     showTeamModal={() => setShowTeamModal(true)} toggleTeams={toggleTeams}
-                                    toggleTeamsView={() => setToggleTeams(!toggleTeams)} onFileUpload={onFileUpload}/>
+                                    toggleTeamsView={() => setToggleTeams(!toggleTeams)} onFileUpload={onFileUpload}
+                                    onLocationDelete={handleDeleteLocation}/>
             {!toggleTeams ?
-                <ProfileInfoGrid user={user} loggedUser={loggedUser}
+                <ProfileInfoGrid user={user}
                                  showUpdateInfoModal={() => setShowUpdateModal(true)}/> :
-                <ProfileTeamsGrid user={user} loggedUser={loggedUser} myTeam={myTeam} joinedTeams={joinedTeams}
+                <ProfileTeamsGrid user={user} myTeam={myTeam} joinedTeams={joinedTeams}
                                   pendingToAcceptTeams={pendingToAcceptTeams}
                                   showTeamModal={() => setShowTeamModal(true)}/>
             }
@@ -104,7 +109,6 @@ const User = props => {
             {showLocationModal &&
                 <CreateEditLocationModal location={myLocation} open={showLocationModal}
                                          onClose={() => setShowLocationModal(false)}/>}
-
         </Grid>
     )
 }

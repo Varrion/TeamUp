@@ -9,6 +9,7 @@ import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
 import TeamMemberGrid from "../../components/grids/TeamMemberGrid";
 import {useAuthContext} from "../../configurations/AuthContext";
+import CreateEditTeamModal from "./modal/CreateEditTeamModal";
 
 const TeamDetails = ({id}) => {
     const {loggedUser} = useAuthContext();
@@ -33,10 +34,10 @@ const TeamDetails = ({id}) => {
     }
 
     return (team &&
-        <Grid container>
+        <Grid container direction={"column"}>
             <UploadShowProfilePicture width={250} height={250} src={NoPhotoFemale} alt={"Logo"}
                                       onUpload={onFileUpload}/>
-            {isLoggedUserTeamLead && <IconButton onClick={showUpdateTeamModal}>
+            {isLoggedUserTeamLead && <IconButton onClick={() => setShowUpdateTeamModal(true)}>
                 <EditOutlinedIcon/>
             </IconButton>}
             <Avatar className={"profile-avatar"} src={'https://i.pravatar.cc/300'}/>
@@ -47,6 +48,8 @@ const TeamDetails = ({id}) => {
                 {team.description}
             </Typography>
             <TeamMemberGrid team={team}/>
+
+            {showUpdateTeamModal && <CreateEditTeamModal team={team}/>}
         </Grid>
     )
 }

@@ -1,5 +1,6 @@
 package finki.graduation.teamup.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import finki.graduation.teamup.model.dto.UserDto;
 import finki.graduation.teamup.model.enums.Gender;
 import finki.graduation.teamup.model.enums.Role;
@@ -7,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,8 +40,9 @@ public class User extends PersonalInfo implements UserDetails, Serializable {
     @Enumerated(EnumType.STRING)
     Gender gender;
 
-    @OneToMany(orphanRemoval = true, mappedBy = "owner")
-    Set<Location> ownedLocations;
+    @OneToOne(orphanRemoval = true, mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    Location ownedLocations;
 
     @OneToMany(orphanRemoval = true)
     Set<File> files;

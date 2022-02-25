@@ -1,5 +1,6 @@
 package finki.graduation.teamup.model.base;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 public class BaseCreatedOnDeletedOn extends BaseId {
     @CreatedDate
+    @Builder.Default
     protected LocalDateTime createdOn = LocalDateTime.now();
 
     @LastModifiedDate

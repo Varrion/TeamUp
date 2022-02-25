@@ -6,15 +6,18 @@ import TeamMemberGrid from "./TeamMemberGrid";
 import SportsIcon from "@material-ui/icons/Sports";
 import TeamCard from "../cards/TeamCard";
 import React from "react";
+import {useAuthContext} from "../../configurations/AuthContext";
 
-const ProfileTeamsGrid = ({myTeam, joinedTeams, pendingToAcceptTeams, user, loggedUser, showTeamModal}) => {
+const ProfileTeamsGrid = ({myTeam, joinedTeams, pendingToAcceptTeams, user, showTeamModal}) => {
+    const {isAuthorized} = useAuthContext();
+
     return (
         <Grid item xs={12} md={6} lg={8}>
             {
                 myTeam ?
                     <Card key={myTeam.id} className={"text-center"}>
                         <CardHeader title={"LEADING"} action={
-                            loggedUser === user.username && <IconButton onClick={showTeamModal}>
+                            isAuthorized(user.username) && <IconButton onClick={showTeamModal}>
                                 <EditOutlinedIcon/>
                             </IconButton>}/>
                         <CardContent>

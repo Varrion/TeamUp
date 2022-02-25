@@ -9,13 +9,16 @@ import PersonIcon from "@material-ui/icons/Person";
 import CakeIcon from "@material-ui/icons/Cake";
 import Typography from "@material-ui/core/Typography";
 import React from "react";
+import {useAuthContext} from "../../configurations/AuthContext";
 
-const ProfileInfoGrid = ({user, loggedUser, showUpdateInfoModal}) => {
+const ProfileInfoGrid = ({user, showUpdateInfoModal}) => {
+    const {isAuthorized} = useAuthContext();
+
     return (
         <Grid item xs={12} md={6} lg={8}>
             <Card>
                 <CardHeader title={"Personal Info"} action={
-                    loggedUser === user.username && <IconButton onClick={showUpdateInfoModal}>
+                    isAuthorized(user.username) && <IconButton onClick={showUpdateInfoModal}>
                         <EditOutlinedIcon/>
                     </IconButton>}/>
                 <CardContent className={"ml-3"}>

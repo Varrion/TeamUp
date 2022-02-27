@@ -12,17 +12,20 @@ import UploadShowProfilePicture from "../../components/pictures/UploadShowProfil
 import NoPhotoFemale from "../../assets/images/GirlSiluethee.jpg";
 import {Gender} from "../../services/UserService";
 import {useAuthContext} from "../../configurations/AuthContext";
+import CreateEditLocationModal from "./modal/CreateEditLocationModal";
+import Button from "@material-ui/core/Button";
 
 const LocationDetails = ({id}) => {
-    const {loggedUser} = useAuthContext();
+    const {isAuthorized} = useAuthContext();
     const [location, setLocation] = useState(null);
+    const [openUpdateModal, setOpenUpdateModal] = useState(false);
 
     useEffect(() => {
         GetOneLocation(id).then(r => {
             setLocation(r.data);
             console.log(r.data);
         })
-    }, [id])
+    }, [id, openUpdateModal])
 
     return (location &&
         <Grid container direction={"column"} justify={"center"} alignItems={"center"}>
@@ -33,6 +36,8 @@ const LocationDetails = ({id}) => {
                 <Grid item lg={10}>
                     <Typography variant={"h2"}>
                         {location.name}
+                        {isAuthorized(location.owner?.username) &&
+                            <Button onClick={() => setOpenUpdateModal(true)} className={"float-right"}>Edit</Button>}
                     </Typography>
 
                     <Typography className={"mt-3"} variant={"body1"}>
@@ -66,6 +71,16 @@ const LocationDetails = ({id}) => {
 
             <GoogleMap height={"600px"} latitude={location.latitude} longitude={location.longitude}
                        hideLongitudeLatitude={true}/>
+
+            <hr/>
+
+            <Typography variant={"h5"}>
+                Terrains
+            </Typography>
+
+            {openUpdateModal &&
+                <CreateEditLocationModal location={location} open={openUpdateModal}
+                                         onClose={() => setOpenUpdateModal(false)}/>}
         </Grid>
     )
 }

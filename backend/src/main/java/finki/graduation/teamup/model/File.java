@@ -4,6 +4,7 @@ import finki.graduation.teamup.model.base.BaseName;
 import finki.graduation.teamup.model.enums.FileType;
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.Entity;
@@ -17,7 +18,8 @@ import java.util.Objects;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Where(clause = "deleted_on is null")
+@SQLDelete(sql = "UPDATE file SET deleted_on = NOW() WHERE id=?")
+@Where(clause = "deleted_on IS NULL")
 public class File extends BaseName {
     String filePath;
 

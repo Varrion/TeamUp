@@ -6,4 +6,4 @@ const StepContent = (props) => {
     )
 }
 
-export default StepContent
+export default StepContent;

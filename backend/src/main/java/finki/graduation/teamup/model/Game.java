@@ -2,8 +2,8 @@ package finki.graduation.teamup.model;
 
 import finki.graduation.teamup.model.base.BaseCreatedOnDeletedOn;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.Entity;
@@ -17,6 +17,7 @@ import java.util.Objects;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLDelete(sql = "UPDATE game SET deleted_on = NOW() WHERE id=?")
 @Where(clause = "deleted_on is null")
 public class Game extends BaseCreatedOnDeletedOn {
     Integer numberPlayers;

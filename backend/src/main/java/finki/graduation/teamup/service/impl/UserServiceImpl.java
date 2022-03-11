@@ -21,10 +21,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-
-import static finki.graduation.teamup.model.enums.FileType.valueOf;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -79,7 +78,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteById(String username) {
         User user = (User) loadUserByUsername(username);
-        user.deleteUser();
+        user.setDeletedOn(LocalDateTime.now());
+
+        userRepository.delete(user);
     }
 
     @Override
@@ -124,16 +125,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveFileToEntity(String id, MultipartFile multipartFile, String fileType) throws Exception {
+    public void saveFileToEntity(String id, MultipartFile multipartFile, FileType fileType) throws Exception {
         User user = (User) loadUserByUsername(id);
-        FileType type = valueOf(fileType);
 
-        File file = fileService.save(multipartFile, type);
+        File file = fileService.save(multipartFile, fileType);
         Set<File> userFiles = user.getFiles();
         userFiles.add(file);
         user.setFiles(userFiles);
 
         userRepository.save(user);
+    }
+
+    @Override
+    public void saveMultipleFilesToEntity(String id, MultipartFile[] multipartFiles, FileType fileType) throws Exception {
+
     }
 
     @Override

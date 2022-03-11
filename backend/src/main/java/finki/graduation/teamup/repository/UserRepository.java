@@ -39,7 +39,6 @@ public interface UserRepository extends JpaRepository<User, Long>, PagingAndSort
 
     @Query("SELECT user " +
             "FROM User user " +
-            "   LEFT JOIN FETCH user.files userFile " +
             "WHERE user.username = :username " +
             "   AND user.deletedOn IS NULL ")
     UserProjection takeUserByUsername(@Param("username") String username);

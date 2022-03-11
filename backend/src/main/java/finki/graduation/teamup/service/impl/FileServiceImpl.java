@@ -12,11 +12,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 @Service
 public class FileServiceImpl implements FileService {
     private final FileRepository fileRepository;
     private final FileSystemRepository fileSystemRepository;
     private final FileUploadService fileUploadService;
+
+    private final String[] videoExtensions = {"mov", "avi", "wmv", "flv", "3gp", "mp4", "mpg"};
+    private final String[] imageExtensions = {"jpg", "jpeg", "png", "gif", "bmp"};
 
     public FileServiceImpl(
             FileRepository fileRepository,
@@ -33,8 +39,21 @@ public class FileServiceImpl implements FileService {
         String filePath = fileUploadService.uploadFile(multipartFile);
         File file = new File();
 
+        String fileContentType = Objects.requireNonNull(multipartFile.getContentType());
+
+        if (fileType == null) {
+
+            if (Arrays.stream(imageExtensions).anyMatch(fileContentType::contains)) {
+                fileType = FileType.Photo;
+            } else if (Arrays.stream(videoExtensions).anyMatch(fileContentType::contains)) {
+                fileType = FileType.Video;
+            } else {
+                fileType = FileType.Other;
+            }
+        }
+
         file.setFilePath(filePath);
-        file.setContentType(multipartFile.getContentType());
+        file.setContentType(fileContentType);
         file.setFileType(fileType);
         file.setName(multipartFile.getOriginalFilename());
 

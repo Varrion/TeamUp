@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-dropzone-uploader/dist/styles.css'
 import './styles/Global.css';
 import axios from "axios";
 import {ToastProvider} from "react-toast-notifications";

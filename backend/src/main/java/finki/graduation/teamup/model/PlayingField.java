@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
@@ -18,7 +19,8 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Where(clause = "deleted_on is null")
+@SQLDelete(sql = "UPDATE playing_field SET deleted_on = NOW() WHERE id=?")
+@Where(clause = "deleted_on IS NULL")
 public class PlayingField extends BaseDescription {
     @OneToOne(mappedBy = "playingField", orphanRemoval = true, fetch = FetchType.LAZY)
     Game game;

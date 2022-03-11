@@ -47,8 +47,7 @@ public class LocationServiceImpl implements LocationService {
     public void deleteById(Long id) {
         Location location = findLocationOrThrowException(id);
         location.setDeletedOn(LocalDateTime.now());
-
-        locationRepository.save(location);
+        locationRepository.delete(location);
     }
 
     @Override
@@ -102,16 +101,20 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public void saveFileToEntity(Long id, MultipartFile multipartFile, String fileType) throws Exception {
+    public void saveFileToEntity(Long id, MultipartFile multipartFile, FileType fileType) throws Exception {
         Location location = findLocationOrThrowException(id);
-        FileType type = valueOf(fileType);
 
-        File file = fileService.save(multipartFile, type);
+        File file = fileService.save(multipartFile, fileType);
         Set<File> locationFiles = location.getFiles();
         locationFiles.add(file);
         location.setFiles(locationFiles);
 
         locationRepository.save(location);
+    }
+
+    @Override
+    public void saveMultipleFilesToEntity(Long id, MultipartFile[] multipartFiles, FileType fileType) throws Exception {
+
     }
 
     @Override

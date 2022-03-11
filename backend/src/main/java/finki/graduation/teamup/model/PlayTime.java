@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.Entity;
@@ -19,7 +20,8 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Where(clause = "deleted_on is null")
+@SQLDelete(sql = "UPDATE play_time SET deleted_on = NOW() WHERE id=?")
+@Where(clause = "deleted_on IS NULL")
 public class PlayTime extends BaseCreatedOnDeletedOn {
     @Enumerated(EnumType.STRING)
     FieldStatus fieldStatus;

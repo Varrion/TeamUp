@@ -1,6 +1,7 @@
 package finki.graduation.teamup.controller;
 
 import finki.graduation.teamup.model.File;
+import finki.graduation.teamup.model.enums.FileType;
 import finki.graduation.teamup.service.base.BaseFileService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,9 +15,14 @@ public abstract class FileController<T> {
         this.fileService = fileService;
     }
 
-    @PostMapping(value = "{id}/files")
-    public void uploadFile(@RequestPart("file") MultipartFile multipartFile, @RequestParam(name = "FileType") String fileType, @PathVariable T id) throws Exception {
+    @PostMapping(value = "{id}/file")
+    public void uploadFile(@RequestPart("file") MultipartFile multipartFile, @RequestParam(name = "FileType") FileType fileType, @PathVariable T id) throws Exception {
         fileService.saveFileToEntity(id, multipartFile, fileType);
+    }
+
+    @PostMapping(value = "{id}/files")
+    public void uploadBulkFiles(@RequestPart("files") MultipartFile[] multipartFiles, @RequestParam(name = "FileType", required = false) FileType fileType, @PathVariable T id) throws Exception {
+        fileService.saveMultipleFilesToEntity(id, multipartFiles, fileType);
     }
 
     @GetMapping("{id}/files")

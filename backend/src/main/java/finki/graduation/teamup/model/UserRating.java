@@ -3,6 +3,7 @@ package finki.graduation.teamup.model;
 import finki.graduation.teamup.model.base.BaseCreatedOnDeletedOn;
 import finki.graduation.teamup.model.enums.Rating;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
@@ -14,7 +15,8 @@ import java.util.Objects;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Where(clause = "deleted_on is null")
+@SQLDelete(sql = "UPDATE user_rating SET deleted_on = NOW() WHERE id=?")
+@Where(clause = "deleted_on IS NULL")
 public class UserRating extends BaseCreatedOnDeletedOn {
     String comment;
 

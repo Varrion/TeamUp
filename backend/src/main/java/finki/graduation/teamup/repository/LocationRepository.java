@@ -20,9 +20,9 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
 
     @Query("SELECT location " +
             "FROM Location location " +
-            "    INNER JOIN FETCH location.owner owner " +
+            "   INNER JOIN FETCH location.owner owner " +
             "WHERE location.deletedOn IS NULL " +
-            "   AND owner.deletedOn IS NULL" +
+            "   AND owner.deletedOn IS NULL " +
             "   AND (location.id = :locationId OR owner.username = :username) ")
     LocationProjection findByIdOrOwnerUsername(@Param("locationId") Long locationId, @Param("username") String username);
 }

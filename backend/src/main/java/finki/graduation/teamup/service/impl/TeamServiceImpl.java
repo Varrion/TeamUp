@@ -6,6 +6,7 @@ import finki.graduation.teamup.model.TeamMember;
 import finki.graduation.teamup.model.User;
 import finki.graduation.teamup.model.dto.ChangeTeamMemberStatusRequestDto;
 import finki.graduation.teamup.model.dto.CreateUpdateTeamRequestDto;
+import finki.graduation.teamup.model.enums.FileType;
 import finki.graduation.teamup.model.enums.TeamMemberStatus;
 import finki.graduation.teamup.model.enums.TeamStatus;
 import finki.graduation.teamup.model.projection.TeamProjection;
@@ -57,15 +58,8 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public void deleteById(Long id) {
         Team team = findTeamOrThrowException(id);
-        LocalDateTime dateTimeNow = LocalDateTime.now();
-
-        team.setDeletedOn(dateTimeNow);
-
-        Set<TeamMember> teamMembers = team.getTeamMembers();
-        teamMembers.forEach(teamMember -> teamMember.setDeletedOn(dateTimeNow));
-
-        teamRepository.save(team);
-        teamMemberRepository.saveAll(teamMembers);
+        team.setDeletedOn(LocalDateTime.now());
+        teamRepository.delete(team);
     }
 
     @Override
@@ -131,7 +125,7 @@ public class TeamServiceImpl implements TeamService {
         validate(teamLead, team, teamMembers, memberToChange);
 
         switch (changeStatus) {
-            case Accepted: {
+            case Accepted -> {
                 if (team.getTeamStatus() != TeamStatus.LookingForMore) {
                     throw new ResponseStatusException(HttpStatus.FORBIDDEN);
                 }
@@ -139,14 +133,11 @@ public class TeamServiceImpl implements TeamService {
                 if (team.getSize() == teamMembers.size()) {
                     team.setTeamStatus(TeamStatus.Full);
                 }
-                break;
             }
-            case Rejected: {
+            case Rejected -> {
                 if (memberToChange.getMemberStatus() != TeamMemberStatus.PendingToBeAcceptedInTeam || memberToChange.getMemberStatus() != TeamMemberStatus.Accepted) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
                 }
-
-                break;
             }
         }
 
@@ -244,7 +235,12 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public void saveFileToEntity(Long id, MultipartFile multipartFile, String fileType) throws Exception {
+    public void saveFileToEntity(Long id, MultipartFile multipartFile, FileType fileType) throws Exception {
+
+    }
+
+    @Override
+    public void saveMultipleFilesToEntity(Long id, MultipartFile[] multipartFiles, FileType fileType) throws Exception {
 
     }
 

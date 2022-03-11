@@ -8,13 +8,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -22,6 +22,7 @@ import java.util.*;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLDelete(sql = "UPDATE user SET deleted_on = NOW() WHERE id=?")
 @Where(clause = "deleted_on is null")
 public class User extends PersonalInfo implements UserDetails, Serializable {
     @Column(nullable = false)
@@ -50,7 +51,7 @@ public class User extends PersonalInfo implements UserDetails, Serializable {
     @ManyToOne
     Game game;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     Set<TeamMember> teamMembers = new HashSet<>();
 
@@ -85,11 +86,6 @@ public class User extends PersonalInfo implements UserDetails, Serializable {
     @Override
     public boolean isEnabled() {
         return isEnabled;
-    }
-
-    public void deleteUser() {
-        LocalDateTime dateTimeNow = LocalDateTime.now();
-        setDeletedOn(dateTimeNow);
     }
 
     public void updateUser(UserDto userDto) {

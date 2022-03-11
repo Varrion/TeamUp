@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
@@ -16,7 +17,8 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Where(clause = "deleted_on is null")
+@SQLDelete(sql = "UPDATE team_member SET deleted_on = NOW() WHERE id=?")
+@Where(clause = "deleted_on IS NULL")
 public class TeamMember extends BaseCreatedOnDeletedOn {
     @ManyToOne(fetch = FetchType.LAZY)
     Team team;

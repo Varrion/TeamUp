@@ -2,6 +2,21 @@ import axios from "axios";
 
 const terrainRoute = "/fields";
 
+const Sport = {
+    Basketball: 'Basketball',
+    Football: 'Football',
+    HandBall: 'HandBall',
+    WaterPolo: 'WaterPolo',
+    Tennis: 'Tennis',
+    ValleyBall: 'ValleyBall',
+    Other: 'Other'
+}
+
+const FieldType = {
+    Public: 'Public',
+    Private: 'Private'
+}
+
 const GetAllTerrainsForLocation = (locationId) => {
     return axios.get(`${terrainRoute}/location/${locationId}`);
 }
@@ -22,4 +37,4 @@ const DeleteTerrain = (terrainId) => {
     return axios.delete(`${terrainRoute}/${terrainId}`);
 }
 
-export {GetAllTerrainsForLocation, GetTerrain, AddTerrain, EditTerrain, DeleteTerrain}
+export {terrainRoute, Sport, FieldType, GetAllTerrainsForLocation, GetTerrain, AddTerrain, EditTerrain, DeleteTerrain}

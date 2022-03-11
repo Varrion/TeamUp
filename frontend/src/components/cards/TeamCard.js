@@ -8,7 +8,7 @@ const TeamCard = ({team}) => {
     return (
         <Card
             onClick={() => navigate(`/teams/${team.id}`)}
-            className={`card-zoom card-height m-2`}>
+            className={`card-zoom cursor-pointer card-height m-2`}>
             <CardContent>
                 <Avatar className={"profile-avatar"} src={'https://i.pravatar.cc/300'}/>
                 <Typography variant={"h5"}

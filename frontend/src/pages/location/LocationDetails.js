@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {GetOneLocation} from "../../services/LocationService";
-import {Grid, Typography} from "@material-ui/core";
+import {DeleteLocation, GetOneLocation} from "../../services/LocationService";
+import {Grid, Grow, IconButton, Tooltip, Typography} from "@material-ui/core";
 import GoogleMap from "../../components/maps/GoogleMap";
 import IconTextTypography from "../../components/IconTextTypography";
 import HomeIcon from "@material-ui/icons/Home";
@@ -13,19 +13,49 @@ import NoPhotoFemale from "../../assets/images/GirlSiluethee.jpg";
 import {Gender} from "../../services/UserService";
 import {useAuthContext} from "../../configurations/AuthContext";
 import CreateEditLocationModal from "./modal/CreateEditLocationModal";
-import Button from "@material-ui/core/Button";
+import CreateEditTerrainModal from "../terrain/modal/CreateEditTerrainModal";
+import {GetAllTerrainsForLocation} from "../../services/PlayingFieldService";
+import TerrainCard from "../../components/cards/TerrainCard";
+import {AddCircle, Delete, EditLocation} from "@material-ui/icons";
+import SplitButton from "../../components/buttons/SplitButton";
 
 const LocationDetails = ({id}) => {
     const {isAuthorized} = useAuthContext();
     const [location, setLocation] = useState(null);
     const [openUpdateModal, setOpenUpdateModal] = useState(false);
+    const [openUpdateTerrainModal, setOpenUpdateTerrainModal] = useState(false);
+    const [checked, setChecked] = React.useState(false);
+
+    const [terrains, setTerrains] = useState(null)
+
+    const onLocationDelete = () => {
+        return DeleteLocation(location.id)
+            // .then(() => navigate("/"));
+    }
+
+    const locationMenuButtonActions = [
+        {
+            text: <><Delete/> Delete </>,
+            action: () => onLocationDelete()
+        }]
+
 
     useEffect(() => {
         GetOneLocation(id).then(r => {
             setLocation(r.data);
-            console.log(r.data);
         })
-    }, [id, openUpdateModal])
+    }, [id, openUpdateModal, openUpdateTerrainModal])
+
+    useEffect(() => {
+        if (!location) {
+            return;
+        }
+        GetAllTerrainsForLocation(location.id).then(r => {
+            setTerrains(r.data);
+            setChecked(true);
+        });
+    }, [location, openUpdateTerrainModal])
+
 
     return (location &&
         <Grid container direction={"column"} justify={"center"} alignItems={"center"}>
@@ -34,10 +64,15 @@ const LocationDetails = ({id}) => {
                     <UploadShowProfilePicture width={200} height={200} src={NoPhotoFemale} alt={Gender.Female}/>
                 </Grid>
                 <Grid item lg={10}>
-                    <Typography variant={"h2"}>
-                        {location.name}
-                        {isAuthorized(location.owner?.username) &&
-                            <Button onClick={() => setOpenUpdateModal(true)} className={"float-right"}>Edit</Button>}
+                    <Typography variant={"h1"}> {location.name}
+                        {isAuthorized(location.owner?.username.trim()) &&
+                            <SplitButton buttonColor={"secondary"} buttonVariant={"contained"}
+                                         text={<><EditLocation/> Edit</>}
+                                         menuOptions={locationMenuButtonActions}
+                                         classes={"float-right"}
+                                         mainOption={() => setOpenUpdateModal(true)}
+                            />
+                        }
                     </Typography>
 
                     <Typography className={"mt-3"} variant={"body1"}>
@@ -68,19 +103,37 @@ const LocationDetails = ({id}) => {
                     icon={<CakeIcon/>}/>
             </Grid>
 
-
             <GoogleMap height={"600px"} latitude={location.latitude} longitude={location.longitude}
                        hideLongitudeLatitude={true}/>
 
-            <hr/>
+            <Typography variant={"h2"}> Terrains </Typography>
+            <hr className={"horizontal-fancy"}/>
 
-            <Typography variant={"h5"}>
-                Terrains
-            </Typography>
+            <Grid container justify={"flex-end"}>
+                <Tooltip title={"Add"} placement={"left"}>
+                    <IconButton color="inherit" onClick={() => setOpenUpdateTerrainModal(true)}><AddCircle
+                        fontSize="large"/></IconButton>
+                </Tooltip>
+            </Grid>
+
+            <Grid container>
+                {terrains && terrains.map(terrain => <Grow key={terrain.id}
+                                                           in={checked}
+                                                           style={{transformOrigin: '0 0 0'}}
+                                                           {...(checked ? {timeout: 5000} : {})}>
+                    <Grid item lg={4} xs={6}>
+                        <TerrainCard terrain={terrain}/>
+                    </Grid>
+                </Grow>)}
+            </Grid>
 
             {openUpdateModal &&
                 <CreateEditLocationModal location={location} open={openUpdateModal}
                                          onClose={() => setOpenUpdateModal(false)}/>}
+
+            {openUpdateTerrainModal &&
+                <CreateEditTerrainModal open={openUpdateTerrainModal} locationId={location.id}
+                                        onClose={() => setOpenUpdateTerrainModal(false)}/>}
         </Grid>
     )
 }

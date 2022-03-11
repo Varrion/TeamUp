@@ -12,10 +12,11 @@ import java.util.List;
 @RestController
 @RequestMapping("api/fields")
 @CrossOrigin(origins = "http://localhost:3000")
-public class PlayFieldController {
+public class PlayFieldController extends FileController<Long> {
     private final PlayingFieldService playingFieldService;
 
     public PlayFieldController(PlayingFieldService playingFieldService) {
+        super(playingFieldService);
         this.playingFieldService = playingFieldService;
     }
 
@@ -30,13 +31,13 @@ public class PlayFieldController {
     }
 
     @PostMapping("location/{id}")
-    public PlayingFieldProjection addPlayingField(@RequestBody PlayingFieldDto playingFieldDto, @PathVariable Long id) {
+    public Long addPlayingField(@RequestBody PlayingFieldDto playingFieldDto, @PathVariable Long id) {
         return playingFieldService.save(playingFieldDto, id);
     }
 
     @PutMapping("{fieldId}")
-    public PlayingFieldProjection updatePlayingField(@RequestBody PlayingFieldDto playingFieldDto, @PathVariable Long fieldId) {
-        return playingFieldService.update(playingFieldDto, fieldId);
+    public void updatePlayingField(@RequestBody PlayingFieldDto playingFieldDto, @PathVariable Long fieldId) {
+        playingFieldService.update(playingFieldDto, fieldId);
     }
 
     @DeleteMapping("{fieldId}")

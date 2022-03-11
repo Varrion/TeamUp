@@ -1,5 +1,6 @@
 package finki.graduation.teamup.service.impl;
 
+import finki.graduation.teamup.model.File;
 import finki.graduation.teamup.model.Location;
 import finki.graduation.teamup.model.PlayTime;
 import finki.graduation.teamup.model.PlayingField;
@@ -7,32 +8,38 @@ import finki.graduation.teamup.model.dto.PlayTimeDto;
 import finki.graduation.teamup.model.dto.PlayingFieldDto;
 import finki.graduation.teamup.model.enums.FieldStatus;
 import finki.graduation.teamup.model.enums.FieldType;
+import finki.graduation.teamup.model.enums.FileType;
 import finki.graduation.teamup.model.enums.Sport;
 import finki.graduation.teamup.model.projection.PlayTimeProjection;
 import finki.graduation.teamup.model.projection.PlayingFieldProjection;
 import finki.graduation.teamup.repository.PlayTimeRepository;
 import finki.graduation.teamup.repository.PlayingFieldRepository;
+import finki.graduation.teamup.service.FileService;
 import finki.graduation.teamup.service.LocationService;
 import finki.graduation.teamup.service.PlayingFieldService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class PlayingFieldServiceImpl implements PlayingFieldService {
     private final PlayingFieldRepository playingFieldRepository;
     private final LocationService locationService;
     private final PlayTimeRepository playTimeRepository;
+    private final FileService fileService;
 
     public PlayingFieldServiceImpl(PlayingFieldRepository playingFieldRepository,
                                    LocationService locationService,
-                                   PlayTimeRepository playTimeRepository) {
+                                   PlayTimeRepository playTimeRepository, FileService fileService) {
         this.playingFieldRepository = playingFieldRepository;
         this.locationService = locationService;
         this.playTimeRepository = playTimeRepository;
+        this.fileService = fileService;
     }
 
     @Override
@@ -51,15 +58,13 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
         PlayingField playingField = findPlayingFieldOrThrowException(id);
         playingField.setDeletedOn(LocalDateTime.now());
 
-        playingFieldRepository.save(playingField);
+        playingFieldRepository.delete(playingField);
     }
 
     @Override
-    public PlayingFieldProjection save(PlayingFieldDto entityDto, Long locationId) {
+    public Long save(PlayingFieldDto entityDto, Long locationId) {
         Location location = locationService.findLocationOrThrowException(locationId);
-
         PlayingField playingField = new PlayingField();
-        playingField.setCreatedOn(LocalDateTime.now());
 
         Sport sport = Sport.valueOf(entityDto.getFieldFor());
         FieldType fieldType = FieldType.valueOf(entityDto.getFieldType());
@@ -71,16 +76,15 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
         playingField.setLocation(location);
 
         playingFieldRepository.save(playingField);
-        return (PlayingFieldProjection) playingField;
+        return playingField.getId();
     }
 
     @Override
-    public PlayingFieldProjection update(PlayingFieldDto entityDto, Long fieldId) {
+    public void update(PlayingFieldDto entityDto, Long fieldId) {
         PlayingField playingField = findPlayingFieldOrThrowException(fieldId);
         playingField.updateField(entityDto);
 
         playingFieldRepository.save(playingField);
-        return (PlayingFieldProjection) playingField;
     }
 
     //FieldPlayTime
@@ -147,5 +151,30 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
         }
 
         return playTime;
+    }
+
+    @Override
+    public void saveFileToEntity(Long id, MultipartFile multipartFile, FileType fileType) throws Exception {
+
+    }
+
+    @Override
+    public void saveMultipleFilesToEntity(Long id, MultipartFile[] multipartFiles, FileType fileType) throws Exception {
+        PlayingField playingField = findPlayingFieldOrThrowException(id);
+        Set<File> fieldFiles = playingField.getFiles();
+
+        for (MultipartFile multipartFile : multipartFiles) {
+
+            File file = fileService.save(multipartFile, fileType);
+            fieldFiles.add(file);
+        }
+
+        playingField.setFiles(fieldFiles);
+        playingFieldRepository.save(playingField);
+    }
+
+    @Override
+    public Set<File> getFileByEntityId(Long id) {
+        return null;
     }
 }

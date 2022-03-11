@@ -1,5 +1,4 @@
 import {useRef, useState} from 'react';
-import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
@@ -10,7 +9,7 @@ import Popper from '@material-ui/core/Popper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 
-const SplitButton = ({text, buttonVariant, buttonColor, mainOption, menuOptions}) => {
+const SplitButton = ({text, buttonVariant, buttonColor, mainOption, menuOptions, classes}) => {
     const [open, setOpen] = useState(false);
     const anchorRef = useRef(null);
 
@@ -27,50 +26,53 @@ const SplitButton = ({text, buttonVariant, buttonColor, mainOption, menuOptions}
     };
 
     return (
-        <Grid container direction="column" alignItems="center">
-            <Grid item xs={12}>
-                <ButtonGroup color={buttonColor}
-                             size="small"
-                             variant={buttonVariant} ref={anchorRef} aria-label="split button">
-                    <Button onClick={mainOption}>{text}
-                    </Button>
-                    <Button
-                        aria-controls={open ? 'split-button-menu' : undefined}
-                        aria-expanded={open ? 'true' : undefined}
-                        aria-label="select merge strategy"
-                        aria-haspopup="menu"
-                        onClick={handleToggleMenu}
+        <div className={classes}>
+            <ButtonGroup color={buttonColor}
+                         size="small"
+                         variant={buttonVariant} ref={anchorRef} aria-label="split button">
+                <Button onClick={mainOption}>{text}
+                </Button>
+                <Button
+                    aria-controls={open ? 'split-button-menu' : undefined}
+                    aria-expanded={open ? 'true' : undefined}
+                    aria-label="select merge strategy"
+                    aria-haspopup="menu"
+                    onClick={handleToggleMenu}
+                >
+                    <ArrowDropDownIcon/>
+                </Button>
+            </ButtonGroup>
+            <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
+                {({TransitionProps, placement}) => (
+                    <Grow
+                        {...TransitionProps}
+                        style={{
+                            transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
+                        }}
                     >
-                        <ArrowDropDownIcon/>
-                    </Button>
-                </ButtonGroup>
-                <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
-                    {({TransitionProps, placement}) => (
-                        <Grow
-                            {...TransitionProps}
-                            style={{
-                                transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
-                            }}
-                        >
-                            <Paper>
-                                <ClickAwayListener onClickAway={handleClose}>
-                                    <MenuList id="split-button-menu">
-                                        {menuOptions && menuOptions.length > 0 && menuOptions.map((option, index) => (
+                        <Paper>
+                            <ClickAwayListener onClickAway={handleClose}>
+                                <MenuList id="split-button-menu">
+                                    {menuOptions && menuOptions.length > 0 && menuOptions.map((option, index) => (
+                                        <Grow {...TransitionProps}
+                                              style={{
+                                                  transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
+                                              }} {...(open ? {timeout: 1000} : {})}>
                                             <MenuItem
                                                 key={index}
                                                 onClick={option.action}
                                             >
                                                 {option.text}
                                             </MenuItem>
-                                        ))}
-                                    </MenuList>
-                                </ClickAwayListener>
-                            </Paper>
-                        </Grow>
-                    )}
-                </Popper>
-            </Grid>
-        </Grid>
+                                        </Grow>
+                                    ))}
+                                </MenuList>
+                            </ClickAwayListener>
+                        </Paper>
+                    </Grow>
+                )}
+            </Popper>
+        </div>
     );
 }
 

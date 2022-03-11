@@ -20,8 +20,6 @@ public class FileUploadServiceImpl implements FileUploadService {
 
     @Override
     public String uploadFile(MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-
-        System.out.println("Original File name" + file.getOriginalFilename());
         try {
             MinioClient minioClient =
                     MinioClient

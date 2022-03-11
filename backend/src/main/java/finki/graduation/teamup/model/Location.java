@@ -6,10 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -19,7 +21,8 @@ import java.util.Set;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Where(clause = "deleted_on is null")
+@SQLDelete(sql = "UPDATE location SET deleted_on = NOW() WHERE id=1")
+@Where(clause = "deleted_on IS NULL")
 public class Location extends PersonalInfo implements Serializable {
     @OneToMany(orphanRemoval = true, mappedBy = "location")
     @ToString.Exclude
@@ -34,7 +37,7 @@ public class Location extends PersonalInfo implements Serializable {
 
     @OneToMany(orphanRemoval = true)
     @ToString.Exclude
-    Set<File> files;
+    Set<File> files = new HashSet<>();
 
     public void updateLocation(LocationDto locationDto) {
         setName(locationDto.getName());

@@ -8,9 +8,11 @@ import java.util.List;
 public interface FieldPlayTimeService {
     List<PlayTimeProjection> getAllFieldPlayingIntervals(Long fieldId);
 
-    PlayTimeProjection addFieldPlayTime(PlayTimeDto playingFieldDto, Long fieldId);
+    PlayTimeProjection getPlayTimeInterval(Long fieldId, Long playTimeId);
 
-    PlayTimeProjection updatePlayTimeStatus(PlayTimeDto playTimeDto, Long playTimeId);
+    Long addFieldPlayTimeInterval(PlayTimeDto playingFieldDto, Long fieldId);
+
+    void updatePlayTimeIntervalStatus(PlayTimeDto playTimeDto, Long playTimeId);
 
     void deleteFieldPlayTime(Long playTimeId);
 }

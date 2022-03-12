@@ -13,11 +13,7 @@ import java.util.List;
 
 @Repository
 public interface PlayTimeRepository extends JpaRepository<PlayTime, Long> {
-    @Transactional
-    @Query("SELECT " +
-            "   playTime.fieldStatus        AS fieldStatus, " +
-            "   playTime.gameStartTime      AS gameStartTime," +
-            "   playTime.gameEndTime        AS gameEndTime " +
+    @Query("SELECT playTime " +
             "FROM PlayTime playTime " +
             "   INNER JOIN playTime.playingField field " +
             "   INNER JOIN field.location location " +
@@ -26,4 +22,6 @@ public interface PlayTimeRepository extends JpaRepository<PlayTime, Long> {
             "      AND field.deletedOn IS NULL " +
             "      AND location.deletedOn IS NULL")
     List<PlayTimeProjection> findAllPlayingIntervalsForGivenField(@Param("fieldId") Long fieldId);
+
+    PlayTimeProjection findPlayTimeByPlayingFieldIdAndId(Long playingFieldId, Long intervalId);
 }

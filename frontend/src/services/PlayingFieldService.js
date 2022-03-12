@@ -17,6 +17,12 @@ const FieldType = {
     Private: 'Private'
 }
 
+const FieldStatus = {
+    Open: 'Open',
+    Reserved: 'Reserved',
+    Closed: 'Closed'
+}
+
 const GetAllTerrainsForLocation = (locationId) => {
     return axios.get(`${terrainRoute}/location/${locationId}`);
 }
@@ -37,4 +43,25 @@ const DeleteTerrain = (terrainId) => {
     return axios.delete(`${terrainRoute}/${terrainId}`);
 }
 
-export {terrainRoute, Sport, FieldType, GetAllTerrainsForLocation, GetTerrain, AddTerrain, EditTerrain, DeleteTerrain}
+const AddPlayingInterval = (terrainId, playingInterval) => {
+    return axios.post(`${terrainRoute}/${terrainId}/playing-intervals`, playingInterval)
+}
+
+
+const GetAllPlayingIntervalsForTerrain = (terrainId) => {
+    return axios.get(`${terrainRoute}/${terrainId}/playing-intervals`)
+}
+
+export {
+    terrainRoute,
+    Sport,
+    FieldType,
+    FieldStatus,
+    GetAllTerrainsForLocation,
+    GetTerrain,
+    AddTerrain,
+    EditTerrain,
+    DeleteTerrain,
+    AddPlayingInterval,
+    GetAllPlayingIntervalsForTerrain
+}

@@ -94,33 +94,33 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
     }
 
     @Override
-    public PlayTimeProjection addFieldPlayTime(PlayTimeDto playingFieldDto, Long fieldId) {
+    public PlayTimeProjection getPlayTimeInterval(Long fieldId, Long playTimeId) {
+        return playTimeRepository.findPlayTimeByPlayingFieldIdAndId(fieldId, playTimeId);
+    }
+
+    @Override
+    public Long addFieldPlayTimeInterval(PlayTimeDto playingFieldDto, Long fieldId) {
         PlayingField playingField = findPlayingFieldOrThrowException(fieldId);
 
         PlayTime playTime = new PlayTime();
-        playTime.setCreatedOn(LocalDateTime.now());
-
         playTime.setGameStartTime(playingFieldDto.getGameStartTime());
         playTime.setGameEndTime(playingFieldDto.getGameEndTime());
 
-        FieldStatus fieldStatus = FieldStatus.valueOf(playingFieldDto.getFieldStatus());
-        playTime.setFieldStatus(fieldStatus);
+        playTime.setFieldStatus(playingFieldDto.getFieldStatus());
         playTime.setPlayingField(playingField);
 
         playTimeRepository.save(playTime);
-        return (PlayTimeProjection) playTime;
+        return playTime.getId();
     }
 
-    public PlayTimeProjection updatePlayTimeStatus(PlayTimeDto playTimeDto, Long playTimeId) {
+    public void updatePlayTimeIntervalStatus(PlayTimeDto playTimeDto, Long playTimeId) {
         PlayTime playTime = findPlayTimeOrThrowException(playTimeId);
-        FieldStatus status = FieldStatus.valueOf(playTimeDto.getFieldStatus());
-        playTime.setFieldStatus(status);
+        playTime.setFieldStatus(playTimeDto.getFieldStatus());
 
         playTime.setGameStartTime(playTimeDto.getGameStartTime());
         playTime.setGameEndTime(playTimeDto.getGameEndTime());
 
         playTimeRepository.save(playTime);
-        return (PlayTimeProjection) playTime;
     }
 
     @Override

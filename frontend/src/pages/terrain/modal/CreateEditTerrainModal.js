@@ -1,13 +1,22 @@
 import {Dialog, DialogContent, DialogTitle, Grid, IconButton, TextField, Typography} from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import useStyles from "../../../components/MaterialStyles";
-import {AddTerrain, EditTerrain, FieldType, terrainRoute} from "../../../services/PlayingFieldService";
+import {
+    AddPlayingInterval,
+    AddTerrain,
+    EditTerrain, FieldStatus,
+    FieldType, GetAllPlayingIntervalsForTerrain,
+    terrainRoute
+} from "../../../services/PlayingFieldService";
 import SportRadioButton from "../../../components/SportRadioButton";
 import HorizontalStepper from "../../../components/stepper/HorizontalStepper";
 import CustomStep from "../../../components/stepper/StepContent";
 import DropzoneUploader from "../../../components/dropzone/DropzoneUploader";
 import {BulkUploadFiles} from "../../../services/FileService";
+import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
+import MomentUtils from "@date-io/moment";
+import Button from "@material-ui/core/Button";
 
 const CreateEditTerrainModal = ({field, locationId, ...props}) => {
     const classes = useStyles();
@@ -20,6 +29,14 @@ const CreateEditTerrainModal = ({field, locationId, ...props}) => {
     const [terrainId, setTerrainId] = useState(null);
     const terrainFiles = []
 
+    const [fieldPlayingIntervals, setFieldPlayingIntervals] = useState(null);
+    const [terrainIntervalsHasChanges, setTerrainIntervalsHasChanges] = useState(null);
+    const [playingInterval, setPlayingInterval] = useState({
+        fieldStatus: FieldStatus.Open,
+        gameStartTime: new Date(),
+        gameEndTime: new Date(),
+    });
+
     const steps = [
         {
             title: "Terrain Info",
@@ -30,9 +47,22 @@ const CreateEditTerrainModal = ({field, locationId, ...props}) => {
             title: "Terrain Media",
             optional: true,
             actionForm: "terrain-media"
+        },
+        {
+            title: "Playing Time Intervals",
+            optional: true,
+            actionForm: "terrain-playing-intervals"
         }]
 
     const horizontalStepperHandleNext = useRef(null);
+
+    useEffect(() => {
+        terrainId && GetAllPlayingIntervalsForTerrain(terrainId)
+            .then(res => {
+                setFieldPlayingIntervals(res.data);
+                setTerrainIntervalsHasChanges(false);
+            });
+    }, [terrainIntervalsHasChanges])
 
     const handleChange = name => event => {
         setTerrain({...terrain, [name]: event.target.value});
@@ -51,12 +81,32 @@ const CreateEditTerrainModal = ({field, locationId, ...props}) => {
 
     }
 
+    const handlePlayingIntervalChange = name => event => {
+        if (name === "fieldStatus") {
+            setPlayingInterval({...playingInterval, fieldStatus: event.target.value})
+            return;
+        }
+
+        setPlayingInterval({...playingInterval, [name]: event.toDate()});
+    }
+
     const handleMediaSubmit = event => {
         event.preventDefault();
         let formData = new FormData();
         terrainFiles.forEach(file => formData.append("files", file))
         BulkUploadFiles(terrainRoute, terrainId, formData)
             .then(() => props.onClose())
+    }
+
+    const handlePlayingIntervalsSubmit = event => {
+        event.preventDefault();
+        props.onClose();
+    }
+
+    const InsertPlayingGameInterval = () => {
+        console.log('test test')
+        AddPlayingInterval(terrainId, playingInterval)
+            .then(() => setTerrainIntervalsHasChanges(true))
     }
 
     return (
@@ -77,7 +127,7 @@ const CreateEditTerrainModal = ({field, locationId, ...props}) => {
                 <HorizontalStepper steps={steps} onComplete={() => props.onClose()}
                                    horizontalStepperHandleNext={horizontalStepperHandleNext}>
                     <CustomStep>
-                        <form id={"terrain-info"} onSubmit={handleSubmit}>
+                        <form id={steps[0].actionForm} onSubmit={handleSubmit}>
                             <Grid container spacing={3}>
                                 <Grid item xs={12}>
                                     <TextField
@@ -110,8 +160,51 @@ const CreateEditTerrainModal = ({field, locationId, ...props}) => {
                         </form>
                     </CustomStep>
                     <CustomStep>
-                        <form id={"terrain-media"} onSubmit={handleMediaSubmit}>
+                        <form id={steps[1].actionForm} onSubmit={handleMediaSubmit}>
                             <DropzoneUploader files={terrainFiles}/>
+                        </form>
+                    </CustomStep>
+                    <CustomStep>
+                        {fieldPlayingIntervals && fieldPlayingIntervals.length > 0 &&
+                            fieldPlayingIntervals.map(interval => <div key={interval.id}>
+                                {interval.gameStartTime} asd sad
+                            </div>)}
+                        <form id={steps[2].actionForm} onSubmit={handlePlayingIntervalsSubmit}>
+                            <Grid container>
+                                <Grid item xl={6}>
+                                    <MuiPickersUtilsProvider utils={MomentUtils}>
+                                        <KeyboardDatePicker
+                                            variant="inline"
+                                            label="Since"
+                                            format="DD/MM/YYYY"
+                                            fullWidth
+                                            className={"mt-2"}
+                                            value={playingInterval.gameStartTime}
+                                            InputAdornmentProps={{position: "start"}}
+                                            onChange={handlePlayingIntervalChange("gameStartTime")}
+                                        />
+                                    </MuiPickersUtilsProvider>
+                                </Grid>
+
+                                <Grid item xl={6}>
+                                    <MuiPickersUtilsProvider utils={MomentUtils}>
+                                        <KeyboardDatePicker
+                                            variant="inline"
+                                            label="Since"
+                                            format="DD/MM/YYYY"
+                                            fullWidth
+                                            className={"mt-2"}
+                                            value={playingInterval.gameEndTime}
+                                            InputAdornmentProps={{position: "start"}}
+                                            onChange={handlePlayingIntervalChange("gameEndTime")}
+                                        />
+                                    </MuiPickersUtilsProvider>
+                                </Grid>
+                            </Grid>
+
+                            <Button onClick={InsertPlayingGameInterval}>
+                                Add Interval
+                            </Button>
                         </form>
                     </CustomStep>
                 </HorizontalStepper>

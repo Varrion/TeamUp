@@ -4,6 +4,7 @@ import finki.graduation.teamup.service.base.FileUploadService;
 import io.minio.MinioClient;
 import io.minio.UploadObjectArgs;
 import io.minio.errors.MinioException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,8 +16,17 @@ import java.util.Objects;
 
 @Service
 public class FileUploadServiceImpl implements FileUploadService {
-    private static final String minIOUrl = "http://127.0.0.1:9000";
-    private static final String bucketName = "teamup";
+    @Value("${spring.minio.url}")
+    private String minIOUrl;
+
+    @Value("${spring.minio.bucket}")
+    private String bucketName;
+
+    @Value("${spring.minio.access-key}")
+    private String accessKey;
+
+    @Value("${spring.minio.secret-key}")
+    private String accessSecret;
 
     @Override
     public String uploadFile(MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
@@ -25,24 +35,26 @@ public class FileUploadServiceImpl implements FileUploadService {
                     MinioClient
                             .builder()
                             .endpoint(minIOUrl)
-                            .credentials("simeon", "simeon1234")
+                            .credentials(accessKey, accessSecret)
                             .build();
 
 
-            File tempFile = File.createTempFile("file", Objects.requireNonNull(file.getOriginalFilename()));
+            File tempFile = File.createTempFile("file_", Objects.requireNonNull(file.getOriginalFilename()));
             file.transferTo(tempFile);
 
             minioClient.uploadObject(
                     UploadObjectArgs.builder()
                             .bucket(bucketName)
-                            .object(file.getOriginalFilename())
+                            .object(tempFile.getName())
                             .filename(tempFile.getAbsolutePath())
                             .build());
+
+            return minIOUrl + "/" + bucketName + "/" + tempFile.getName();
 
         } catch (MinioException e) {
             System.out.println("Error occurred: " + e);
         }
 
-        return minIOUrl + "/" +bucketName + "/" + file.getOriginalFilename();
+        return null;
     }
 }

@@ -46,7 +46,7 @@ const ProfileLeftDetailsGrid = ({
                                               src={user.gender === Gender.Female ? NoPhotoFemale : user.gender === Gender.Male ? NoPhotoMale : NoPhotoOther}
                                               alt={user.gender}
                                               onUpload={onFileUpload}/>
-                    : <img className={"mt-4"} src={profileImage.filePath} alt={"Profile"}/>}
+                    : <img className={"mt-4"} src={profileImage.filePath} alt={"Profile"} width={250} height={250} className={"rounded-circle"}/>}
                 <Typography className={"mt-3"} color={"textSecondary"} variant={"h6"}>
                     @{user.username}
                 </Typography>

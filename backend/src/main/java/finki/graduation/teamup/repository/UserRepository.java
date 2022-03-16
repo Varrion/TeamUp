@@ -44,4 +44,9 @@ public interface UserRepository extends JpaRepository<User, Long>, PagingAndSort
     UserProjection takeUserByUsername(@Param("username") String username);
 
     boolean existsUserByUsernameOrEmail(String username, String email);
+
+    @Query("SELECT user " +
+            "FROM User user " +
+            "WHERE user.name LIKE :search%")
+    List<UserProjection> findUsersWhereNameStartsWith(String search);
 }

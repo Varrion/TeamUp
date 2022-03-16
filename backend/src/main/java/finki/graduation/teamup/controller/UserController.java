@@ -22,7 +22,14 @@ public class UserController extends FileController<String> {
     }
 
     @GetMapping
-    public List<UserProjection> getAllUsers(@RequestParam(value = "userRole", required = false) Role role) {
+    public List<UserProjection> getAllUsers(
+            @RequestParam(value = "userRole", required = false) Role role,
+            @RequestParam(value = "search", required = false) String search
+    ) {
+        if (search != null && !search.isEmpty()) {
+            return userService.findUsersWhereNameStartsWith(search);
+        }
+
         return userService.getAll(role);
     }
 

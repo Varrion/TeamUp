@@ -71,6 +71,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserProjection> findUsersWhereNameStartsWith(String search) {
+        return userRepository.findUsersWhereNameStartsWith(search);
+    }
+
+    @Override
     public UserProjection getById(String username) {
         return userRepository.takeUserByUsername(username);
     }

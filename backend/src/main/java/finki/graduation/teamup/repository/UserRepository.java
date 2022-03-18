@@ -46,8 +46,9 @@ public interface UserRepository extends JpaRepository<User, Long>, PagingAndSort
 
     @Query("SELECT user " +
             "FROM User user " +
-            "WHERE user.name LIKE :search% " +
+            "WHERE (user.name LIKE :search% " +
             "   OR user.username LIKE :search% " +
-            "   OR user.surname LIKE :search% ")
-    List<UserProjection> searchForUsers(String search);
+            "   OR user.surname LIKE :search%) " +
+            "   AND user.role = :role")
+    List<UserProjection> searchUsers(String search, Role role);
 }

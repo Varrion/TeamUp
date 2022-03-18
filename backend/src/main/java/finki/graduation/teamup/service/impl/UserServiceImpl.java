@@ -71,8 +71,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserProjection> findUsersWhereNameStartsWith(String search) {
-        return userRepository.searchForUsers(search);
+    public List<UserProjection> searchUsers(String search, Role role) {
+        return userRepository.searchUsers(search, role);
     }
 
     @Override

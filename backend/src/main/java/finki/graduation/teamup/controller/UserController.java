@@ -32,7 +32,7 @@ public class UserController extends FileController<String> {
             @RequestParam(value = "search", required = false) String search
     ) {
         if (search != null && !search.isEmpty()) {
-            return userService.findUsersWhereNameStartsWith(search);
+            return userService.searchUsers(search, role);
         }
 
         return userService.getAll(role);

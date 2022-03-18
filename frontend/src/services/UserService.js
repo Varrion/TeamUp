@@ -52,6 +52,12 @@ const BasicAuth = (username, password) => {
     return 'Basic ' + window.btoa(username + ":" + password);
 }
 
+const SearchUsers = (search, role) => {
+    return axios.get(`${usersRoute}`, {
+        params: {userRole: role, search: search}
+    })
+}
+
 export {
     UserRole,
     Gender,
@@ -64,5 +70,6 @@ export {
     RegisterUser,
     GetTeamMembers,
     GetTeamPendingMembers,
-    BasicAuth
+    BasicAuth,
+    SearchUsers
 }

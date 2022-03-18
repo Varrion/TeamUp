@@ -1,19 +1,26 @@
 package finki.graduation.teamup.config;
 
+import finki.graduation.teamup.config.filter.AuthTokenFilter;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
-
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final UsernamePasswordAuthProvider authProvider;
     private final RestAuthEntryPoint restAuthEntryPoint;
+
+    @Bean
+    public AuthTokenFilter authenticationTokenFilter() {
+        return new AuthTokenFilter();
+    }
 
     public WebSecurityConfiguration(UsernamePasswordAuthProvider authProvider, RestAuthEntryPoint restAuthEntryPoint) {
         this.authProvider = authProvider;
@@ -54,5 +61,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(restAuthEntryPoint)
                 .and()
                 .formLogin().loginProcessingUrl("/login");
+        http.addFilterBefore(authenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 }

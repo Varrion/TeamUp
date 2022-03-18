@@ -18,4 +18,6 @@ public interface UserService extends UserDetailsService, BaseGetDeleteService<Us
     List<UserProjection> getAllMembersInTeam(Long teamId);
 
     List<UserProjection> getAllPendingMembersForTeam(Long teamId);
+
+    List<UserProjection> searchUsers(String search, Role role);
 }

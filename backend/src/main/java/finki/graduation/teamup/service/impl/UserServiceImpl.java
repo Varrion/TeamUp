@@ -71,6 +71,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserProjection> searchUsers(String search, Role role) {
+        return userRepository.searchUsers(search, role);
+    }
+
+    @Override
     public UserProjection getById(String username) {
         return userRepository.takeUserByUsername(username);
     }

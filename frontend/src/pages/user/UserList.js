@@ -40,16 +40,11 @@ const useStyles = makeStyles(({palette}) => ({
 
 const UserList = (props) => {
     const styles = useStyles();
-    const [users, setUsers] = useState(null);
-
-    useEffect(() => {
-        GetAllUsers(UserRole.User)
-            .then(res => setUsers(res.data))
-    }, [])
 
     return (
+        props.users && props.users.length > 0 &&
         <Grid container>
-            {users && users.length > 0 && users.map(user => <Grid key={user.id} item lg={3} xs={6}>
+            {props.users.map(user => <Grid key={user.id} item lg={3} xs={6}>
                 <UserCard user={user}/>
             </Grid>)}
         </Grid>

@@ -5,6 +5,10 @@ import finki.graduation.teamup.model.dto.UserLoginDto;
 import finki.graduation.teamup.model.enums.Role;
 import finki.graduation.teamup.model.projection.UserProjection;
 import finki.graduation.teamup.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +19,7 @@ import java.util.List;
 @RequestMapping(value = "api/users")
 public class UserController extends FileController<String> {
     private final UserService userService;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     public UserController(UserService userService) {
         super(userService);
@@ -22,7 +27,14 @@ public class UserController extends FileController<String> {
     }
 
     @GetMapping
-    public List<UserProjection> getAllUsers(@RequestParam(value = "userRole", required = false) Role role) {
+    public List<UserProjection> getAllUsers(
+            @RequestParam(value = "userRole", required = false) Role role,
+            @RequestParam(value = "search", required = false) String search
+    ) {
+        if (search != null && !search.isEmpty()) {
+            return userService.searchUsers(search, role);
+        }
+
         return userService.getAll(role);
     }
 
@@ -38,6 +50,10 @@ public class UserController extends FileController<String> {
 
     @GetMapping("{username}")
     public UserProjection getUserDetails(@PathVariable String username) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        System.out.println("getUserDetauls -> " + currentPrincipalName);
+
         return userService.getById(username);
     }
 

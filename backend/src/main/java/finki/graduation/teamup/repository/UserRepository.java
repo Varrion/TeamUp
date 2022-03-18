@@ -4,7 +4,6 @@ import finki.graduation.teamup.model.User;
 import finki.graduation.teamup.model.enums.Role;
 import finki.graduation.teamup.model.enums.TeamMemberStatus;
 import finki.graduation.teamup.model.projection.UserProjection;
-import org.checkerframework.checker.nullness.Opt;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -44,4 +43,12 @@ public interface UserRepository extends JpaRepository<User, Long>, PagingAndSort
     UserProjection takeUserByUsername(@Param("username") String username);
 
     boolean existsUserByUsernameOrEmail(String username, String email);
+
+    @Query("SELECT user " +
+            "FROM User user " +
+            "WHERE (user.name LIKE :search% " +
+            "   OR user.username LIKE :search% " +
+            "   OR user.surname LIKE :search%) " +
+            "   AND user.role = :role")
+    List<UserProjection> searchUsers(String search, Role role);
 }

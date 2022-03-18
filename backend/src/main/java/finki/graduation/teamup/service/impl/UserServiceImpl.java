@@ -13,9 +13,6 @@ import finki.graduation.teamup.model.projection.UserProjection;
 import finki.graduation.teamup.repository.UserRepository;
 import finki.graduation.teamup.service.FileService;
 import finki.graduation.teamup.service.UserService;
-import lombok.extern.java.Log;
-import lombok.extern.log4j.Log4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -75,7 +72,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserProjection> findUsersWhereNameStartsWith(String search) {
-        return userRepository.findUsersWhereNameStartsWith(search);
+        return userRepository.searchForUsers(search);
     }
 
     @Override

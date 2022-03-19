@@ -25,8 +25,8 @@ const TeamMemberGrid = ({team}) => {
     return (
         <Grid container justify={"flex-start"}>
             {team?.teamMembers?.map(teamMember => <Grid key={teamMember?.user.id} item lg={3}>
-                <Avatar className={"profile-avatar"} src={'https://i.pravatar.cc/300'}/>
-                <span>{teamMember.user.name}</span>
+                <Avatar className={"profile-avatar"} src={teamMember.user.files?.filter(file => file.fileType == "Profile")[0].filePath} />
+                <span>{teamMember.user?.name}</span>
             </Grid>)}
             {missingMembersNumber != null && missingMembersNumber.length > 0 &&
                 <>

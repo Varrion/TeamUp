@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -49,10 +50,8 @@ public class UserController extends FileController<String> {
     }
 
     @GetMapping("{username}")
-    public UserProjection getUserDetails(@PathVariable String username) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-        System.out.println("getUserDetauls -> " + currentPrincipalName);
+    public UserProjection getUserDetails(@PathVariable String username, final Principal principal) {
+        System.out.println("getUserDetauls -> " + principal.getName());
 
         return userService.getById(username);
     }

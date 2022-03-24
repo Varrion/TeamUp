@@ -4,7 +4,7 @@ import {GetUser, UserRole, usersRoute} from "../../services/UserService";
 import UserEditModal from "./modal/UserEditModal";
 import CreateEditTeamModal from "../team/modal/CreateEditTeamModal";
 import {GetTeamsByMemberUsername, TeamMemberStatus} from "../../services/TeamService";
-import {FileType, UploadFile} from "../../services/FileService";
+import {FileType, GetLastFilePath, UploadFile} from "../../services/FileService";
 import ProfileInfoGrid from "../../components/grids/ProfileInfoGrid";
 import ProfileTeamsGrid from "../../components/grids/ProfileTeamsGrid";
 import ProfileLeftDetailsGrid from "../../components/grids/ProfileLeftDetailsGrid";
@@ -14,6 +14,7 @@ import CreateEditLocationModal from "../location/modal/CreateEditLocationModal";
 const User = props => {
     const [user, setUser] = useState(null);
     const [profileImage, setProfileImage] = useState(null);
+    const [imageUploadedToggle, setImageUploadedToggle] = useState(false);
 
     //teams
     const [myTeam, setMyTeam] = useState(null);
@@ -35,11 +36,10 @@ const User = props => {
         GetUser(props.username)
             .then(res => {
                 const userData = res.data;
-                setProfileImage(userData.files && userData.files.length > 0 && userData.files.find(file => file.fileType === FileType.Profile)
-                    && userData.files.filter(file => file.fileType === FileType.Profile).splice(-1)[0]);
+                setProfileImage(GetLastFilePath(userData.files));
                 setUser(userData);
             })
-    }, [props.username, showUpdateModal])
+    }, [props.username, showUpdateModal, imageUploadedToggle])
 
     useEffect(() => {
         if (user) {
@@ -72,8 +72,9 @@ const User = props => {
     const onFileUpload = (event) => {
         let formData = new FormData();
         formData.append("file", event.target.files[0]);
+
         UploadFile(usersRoute, user.username, formData, FileType.Profile)
-            .then(() => console.log('vlagam tuka'))
+            .then(() => setImageUploadedToggle(!imageUploadedToggle))
     }
 
     const handleOnCloseTeamModal = (isTeamDeleted) => {
@@ -88,7 +89,8 @@ const User = props => {
 
     return (user &&
         <Grid container>
-            <ProfileLeftDetailsGrid profileImage={profileImage} user={user} isMemberOfTeam={isMemberOfTeam} isTeamLeader={myTeam ?? false}
+            <ProfileLeftDetailsGrid profileImage={profileImage} user={user} isMemberOfTeam={isMemberOfTeam}
+                                    isTeamLeader={myTeam ?? false}
                                     ownedLocation={myLocation}
                                     showLocationModal={() => setShowLocationModal(true)}
                                     showTeamModal={() => setShowTeamModal(true)} toggleTeams={toggleTeams}

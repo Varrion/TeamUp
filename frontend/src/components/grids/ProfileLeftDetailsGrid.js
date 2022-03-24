@@ -13,6 +13,7 @@ import SplitButton from "../buttons/SplitButton";
 import {Delete, EditLocationOutlined} from "@material-ui/icons";
 import {navigate} from "@reach/router";
 import {useAuthContext} from "../../configurations/AuthContext";
+import {FileType} from "../../services/FileService";
 
 const ProfileLeftDetailsGrid = ({
                                     user,
@@ -41,12 +42,11 @@ const ProfileLeftDetailsGrid = ({
     return (
         <Grid item xs={12} md={6} lg={4}>
             <Grid container alignItems={"center"} direction={"column"}>
-                {!profileImage ?
-                    <UploadShowProfilePicture width={250} height={250}
-                                              src={user.gender === Gender.Female ? NoPhotoFemale : user.gender === Gender.Male ? NoPhotoMale : NoPhotoOther}
-                                              alt={user.gender}
-                                              onUpload={onFileUpload}/>
-                    : <img className={"mt-4"} src={profileImage.filePath} alt={"Profile"} width={250} height={250} className={"rounded-circle"}/>}
+                <UploadShowProfilePicture width={250} height={250}
+                                          src={!profileImage ? (user.gender === Gender.Female ? NoPhotoFemale : user.gender === Gender.Male ? NoPhotoMale : NoPhotoOther)
+                                              : profileImage}
+                                          alt={FileType.Profile}
+                                          onUpload={onFileUpload}/>
                 <Typography className={"mt-3"} color={"textSecondary"} variant={"h6"}>
                     @{user.username}
                 </Typography>

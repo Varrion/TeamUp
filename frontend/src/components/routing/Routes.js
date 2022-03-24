@@ -4,12 +4,12 @@ import Home from "../../pages/Home";
 import Register from "../../pages/user/Register";
 import Login from "../../pages/user/Login";
 import Profile from "../../pages/user/Profile";
-import React from "react";
 import UsersPage from "../../pages/user/UsersPage";
 import TeamList from "../../pages/team/TeamList";
 import TeamDetails from "../../pages/team/TeamDetails";
 import LocationDetails from "../../pages/location/LocationDetails";
 import LocationList from "../../pages/location/LocationList";
+import TerrainDetails from "../../pages/terrain/TerrainDetails";
 
 const Routes = () => {
     return <Router>
@@ -30,6 +30,9 @@ const Routes = () => {
         <Route container={true} path={"/locations"}>
             <LocationList path={"/"}/>
             <LocationDetails path={":id"}/>
+        </Route>
+        <Route container={true} path={"/terrains"}>
+            <TerrainDetails path={":id"}/>
         </Route>
     </Router>
 }

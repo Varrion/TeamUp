@@ -1,9 +1,9 @@
 import {Carousel} from "react-bootstrap";
 
-const CustomCarousel = (props) => {
+const CustomCarousel = ({height, children}) => {
     return (
-        <Carousel fade>
-            {props.children}
+        <Carousel fade style={{height: height}}>
+            {children}
         </Carousel>
     )
 }

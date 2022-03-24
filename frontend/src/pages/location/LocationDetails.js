@@ -9,8 +9,6 @@ import EmailIcon from "@material-ui/icons/Email";
 import CallIcon from "@material-ui/icons/Call";
 import CakeIcon from "@material-ui/icons/Cake";
 import UploadShowProfilePicture from "../../components/pictures/UploadShowProfilePicture";
-import NoPhotoFemale from "../../assets/images/GirlSiluethee.jpg";
-import {Gender} from "../../services/UserService";
 import {useAuthContext} from "../../configurations/AuthContext";
 import CreateEditLocationModal from "./modal/CreateEditLocationModal";
 import CreateEditTerrainModal from "../terrain/modal/CreateEditTerrainModal";
@@ -18,6 +16,7 @@ import {GetAllTerrainsForLocation} from "../../services/PlayingFieldService";
 import TerrainCard from "../../components/cards/TerrainCard";
 import {AddCircle, Delete, EditLocation} from "@material-ui/icons";
 import SplitButton from "../../components/buttons/SplitButton";
+import {FileType, GetLastFilePath} from "../../services/FileService";
 
 const LocationDetails = ({id}) => {
     const {isAuthorized} = useAuthContext();
@@ -30,7 +29,7 @@ const LocationDetails = ({id}) => {
 
     const onLocationDelete = () => {
         return DeleteLocation(location.id)
-            // .then(() => navigate("/"));
+        // .then(() => navigate("/"));
     }
 
     const locationMenuButtonActions = [
@@ -59,9 +58,10 @@ const LocationDetails = ({id}) => {
 
     return (location &&
         <Grid container direction={"column"} justify={"center"} alignItems={"center"}>
-            <Grid container alignItems={"center"} justify={"space-evenly"}>
+            <Grid container alignItems={"center"} justify={"space-between"}>
                 <Grid item lg={2}>
-                    <UploadShowProfilePicture width={200} height={200} src={NoPhotoFemale} alt={Gender.Female}/>
+                    <UploadShowProfilePicture width={200} height={200} src={GetLastFilePath(location.files)}
+                                              alt={FileType.Profile}/>
                 </Grid>
                 <Grid item lg={10}>
                     <Typography variant={"h1"}> {location.name}
@@ -117,7 +117,7 @@ const LocationDetails = ({id}) => {
             </Grid>
 
             <Grid container>
-                {terrains && terrains.map(terrain => <Grow key={terrain.id}
+                {terrains && terrains.map((terrain, index) => <Grow key={index}
                                                            in={checked}
                                                            style={{transformOrigin: '0 0 0'}}
                                                            {...(checked ? {timeout: 5000} : {})}>

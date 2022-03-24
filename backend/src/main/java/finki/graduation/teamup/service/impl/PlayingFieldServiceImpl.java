@@ -49,8 +49,7 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
 
     @Override
     public PlayingFieldProjection getById(Long id) {
-        PlayingField playingField = findPlayingFieldOrThrowException(id);
-        return (PlayingFieldProjection) playingField;
+        return playingFieldRepository.getById(id);
     }
 
     @Override
@@ -154,8 +153,8 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
     }
 
     @Override
-    public void saveFileToEntity(Long id, MultipartFile multipartFile, FileType fileType) throws Exception {
-
+    public String saveFileToEntity(Long id, MultipartFile multipartFile, FileType fileType) throws Exception {
+        return "";
     }
 
     @Override

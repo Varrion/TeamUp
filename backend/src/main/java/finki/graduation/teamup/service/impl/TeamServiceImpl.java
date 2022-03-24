@@ -235,8 +235,8 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public void saveFileToEntity(Long id, MultipartFile multipartFile, FileType fileType) throws Exception {
-
+    public String saveFileToEntity(Long id, MultipartFile multipartFile, FileType fileType) throws Exception {
+        return "";
     }
 
     @Override

@@ -9,6 +9,11 @@ const FileType = {
     Other: 'Other'
 }
 
+const GetLastFilePath = (files) => {
+    return files && files.length > 0 &&
+        files.filter(file => file.fileType === FileType.Profile)?.sort((a, b) => (a.id > b.id) ? 1 : -1)
+            .splice(-1)[0].filePath;
+}
 
 const UploadFile = (route, id, file, fileType) => {
     return axios.post(`${route}/${id}/file`, file, {
@@ -47,5 +52,6 @@ export {
     FileType,
     UploadFile,
     BulkUploadFiles,
-    GetAllEntityFiles
+    GetAllEntityFiles,
+    GetLastFilePath
 }

@@ -10,9 +10,7 @@ import CustomStep from "../../../components/stepper/StepContent";
 import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
 import UploadShowProfilePicture from "../../../components/pictures/UploadShowProfilePicture";
-import NoPhotoFemale from "../../../assets/images/GirlSiluethee.jpg";
-import {Gender} from "../../../services/UserService";
-import {FileType, UploadFile} from "../../../services/FileService";
+import {FileType, GetLastFilePath, UploadFile} from "../../../services/FileService";
 
 
 const CreateEditLocationModal = (props) => {
@@ -29,9 +27,11 @@ const CreateEditLocationModal = (props) => {
         longitude: props.location?.longitude ?? null,
         latitude: props.location?.latitude ?? null,
         phoneNumber: props.location?.phoneNumber ?? "",
+        files: props.location?.files && props.location.files.length > 0 ? props.location.files : null,
         dateOfBirth: props.location?.dateOfBirth ? new Date(props.location.dateOfBirth) : new Date()
     });
 
+    const [locationImage, setLocationImage] = useState(GetLastFilePath(location.files));
     const horizontalStepperHandleNext = useRef(null);
 
     const steps = [
@@ -73,7 +73,6 @@ const CreateEditLocationModal = (props) => {
             : EditLocation(createdLocationId, location)
                 .then(() => horizontalStepperHandleNext.current())
                 .catch(err => console.log(err))
-
     }
 
     const handleSecondStepSubmit = event => {
@@ -93,7 +92,9 @@ const CreateEditLocationModal = (props) => {
         let formData = new FormData();
         formData.append("file", event.target.files[0]);
         UploadFile(locationRoute, createdLocationId, formData, FileType.Profile)
-            .then(() => console.log('vlagam tuka'))
+            .then((r) => {
+                setLocationImage(r.data)
+            })
     }
 
     return (
@@ -223,7 +224,7 @@ const CreateEditLocationModal = (props) => {
                     <CustomStep>
                         <form id={"location-logo"} onSubmit={handleThirdStepSubmit}
                               className={"d-flex justify-content-center"}>
-                            <UploadShowProfilePicture width={250} height={250} src={NoPhotoFemale} alt={Gender.Female}
+                            <UploadShowProfilePicture width={250} height={250} src={locationImage} alt={FileType.Profile}
                                                       onUpload={onFileUpload}/>
                         </form>
                     </CustomStep>

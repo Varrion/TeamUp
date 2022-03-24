@@ -71,6 +71,15 @@
     right: 20px;
 }
 
+.mini-image2 {
+    position: absolute;
+    left: 45%;
+    top: 260px;
+    z-index: 999;
+    border: 2px solid #fff;
+    box-shadow: 10px 10px 50px red;
+}
+
 .photo-icon-color {
     color: white !important;
     background-color: #343a40 !important;
@@ -95,6 +104,15 @@
 
 .card-height {
     min-height: 360px;
+}
+
+.card-carousel-height {
+    height: 360px;
+}
+
+.carousel-inner,
+.carousel-item {
+    height: inherit !important;
 }
 
 .her-default-colors {
@@ -128,7 +146,7 @@
     justify-content: center;
     width: 100%;
     padding: 20px;
-    text-align:center;
+    text-align: center;
 }
 
 .marker-wrapper {
@@ -141,9 +159,9 @@
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    -webkit-transform: translate(-50%,-50%);
-    -ms-transform: translate(-50%,-50%);
-    transform: translate(-50%,-50%);
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
     cursor: grab;
 }
 
@@ -152,16 +170,20 @@
     margin: 10px 50px;
     filter: drop-shadow(-1px 5px 3px #ccc);
 }
+
 .info-wrapper {
     margin-top: 15px;
 }
+
 .map-details {
     text-align: center;
     font-size: 1.2em;
 }
+
 .map-details span {
     font-weight: bold;
 }
+
 .search-input {
     font-size: 1.2em;
     width: 80%;
@@ -172,7 +194,7 @@
     left: -9999px;
 }
 
-.input-hidden.Mui-checked + .MuiFormControlLabel-label>img {
+.input-hidden.Mui-checked + .MuiFormControlLabel-label > img {
     border: 5px solid darkorange;
     box-shadow: 0 0 3px 3px orange;
 }

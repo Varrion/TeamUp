@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveFileToEntity(String id, MultipartFile multipartFile, FileType fileType) throws Exception {
+    public String saveFileToEntity(String id, MultipartFile multipartFile, FileType fileType) throws Exception {
         User user = (User) loadUserByUsername(id);
 
         File file = fileService.save(multipartFile, fileType);
@@ -139,6 +139,7 @@ public class UserServiceImpl implements UserService {
         user.setFiles(userFiles);
 
         userRepository.save(user);
+        return file.getFilePath();
     }
 
     @Override

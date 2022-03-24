@@ -101,7 +101,7 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public void saveFileToEntity(Long id, MultipartFile multipartFile, FileType fileType) throws Exception {
+    public String saveFileToEntity(Long id, MultipartFile multipartFile, FileType fileType) throws Exception {
         Location location = findLocationOrThrowException(id);
 
         File file = fileService.save(multipartFile, fileType);
@@ -110,6 +110,7 @@ public class LocationServiceImpl implements LocationService {
         location.setFiles(locationFiles);
 
         locationRepository.save(location);
+        return file.getFilePath();
     }
 
     @Override

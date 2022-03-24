@@ -14,10 +14,10 @@ public interface PlayingFieldRepository extends JpaRepository<PlayingField, Long
     @Query(" SELECT playingField " +
             "FROM PlayingField playingField " +
             "   INNER JOIN playingField.location location " +
-            "   LEFT JOIN FETCH playingField.files file " +
             "WHERE location.id = :locationId " +
             "    AND location.deletedOn IS NULL " +
-            "    AND playingField.deletedOn IS NULL " +
-            "    AND file.deletedOn IS NULL")
+            "    AND playingField.deletedOn IS NULL ")
     List<PlayingFieldProjection> getAllPlayingFieldsByLocation(@Param("locationId") Long locationId);
+
+    PlayingFieldProjection getById(Long terrainId);
 }

@@ -15,6 +15,11 @@ public abstract class FileController<T> {
         this.fileService = fileService;
     }
 
+    @GetMapping("files/{filePath}")
+    public File findByFilePath(@PathVariable String filePath) {
+        return fileService.getFileByPath(filePath);
+    }
+
     @PostMapping(value = "{id}/file")
     public String uploadFile(@RequestPart("file") MultipartFile multipartFile, @RequestParam(name = "FileType") FileType fileType, @PathVariable T id) throws Exception {
         return fileService.saveFileToEntity(id, multipartFile, fileType);
@@ -26,7 +31,7 @@ public abstract class FileController<T> {
     }
 
     @GetMapping("{id}/files")
-    public Set<File> getAllFilesForUser(@PathVariable T id) {
+    public Set<File> getAllFilesForEntity(@PathVariable T id) {
         return fileService.getFileByEntityId(id);
     }
 }

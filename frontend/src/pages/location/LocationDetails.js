@@ -132,8 +132,9 @@ const LocationDetails = ({id}) => {
                                          onClose={() => setOpenUpdateModal(false)}/>}
 
             {openUpdateTerrainModal &&
-                <CreateEditTerrainModal open={openUpdateTerrainModal} locationId={location.id}
-                                        onClose={() => setOpenUpdateTerrainModal(false)}/>}
+                <CreateEditTerrainModal open={openUpdateTerrainModal}
+                                        onClose={() => setOpenUpdateTerrainModal(false)}
+                                        locationId={location.id}/>}
         </Grid>
     )
 }

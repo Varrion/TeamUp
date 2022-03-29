@@ -51,18 +51,18 @@ public class PlayFieldController extends FileController<Long> {
         return playingFieldService.getAllFieldPlayingIntervals(fieldId);
     }
 
-    @GetMapping("{fieldId}/playing-intervals/{intervalId}")
-    public PlayTimeProjection getPlayingIntervalForGivenField(@PathVariable Long fieldId, Long intervalId) {
-        return playingFieldService.getPlayTimeInterval(fieldId, intervalId);
-    }
-
     @PostMapping("{fieldId}/playing-intervals")
     public Long addPlayTime(@RequestBody PlayTimeDto playTimeDto, @PathVariable Long fieldId) {
         return playingFieldService.addFieldPlayTimeInterval(playTimeDto, fieldId);
     }
 
-    @PutMapping("{fieldId}/playing-intervals")
-    public void updatePlayTime(@RequestBody PlayTimeDto playTimeDto, @PathVariable Long fieldId) {
-        playingFieldService.updatePlayTimeIntervalStatus(playTimeDto, fieldId);
+    @PutMapping("{fieldId}/playing-intervals/{intervalId}")
+    public void updatePlayTime(@RequestBody PlayTimeDto playTimeDto, @PathVariable Long fieldId, @PathVariable Long intervalId) {
+        playingFieldService.updatePlayTimeIntervalStatus(playTimeDto, intervalId);
+    }
+
+    @DeleteMapping("{fieldId}/playing-intervals/{intervalId}")
+    public void deletePlayingIntervalForGivenField(@PathVariable Long fieldId, @PathVariable Long intervalId) {
+        playingFieldService.deleteFieldPlayTime(intervalId);
     }
 }

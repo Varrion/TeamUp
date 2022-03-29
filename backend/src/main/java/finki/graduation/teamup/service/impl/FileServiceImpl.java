@@ -61,6 +61,16 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    public File save(File file) {
+        return fileRepository.save(file);
+    }
+
+    @Override
+    public File findByFilePath(String filePath) {
+        return fileRepository.findByFilePath(filePath);
+    }
+
+    @Override
     public FileSystemResource find(Long fileId) {
         File file = fileRepository.findById(fileId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));

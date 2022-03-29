@@ -1,60 +1,65 @@
-import {withStyles} from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-import {useState} from "react";
+import {useRef, useState} from 'react';
+import {IconButton, Menu, MenuItem} from "@material-ui/core";
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import Fade from '@material-ui/core/Fade';
 
-const StyledMenu = withStyles({
-    paper: {
-        border: '1px solid #d3d4d5',
-    },
-})((props) => (
-    <Menu
-        elevation={0}
-        getContentAnchorEl={null}
-        anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left',
-        }}
-        transformOrigin={{
-            vertical: 'top',
-            horizontal: 'left',
-        }}
-        {...props}
-    />
-));
+const MenuButton = ({actionParams, menuOptions}) => {
+    const anchorRef = useRef(null);
+    const [open, setOpen] = useState(false);
+    const ITEM_HEIGHT = 48;
 
-const MenuButton = ({text, buttonVariant, buttonColor, ...props}) => {
-    const [anchorEl, setAnchorEl] = useState(null);
-
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
+    const handleToggleMenu = (event) => {
+        anchorRef.current = event.currentTarget;
+        setOpen((prevOpen) => !prevOpen);
     };
 
-    const handleClose = () => {
-        setAnchorEl(null);
+    const handleClose = (event) => {
+        if (anchorRef.current && anchorRef.current.contains(event.target)) {
+            return;
+        }
+
+        setOpen(false);
     };
 
     return (
-        <>
-            <Button
-                aria-controls="customized-menu"
+        <div>
+            <IconButton
+                aria-label="more"
+                id="long-button"
+                aria-controls={open ? 'long-menu' : undefined}
+                aria-expanded={open ? 'true' : undefined}
                 aria-haspopup="true"
-                variant={buttonVariant}
-                color={buttonColor}
-                onClick={handleClick}
+                onClick={handleToggleMenu}
             >
-                {text}
-            </Button>
+                <MoreVertIcon/>
+            </IconButton>
             <Menu
-                id="customized-menu"
-                anchorEl={anchorEl}
-                keepMounted
-                open={Boolean(anchorEl)}
+                id="long-menu"
+                MenuListProps={{
+                    'aria-labelledby': 'long-button',
+                }}
+                anchorEl={anchorRef.current}
+                open={open}
                 onClose={handleClose}
+                TransitionComponent={Fade}
+                PaperProps={{
+                    style: {
+                        maxHeight: ITEM_HEIGHT * 4.5,
+                        width: '20ch',
+                    },
+                }}
             >
-                {props.children}
+                {menuOptions && menuOptions.length > 0 && menuOptions.map((option, index) => (
+                    <MenuItem
+                        key={index}
+                        onClick={() => option.action(actionParams)}
+                    >
+                        {option.text}
+                    </MenuItem>
+                ))}
             </Menu>
-        </>
+
+        </div>
     );
 }
 

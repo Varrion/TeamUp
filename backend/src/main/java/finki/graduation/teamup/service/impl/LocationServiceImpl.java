@@ -123,4 +123,9 @@ public class LocationServiceImpl implements LocationService {
         Location location = findLocationOrThrowException(id);
         return location.getFiles();
     }
+
+    @Override
+    public File getFileByPath(String filePath) {
+        return null;
+    }
 }

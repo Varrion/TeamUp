@@ -55,11 +55,12 @@ const SplitButton = ({text, buttonVariant, buttonColor, mainOption, menuOptions,
                                 <MenuList id="split-button-menu">
                                     {menuOptions && menuOptions.length > 0 && menuOptions.map((option, index) => (
                                         <Grow {...TransitionProps}
+                                              key={index}
                                               style={{
                                                   transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
                                               }} {...(open ? {timeout: 1000} : {})}>
                                             <MenuItem
-                                                key={index}
+
                                                 onClick={option.action}
                                             >
                                                 {option.text}

@@ -23,8 +23,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class PlayingFieldServiceImpl implements PlayingFieldService {
@@ -159,13 +162,35 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
 
     @Override
     public void saveMultipleFilesToEntity(Long id, MultipartFile[] multipartFiles, FileType fileType) throws Exception {
+        if (multipartFiles == null || multipartFiles.length == 0) {
+            return;
+        }
+
         PlayingField playingField = findPlayingFieldOrThrowException(id);
         Set<File> fieldFiles = playingField.getFiles();
 
-        for (MultipartFile multipartFile : multipartFiles) {
+        List<String> dbFilePaths = fieldFiles.stream()
+                .map(File::getFilePath).toList();
 
+        List<String> dtoFilePaths = Arrays.stream(multipartFiles).map(MultipartFile::getOriginalFilename).toList();
+
+        List<File> elementsToRemove = fieldFiles.stream()
+                .filter(file -> !dtoFilePaths.contains(file.getFilePath())).toList();
+
+        List<MultipartFile> filesToAdd = Arrays.stream(multipartFiles)
+                .filter(newFile -> (dtoFilePaths.stream()
+                        .filter(file -> !dbFilePaths.contains(file)).toList())
+                        .contains(newFile.getOriginalFilename()))
+                .toList();
+
+        for (MultipartFile multipartFile : filesToAdd) {
             File file = fileService.save(multipartFile, fileType);
             fieldFiles.add(file);
+        }
+
+        for (File file : elementsToRemove) {
+            file.setDeletedOn(LocalDateTime.now());
+            fileService.save(file);
         }
 
         playingField.setFiles(fieldFiles);
@@ -175,5 +200,10 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
     @Override
     public Set<File> getFileByEntityId(Long id) {
         return null;
+    }
+
+    @Override
+    public File getFileByPath(String filePath) {
+        return fileService.findByFilePath(filePath);
     }
 }

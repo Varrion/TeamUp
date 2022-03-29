@@ -152,4 +152,9 @@ public class UserServiceImpl implements UserService {
         User user = (User) loadUserByUsername(id);
         return user.getFiles();
     }
+
+    @Override
+    public File getFileByPath(String filePath) {
+        return fileService.findByFilePath(filePath);
+    }
 }

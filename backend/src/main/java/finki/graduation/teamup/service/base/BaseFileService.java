@@ -12,4 +12,6 @@ public interface BaseFileService<T> {
     void saveMultipleFilesToEntity(T id, MultipartFile[] multipartFiles, FileType fileType) throws Exception;
 
     Set<File> getFileByEntityId(T id);
+
+    File getFileByPath(String filePath);
 }

@@ -218,3 +218,21 @@
     width: 50%;
     background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(9, 84, 132), rgba(0, 0, 0, 0));
 }
+
+.MuiListItemText-root {
+    width: 130px;
+}
+
+.MuiListItem-container {
+    width: 100%;
+}
+
+.MuiListItemSecondaryAction-root {
+    right: 5px !important;
+}
+
+.interval-list-item {
+    width: 285px;
+}
+
+

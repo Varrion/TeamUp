@@ -248,4 +248,9 @@ public class TeamServiceImpl implements TeamService {
     public Set<File> getFileByEntityId(Long id) {
         return null;
     }
+
+    @Override
+    public File getFileByPath(String filePath) {
+        return fileService.findByFilePath(filePath);
+    }
 }

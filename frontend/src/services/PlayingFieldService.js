@@ -43,15 +43,6 @@ const DeleteTerrain = (terrainId) => {
     return axios.delete(`${terrainRoute}/${terrainId}`);
 }
 
-const AddPlayingInterval = (terrainId, playingInterval) => {
-    return axios.post(`${terrainRoute}/${terrainId}/playing-intervals`, playingInterval)
-}
-
-
-const GetAllPlayingIntervalsForTerrain = (terrainId) => {
-    return axios.get(`${terrainRoute}/${terrainId}/playing-intervals`)
-}
-
 export {
     terrainRoute,
     Sport,
@@ -61,7 +52,5 @@ export {
     GetTerrain,
     AddTerrain,
     EditTerrain,
-    DeleteTerrain,
-    AddPlayingInterval,
-    GetAllPlayingIntervalsForTerrain
+    DeleteTerrain
 }

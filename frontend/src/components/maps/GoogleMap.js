@@ -30,7 +30,8 @@ const mapOptions = (maps) => {
         },
 
         zoomControl: true,
-        clickableIcons: false
+        clickableIcons: false,
+        scrollwheel: false,
     };
 }
 

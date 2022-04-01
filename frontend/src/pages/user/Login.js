@@ -44,10 +44,13 @@ const Login = () => {
 
         LoginUser(user)
             .then((res) => {
-                let authData = BasicAuth(res.data.username, res.data.password);
-                sessionStorage.setItem('authData', authData);
+                let authData = {
+                    userCredential: BasicAuth(res.data.username, res.data.password),
+                    userRole: res.data.role
+                }
+                sessionStorage.setItem('authData', JSON.stringify(authData));
                 changeMainColorByUserGender(res.data.gender);
-                login(res.data.username);
+                login(res.data.username, res.data.role);
             })
     }
 

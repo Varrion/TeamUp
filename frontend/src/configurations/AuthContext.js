@@ -5,18 +5,20 @@ const AuthContext = createContext(null);
 
 const AuthProvider = props => {
     const [loggedUser, setLoggedUser] = useState(null);
+    const [loggedUserRole, setLoggedUserRole] = useState(null);
 
     useEffect(() => {
-        let credentials = sessionStorage.getItem("authData");
-        if (credentials) {
-            let username = atob(credentials.split(" ")[1]).split(":")[0].trim();
-
-            login(username);
+        let authData = JSON.parse(sessionStorage.getItem("authData"));
+        if (authData) {
+            let username = atob(authData.userCredential.split(" ")[1]).split(":")[0].trim();
+            let role = authData.userRole;
+            login(username, role);
         }
     }, [])
 
-    const login = (username) => {
+    const login = (username, role) => {
         setLoggedUser(username);
+        setLoggedUserRole(role);
     }
 
     const logout = () => {
@@ -24,7 +26,10 @@ const AuthProvider = props => {
         navigate("/").then(() => {
             alert("You have been logged out");
         });
+
         setLoggedUser(null);
+        setLoggedUserRole(null);
+
     }
 
     const isAuthorized = (username) => {
@@ -35,6 +40,7 @@ const AuthProvider = props => {
         <AuthContext.Provider
             value={{
                 loggedUser: loggedUser,
+                loggedUserRole: loggedUserRole,
                 login: login,
                 logout: logout,
                 isAuthorized: isAuthorized

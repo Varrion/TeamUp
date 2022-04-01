@@ -3,7 +3,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import React, {useEffect, useRef, useState} from "react";
 import useStyles from "../../../components/MaterialStyles";
 import {
-    AddTerrain,
+    AddLocationTerrain, AddPublicTerrain,
     EditTerrain,
     FieldStatus,
     FieldType,
@@ -25,12 +25,12 @@ import {Delete} from "@material-ui/icons";
 import CreateUpdatePlayingIntervalForm from "../intervals/CreateUpdatePlayingIntervalForm";
 import convertUrlToImageData from "../../../services/convertUrlToImageData";
 
-const CreateEditTerrainModal = ({field, locationId, onIntervalUpdate, ...props}) => {
+const CreateEditTerrainModal = ({field, locationId = null, onIntervalUpdate, ...props}) => {
     const classes = useStyles();
     const [terrain, setTerrain] = useState({
         name: field?.name ?? "",
         description: field?.description ?? "",
-        fieldType: FieldType.Private,
+        fieldType: locationId ? FieldType.Private.toString() : FieldType.Public.toString(),
         fieldFor: field?.fieldFor ?? ""
     });
     const [terrainId, setTerrainId] = useState(field?.id ?? null);
@@ -99,11 +99,16 @@ const CreateEditTerrainModal = ({field, locationId, onIntervalUpdate, ...props})
 
         field ? EditTerrain(terrain, field.id)
                 .then(() => horizontalStepperHandleNext.current())
-            : AddTerrain(terrain, locationId)
-                .then((res) => {
-                    setTerrainId(res.data);
-                    horizontalStepperHandleNext.current()
-                })
+            : locationId ? AddLocationTerrain(terrain, locationId)
+                    .then((res) => {
+                        setTerrainId(res.data);
+                        horizontalStepperHandleNext.current()
+                    })
+                : AddPublicTerrain(terrain)
+                    .then(res => {
+                        setTerrainId(res.data);
+                        horizontalStepperHandleNext.current()
+                    })
 
     }
 
@@ -125,7 +130,7 @@ const CreateEditTerrainModal = ({field, locationId, onIntervalUpdate, ...props})
 
     const handlePlayingIntervalsSubmit = event => {
         event.preventDefault();
-        onIntervalUpdate();
+        onIntervalUpdate && onIntervalUpdate();
         props.onClose();
     }
 
@@ -156,7 +161,7 @@ const CreateEditTerrainModal = ({field, locationId, onIntervalUpdate, ...props})
         >
             <DialogTitle disableTypography={true} id={"choose-role-title"} className={"text-center"}>
                 <Typography variant={"h4"}
-                            className={"font-weight-bolder"}> {field ? "Edit" : "Add"} Terrain </Typography>
+                            className={"font-weight-bolder"}> {field ? "Edit" : "Add"} {locationId ? FieldType.Private : FieldType.Public} Terrain </Typography>
             </DialogTitle>
             <IconButton aria-label="close" className={classes.closeButton} onClick={() => props.onClose()}>
                 <CloseIcon/>

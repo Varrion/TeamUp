@@ -51,6 +51,11 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
     }
 
     @Override
+    public List<PlayingFieldProjection> getAll(FieldType fieldType) {
+        return playingFieldRepository.getAllPlayingFields(fieldType);
+    }
+
+    @Override
     public PlayingFieldProjection getById(Long id) {
         return playingFieldRepository.getById(id);
     }
@@ -65,17 +70,17 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
 
     @Override
     public Long save(PlayingFieldDto entityDto, Long locationId) {
-        Location location = locationService.findLocationOrThrowException(locationId);
         PlayingField playingField = new PlayingField();
 
-        Sport sport = Sport.valueOf(entityDto.getFieldFor());
-        FieldType fieldType = FieldType.valueOf(entityDto.getFieldType());
+        if (locationId != null) {
+            Location location = locationService.findLocationOrThrowException(locationId);
+            playingField.setLocation(location);
+        }
 
-        playingField.setFieldFor(sport);
-        playingField.setFieldType(fieldType);
+        playingField.setFieldFor(entityDto.getFieldFor());
+        playingField.setFieldType(entityDto.getFieldType());
         playingField.setName(entityDto.getName());
         playingField.setDescription(entityDto.getDescription());
-        playingField.setLocation(location);
 
         playingFieldRepository.save(playingField);
         return playingField.getId();

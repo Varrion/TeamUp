@@ -162,7 +162,15 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
 
     @Override
     public String saveFileToEntity(Long id, MultipartFile multipartFile, FileType fileType) throws Exception {
-        return "";
+        PlayingField playingField = findPlayingFieldOrThrowException(id);
+
+        File file = fileService.save(multipartFile, fileType);
+        Set<File> locationFiles = playingField.getFiles();
+        locationFiles.add(file);
+        playingField.setFiles(locationFiles);
+        playingFieldRepository.save(playingField);
+
+        return file.getFilePath();
     }
 
     @Override

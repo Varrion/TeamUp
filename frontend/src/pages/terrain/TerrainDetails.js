@@ -74,8 +74,6 @@ const TerrainDetails = (props) => {
     }, [terrain, hasIntervalUpdate])
 
 
-
-
     const onIntervalUpdate = (interval) => {
         setSelectedInterval(interval);
         setIsModalUpdate(true);
@@ -113,6 +111,9 @@ const TerrainDetails = (props) => {
                          src={require(`../../assets/images/sport/${terrain.fieldFor}.jpg`)} alt={terrain.fieldFor}/>
                 </Tooltip>
             </div>
+            <Typography variant={"h4"} className={"m-5 bold font-weight-bold text-uppercase"} align={"center"}>
+                {terrain.fieldType} Terrain
+            </Typography>
             <Grid container justify={"space-between"} className={"mt-4"}>
                 <Grid item md={4} sm={12} className={"pr-4"}>
                     <Card>
@@ -174,7 +175,11 @@ const TerrainDetails = (props) => {
             {openPlayingIntervalModal && <CreateEditPlayingIntervalModal terrainId={terrain.id} isEdit={isModalUpdate}
                                                                          playingInterval={selectedInterval}
                                                                          open={openPlayingIntervalModal}
-                                                                         onClose={() => {setOpenPlayingIntervalModal(false); setHasIntervalUpdate(true)} }/>}
+                                                                         onClose={() => {
+                                                                             setSelectedInterval(null);
+                                                                             setOpenPlayingIntervalModal(false);
+                                                                             setHasIntervalUpdate(true)
+                                                                         }}/>}
         </>
     )
 }

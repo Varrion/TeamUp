@@ -10,12 +10,12 @@ import axios from "axios";
 import {ToastProvider} from "react-toast-notifications";
 import CustomThemeProvider from "./configurations/MuiThemeContext";
 
-const credentials = sessionStorage.getItem("authData");
+const credentials = JSON.parse(sessionStorage.getItem("authData"));
 
 axios.defaults.baseURL = 'http://localhost:8080/api';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 if (credentials) {
-    axios.defaults.headers.common['Authorization'] = credentials;
+    axios.defaults.headers.common['Authorization'] = credentials.userCredential;
 }
 
 ReactDOM.render(

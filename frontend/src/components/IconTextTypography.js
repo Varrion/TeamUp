@@ -6,8 +6,8 @@ const IconTextTypography = (props) => {
     const unknown = "Unknown";
 
     return (
-        <Typography className={props.class} component={"div"} color={"textSecondary"}>
-            <Row>
+        <Typography component={"div"} color={"textSecondary"}>
+            <Row className={props.class}>
                 {props.icon}
                 <Col>
                     <Box>

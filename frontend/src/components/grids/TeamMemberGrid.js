@@ -1,6 +1,7 @@
 import {Grid, Typography} from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import MissingMember from "../../assets/images/MissingPlayer.png";
+import {GetLastFilePath} from "../../services/FileService";
 
 const TeamMemberGrid = ({team}) => {
     const calculateMissingMembers = () => {
@@ -25,7 +26,8 @@ const TeamMemberGrid = ({team}) => {
     return (
         <Grid container justify={"flex-start"}>
             {team?.teamMembers?.map(teamMember => <Grid key={teamMember?.user.id} item lg={3}>
-                <Avatar className={"profile-avatar"} src={teamMember.user.files?.filter(file => file.fileType == "Profile")[0].filePath} />
+                <Avatar className={"profile-avatar"}
+                        src={GetLastFilePath(teamMember?.user?.files, MissingMember)}/>
                 <span>{teamMember.user?.name}</span>
             </Grid>)}
             {missingMembersNumber != null && missingMembersNumber.length > 0 &&

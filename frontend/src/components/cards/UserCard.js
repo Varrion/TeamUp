@@ -1,13 +1,15 @@
 import {Box, Card, CardContent, Divider, Typography} from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import {navigate} from "@reach/router";
-import { FileType } from '../../services/FileService'
+import {FileType, GetLastFilePath} from '../../services/FileService'
 
 const UserCard = (props) => {
     return (
         <Card onClick={() => navigate(`/users/${props.user.username}`)}>
             <CardContent>
-                <Avatar className={"profile-avatar"} src={props.user.files && props.user.files.length > 0 ? props.user.files.filter(file => file.fileType === FileType.Profile).splice(-1)[0].filePath : "https://i.pravatar.cc/300" } alt={'https://i.pravatar.cc/300'}/>
+                <Avatar className={"profile-avatar"}
+                        src={GetLastFilePath(props.user.files, "https://i.pravatar.cc/300")}
+                        alt={FileType.Profile}/>
                 <Typography variant={"h5"}
                             className={"font-weight-bold"}>{props.user.name.toUpperCase() + " " + props.user.surname.toUpperCase()}</Typography>
                 <span>Poland</span>

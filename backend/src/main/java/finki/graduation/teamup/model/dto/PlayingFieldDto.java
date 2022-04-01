@@ -1,5 +1,7 @@
 package finki.graduation.teamup.model.dto;
 
+import finki.graduation.teamup.model.enums.FieldType;
+import finki.graduation.teamup.model.enums.Sport;
 import lombok.Data;
 
 @Data
@@ -8,7 +10,7 @@ public class PlayingFieldDto {
 
     String description;
 
-    String fieldType;
+    FieldType fieldType;
 
-    String fieldFor;
+    Sport fieldFor;
 }

@@ -41,11 +41,8 @@ public class PlayingField extends BaseDescription {
     Set<File> files;
 
     public void updateField(PlayingFieldDto fieldDto) {
-        Sport sport = Sport.valueOf(fieldDto.getFieldFor());
-        FieldType fieldType = FieldType.valueOf(fieldDto.getFieldType());
-
-        setFieldFor(sport);
-        setFieldType(fieldType);
+        setFieldFor(fieldDto.getFieldFor());
+        setFieldType(fieldDto.getFieldType());
         setName(fieldDto.getName());
         setDescription(fieldDto.getDescription());
     }

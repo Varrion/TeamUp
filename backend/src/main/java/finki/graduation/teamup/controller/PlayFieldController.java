@@ -2,6 +2,7 @@ package finki.graduation.teamup.controller;
 
 import finki.graduation.teamup.model.dto.PlayTimeDto;
 import finki.graduation.teamup.model.dto.PlayingFieldDto;
+import finki.graduation.teamup.model.enums.FieldType;
 import finki.graduation.teamup.model.projection.PlayTimeProjection;
 import finki.graduation.teamup.model.projection.PlayingFieldProjection;
 import finki.graduation.teamup.service.PlayingFieldService;
@@ -20,6 +21,16 @@ public class PlayFieldController extends FileController<Long> {
         this.playingFieldService = playingFieldService;
     }
 
+    @PostMapping
+    public Long addPublicPlayingField(@RequestBody PlayingFieldDto playingFieldDto) {
+        return playingFieldService.save(playingFieldDto, null);
+    }
+
+    @GetMapping
+    public List<PlayingFieldProjection> getAllPlayingFields(@RequestParam(name = "type", required = false) FieldType fieldType) {
+        return playingFieldService.getAll(fieldType);
+    }
+
     @GetMapping("location/{id}")
     public List<PlayingFieldProjection> getAllLocationPlayingFields(@PathVariable Long id) {
         return playingFieldService.getAll(id);
@@ -31,7 +42,7 @@ public class PlayFieldController extends FileController<Long> {
     }
 
     @PostMapping("location/{id}")
-    public Long addPlayingField(@RequestBody PlayingFieldDto playingFieldDto, @PathVariable Long id) {
+    public Long addPlayingField(@RequestBody PlayingFieldDto playingFieldDto, @PathVariable(required = false) Long id) {
         return playingFieldService.save(playingFieldDto, id);
     }
 
@@ -57,12 +68,12 @@ public class PlayFieldController extends FileController<Long> {
     }
 
     @PutMapping("{fieldId}/playing-intervals/{intervalId}")
-    public void updatePlayTime(@RequestBody PlayTimeDto playTimeDto, @PathVariable Long fieldId, @PathVariable Long intervalId) {
+    public void updatePlayTime(@RequestBody PlayTimeDto playTimeDto, @PathVariable(required = false) Long fieldId, @PathVariable Long intervalId) {
         playingFieldService.updatePlayTimeIntervalStatus(playTimeDto, intervalId);
     }
 
     @DeleteMapping("{fieldId}/playing-intervals/{intervalId}")
-    public void deletePlayingIntervalForGivenField(@PathVariable Long fieldId, @PathVariable Long intervalId) {
+    public void deletePlayingIntervalForGivenField(@PathVariable(required = false) Long fieldId, @PathVariable Long intervalId) {
         playingFieldService.deleteFieldPlayTime(intervalId);
     }
 }

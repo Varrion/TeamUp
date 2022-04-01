@@ -38,6 +38,7 @@ const Header = props => {
             <Nav className="mr-auto">
                 <Link to={"/users"} className={"nav-link"}>Users</Link>
                 <Link to={"/teams"} className={"nav-link"}>Teams</Link>
+                <Link to={"/locations"} className={"nav-link"}>Our Locations</Link>
             </Nav>
             <Nav>
                 {!loggedUser ?
@@ -50,7 +51,7 @@ const Header = props => {
                         <Link to={`/users/${loggedUser}`} className={"nav-link h6"}>
                             Welcome {loggedUser}
                         </Link>
-                        <Button onClick={logout}>logout</Button>
+                        <Button className={"nav-link h6"} onClick={logout}>logout</Button>
                     </>
                 }
             </Nav>

@@ -51,7 +51,7 @@ public class UserController extends FileController<String> {
 
     @GetMapping("{username}")
     public UserProjection getUserDetails(@PathVariable String username, final Principal principal) {
-        System.out.println("getUserDetauls -> " + principal.getName());
+//        System.out.println("getUserDetauls -> " + principal.getName());
 
         return userService.getById(username);
     }

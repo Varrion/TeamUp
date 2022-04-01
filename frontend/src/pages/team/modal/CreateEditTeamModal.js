@@ -82,7 +82,7 @@ const CreateEditTeamModal = (props) => {
         <Dialog
             disableBackdropClick
             fullWidth={true}
-            maxWidth={"lg"}
+            maxWidth={"md"}
             {...props}
             aria-labelledby="choose-role-title"
         >
@@ -125,7 +125,7 @@ const CreateEditTeamModal = (props) => {
                                 id="info"
                                 label="Team Info"
                                 multiline
-                                rows={5}
+                                rows={8}
                                 fullWidth
                                 variant="outlined"
                                 value={team.description}

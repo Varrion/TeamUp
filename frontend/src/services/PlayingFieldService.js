@@ -23,6 +23,12 @@ const FieldStatus = {
     Closed: 'Closed'
 }
 
+const GetAllTerrains = (fieldType) => {
+    return axios.get(`${terrainRoute}`, {
+        params: {"type": fieldType}
+    });
+}
+
 const GetAllTerrainsForLocation = (locationId) => {
     return axios.get(`${terrainRoute}/location/${locationId}`);
 }
@@ -31,8 +37,12 @@ const GetTerrain = (terrainId) => {
     return axios.get(`${terrainRoute}/${terrainId}`);
 }
 
-const AddTerrain = (terrainForm, locationId) => {
+const AddLocationTerrain = (terrainForm, locationId) => {
     return axios.post(`${terrainRoute}/location/${locationId}`, terrainForm);
+}
+
+const AddPublicTerrain = (terrainForm) => {
+    return axios.post(`${terrainRoute}`, terrainForm);
 }
 
 const EditTerrain = (terrainForm, terrainId) => {
@@ -48,9 +58,11 @@ export {
     Sport,
     FieldType,
     FieldStatus,
+    GetAllTerrains,
     GetAllTerrainsForLocation,
     GetTerrain,
-    AddTerrain,
+    AddLocationTerrain,
+    AddPublicTerrain,
     EditTerrain,
     DeleteTerrain
 }

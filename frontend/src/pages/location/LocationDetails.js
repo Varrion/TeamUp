@@ -2,12 +2,6 @@ import React, {useEffect, useState} from "react";
 import {DeleteLocation, GetOneLocation} from "../../services/LocationService";
 import {Grid, Grow, IconButton, Tooltip, Typography} from "@material-ui/core";
 import GoogleMap from "../../components/maps/GoogleMap";
-import IconTextTypography from "../../components/IconTextTypography";
-import HomeIcon from "@material-ui/icons/Home";
-import LocationCityIcon from "@material-ui/icons/LocationCity";
-import EmailIcon from "@material-ui/icons/Email";
-import CallIcon from "@material-ui/icons/Call";
-import CakeIcon from "@material-ui/icons/Cake";
 import UploadShowProfilePicture from "../../components/pictures/UploadShowProfilePicture";
 import {useAuthContext} from "../../configurations/AuthContext";
 import CreateEditLocationModal from "./modal/CreateEditLocationModal";
@@ -17,6 +11,7 @@ import TerrainCard from "../../components/cards/TerrainCard";
 import {AddCircle, Delete, EditLocation} from "@material-ui/icons";
 import SplitButton from "../../components/buttons/SplitButton";
 import {FileType, GetLastFilePath} from "../../services/FileService";
+import LocationInfoGrid from "../../components/grids/LocationInfoGrid";
 
 const LocationDetails = ({id}) => {
     const {isAuthorized} = useAuthContext();
@@ -80,29 +75,8 @@ const LocationDetails = ({id}) => {
                     </Typography>
                 </Grid>
             </Grid>
-            <Grid className={"p-4"} container alignItems={"baseline"} justify={"space-between"}>
-                <IconTextTypography text={location?.address}
-                                    caption={"Address"}
-                                    icon={<HomeIcon/>}/>
-                <IconTextTypography text={location?.city}
-                                    caption={"City"}
-                                    class={"mt-3"}
-                                    icon={<LocationCityIcon/>}/>
-                <IconTextTypography text={location?.email}
-                                    caption={"Email"}
-                                    class={"mt-3"}
-                                    icon={<EmailIcon/>}/>
-                <IconTextTypography text={location?.phoneNumber}
-                                    caption={"Phone"}
-                                    class={"mt-3"}
-                                    icon={<CallIcon/>}/>
-                <IconTextTypography
-                    text={location?.dateOfBirth?.split('T')[0].split("-").reverse().join("-")}
-                    caption={"Since"}
-                    class={"ml-3"}
-                    icon={<CakeIcon/>}/>
-            </Grid>
 
+            <LocationInfoGrid location={location}/>
             <GoogleMap height={"600px"} latitude={location.latitude} longitude={location.longitude}
                        hideLongitudeLatitude={true}/>
 
@@ -110,17 +84,18 @@ const LocationDetails = ({id}) => {
             <hr className={"horizontal-fancy"}/>
 
             <Grid container justify={"flex-end"}>
-                <Tooltip title={"Add"} placement={"left"}>
-                    <IconButton color="inherit" onClick={() => setOpenUpdateTerrainModal(true)}><AddCircle
-                        fontSize="large"/></IconButton>
-                </Tooltip>
+                {isAuthorized(location.owner?.username.trim()) &&
+                    <Tooltip title={"Add"} placement={"left"}>
+                        <IconButton color="inherit" onClick={() => setOpenUpdateTerrainModal(true)}><AddCircle
+                            fontSize="large"/></IconButton>
+                    </Tooltip>}
             </Grid>
 
             <Grid container>
                 {terrains && terrains.map((terrain, index) => <Grow key={index}
-                                                           in={checked}
-                                                           style={{transformOrigin: '0 0 0'}}
-                                                           {...(checked ? {timeout: 5000} : {})}>
+                                                                    in={checked}
+                                                                    style={{transformOrigin: '0 0 0'}}
+                                                                    {...(checked ? {timeout: 5000} : {})}>
                     <Grid item lg={4} xs={6}>
                         <TerrainCard terrain={terrain}/>
                     </Grid>

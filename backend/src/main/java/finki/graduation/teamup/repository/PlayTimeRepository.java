@@ -16,7 +16,7 @@ public interface PlayTimeRepository extends JpaRepository<PlayTime, Long> {
     @Query("SELECT playTime " +
             "FROM PlayTime playTime " +
             "   INNER JOIN playTime.playingField field " +
-            "   INNER JOIN field.location location " +
+            "   LEFT JOIN field.location location " +
             "WHERE playTime.deletedOn IS NULL " +
             "      AND field.id = :fieldId " +
             "      AND field.deletedOn IS NULL " +

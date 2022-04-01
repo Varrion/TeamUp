@@ -22,8 +22,13 @@ public class TeamController extends FileController<Long> {
     }
 
     @GetMapping
-    public List<TeamProjection> getAllTeams(@RequestParam(value = "status", required = false) TeamStatus teamStatus) {
-        return teamService.getAll(teamStatus);
+    public List<TeamProjection> getAllTeams(@RequestParam(value = "status", required = false) TeamStatus teamStatus, @RequestParam(value = "search", required = false) String search) {
+        List<TeamProjection> teams = teamService.getAll(teamStatus);
+        if (!search.isEmpty()) {
+            teams.stream().filter(s -> s.getName().startsWith(search)).toList();
+        }
+
+        return teams;
     }
 
     @GetMapping("members/{username}")

@@ -168,7 +168,7 @@ const TerrainDetails = (props) => {
                 </Grid>
             </Grid>
             {openUpdateModal && <CreateEditTerrainModal field={terrain}
-                                                        locationId={terrain?.location.id}
+                                                        locationId={terrain?.location?.id}
                                                         onIntervalUpdate={() => setHasIntervalUpdate(true)}
                                                         open={openUpdateModal}
                                                         onClose={() => setOpenUpdateModal(false)}/>}

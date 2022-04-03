@@ -1,11 +1,13 @@
 import {createContext, useContext, useEffect, useState} from 'react'
 import {navigate} from "@reach/router";
+import {useToasts} from "react-toast-notifications";
 
 const AuthContext = createContext(null);
 
 const AuthProvider = props => {
     const [loggedUser, setLoggedUser] = useState(null);
     const [loggedUserRole, setLoggedUserRole] = useState(null);
+    const {addToast} = useToasts();
 
     useEffect(() => {
         let authData = JSON.parse(sessionStorage.getItem("authData"));
@@ -24,7 +26,7 @@ const AuthProvider = props => {
     const logout = () => {
         sessionStorage.removeItem("authData");
         navigate("/").then(() => {
-            alert("You have been logged out");
+            addToast("You have been logged out", {appearance: 'success'});
         });
 
         setLoggedUser(null);

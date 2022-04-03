@@ -16,9 +16,9 @@ const TeamMemberStatus = {
     Accepted: 'Accepted'
 }
 
-const GetAllTeams = (status = null) => {
+const GetAllTeams = (status = null, search = "") => {
     return axios.get(teamsRoute, {
-        params: {status: status}
+        params: {status: status, search: search}
     });
 }
 

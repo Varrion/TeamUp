@@ -5,11 +5,11 @@ import Register from "../../pages/user/Register";
 import Login from "../../pages/user/Login";
 import Profile from "../../pages/user/Profile";
 import UsersPage from "../../pages/user/UsersPage";
-import TeamList from "../../pages/team/TeamList";
 import TeamDetails from "../../pages/team/TeamDetails";
 import LocationDetails from "../../pages/location/LocationDetails";
 import LocationList from "../../pages/location/LocationList";
 import TerrainDetails from "../../pages/terrain/TerrainDetails";
+import TeamsPage from "../../pages/team/TeamsPage";
 
 const Routes = () => {
     return <Router>
@@ -24,7 +24,7 @@ const Routes = () => {
             <Profile path={":username"}/>
         </Route>
         <Route container={true} path={"/teams"}>
-            <TeamList path={"/"}/>
+            <TeamsPage path={"/"}/>
             <TeamDetails path={":id"}/>
         </Route>
         <Route container={true} path={"/locations"}>

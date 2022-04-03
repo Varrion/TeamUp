@@ -20,9 +20,11 @@ import Button from "@material-ui/core/Button";
 import {KeyboardDatePicker, MuiPickersUtilsProvider,} from '@material-ui/pickers';
 import MomentUtils from '@date-io/moment';
 import {useToggleTheme} from "../../../configurations/MuiThemeContext";
+import {useToasts} from "react-toast-notifications";
 
 const UserEditModal = (props) => {
     const classes = useStyles();
+    const { addToast } = useToasts();
 
     const {changeMainColorByUserGender} = useToggleTheme();
 
@@ -55,6 +57,7 @@ const UserEditModal = (props) => {
         EditUser(user.username, user)
             .then(() => {
                 changeMainColorByUserGender(user.gender);
+                addToast('Successfully updated user profile', { appearance: 'success' });
                 return props.onClose()
             })
     }

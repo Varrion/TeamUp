@@ -22,7 +22,7 @@ const Register = (props) => {
         surname: "",
         email: "",
         gender: "",
-        roleType: null
+        roleType: props.location.state.roleType
     });
 
     const chooseRole = role => {
@@ -42,7 +42,7 @@ const Register = (props) => {
 
 
     return (loggedUser ? <Redirect to={"/"} noThrow/> :
-            showRoleModal && !user.roleType ?
+            showRoleModal && (user.roleType === null || user.roleType === undefined) ?
                 <ChooseRole open={showRoleModal} onClose={() => setShowRoleModal(false)} roleset={chooseRole}/>
                 : <Container component="main" maxWidth="xs">
                     <Paper elevation={0} className={"d-flex flex-column align-items-center pt-5"}>

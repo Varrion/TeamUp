@@ -5,9 +5,11 @@ import CreateUpdatePlayingIntervalForm from "../intervals/CreateUpdatePlayingInt
 import {AddPlayingInterval, UpdatePlayingInterval} from "../../../services/PlayingIntervalService";
 import useStyles from "../../../components/MaterialStyles";
 import {FieldStatus} from "../../../services/PlayingFieldService";
+import {useToasts} from "react-toast-notifications";
 
 const CreateEditPlayingIntervalModal = ({terrainId, playingInterval, isEdit, ...props}) => {
     const classes = useStyles();
+    const {addToast} = useToasts();
 
     const [interval, setInterval] = useState({
         gameStartTime: playingInterval?.gameStartTime ?? new Date(),
@@ -19,9 +21,15 @@ const CreateEditPlayingIntervalModal = ({terrainId, playingInterval, isEdit, ...
         event.preventDefault();
 
         isEdit ? UpdatePlayingInterval(terrainId, playingInterval.id, interval)
-                .then(() => props.onClose())
+                .then(() => {
+                    props.onClose();
+                    addToast('Successfully updated playing interval', {appearance: 'success'});
+                })
             : AddPlayingInterval(terrainId, interval)
-                .then(() => props.onClose())
+                .then(() => {
+                    props.onClose();
+                    addToast('Successfully added playing interval', {appearance: 'success'});
+                })
     }
 
     const handleChange = name => event => {
@@ -48,7 +56,8 @@ const CreateEditPlayingIntervalModal = ({terrainId, playingInterval, isEdit, ...
                 <CloseIcon/>
             </IconButton>
             <DialogContent className={"mb-3"}>
-                <CreateUpdatePlayingIntervalForm ButtonText={`${isEdit ? "Edit" : "Add"} interval`} ButtonType={"submit"}
+                <CreateUpdatePlayingIntervalForm ButtonText={`${isEdit ? "Edit" : "Add"} interval`}
+                                                 ButtonType={"submit"}
                                                  formSubmit={handleSubmit}
                                                  handlePlayingIntervalChange={handleChange}
                                                  playingInterval={interval}/>

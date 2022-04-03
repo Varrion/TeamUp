@@ -12,6 +12,7 @@ import {Link, Redirect} from "@reach/router";
 import {BasicAuth, LoginUser} from "../../services/UserService";
 import {useAuthContext} from "../../configurations/AuthContext";
 import {useToggleTheme} from "../../configurations/MuiThemeContext";
+import {useToasts} from "react-toast-notifications";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -30,6 +31,7 @@ const Login = () => {
     const {loggedUser, login} = useAuthContext();
     const {changeMainColorByUserGender} = useToggleTheme();
     const classes = useStyles();
+    const {addToast} = useToasts();
     const [user, setUser] = useState({
         username: "",
         password: ""
@@ -51,6 +53,8 @@ const Login = () => {
                 sessionStorage.setItem('authData', JSON.stringify(authData));
                 changeMainColorByUserGender(res.data.gender);
                 login(res.data.username, res.data.role);
+                addToast("Successfuly logged in", { appearance: 'success' })
+
             })
     }
 

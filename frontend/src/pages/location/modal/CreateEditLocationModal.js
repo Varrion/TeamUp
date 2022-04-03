@@ -11,11 +11,13 @@ import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers"
 import MomentUtils from "@date-io/moment";
 import UploadShowProfilePicture from "../../../components/pictures/UploadShowProfilePicture";
 import {FileType, GetLastFilePath, UploadFile} from "../../../services/FileService";
+import {useToasts} from "react-toast-notifications";
 
 
 const CreateEditLocationModal = (props) => {
     const classes = useStyles();
     const {loggedUser} = useAuthContext();
+    const {addToast} = useToasts();
     const [createdLocationId, setCreatedLocationId] = useState(props.location?.id ?? null);
     const [location, setLocation] = useState({
         name: props.location?.name ?? "",
@@ -54,6 +56,7 @@ const CreateEditLocationModal = (props) => {
     const handleChange = name => event => {
         if (name === "dateOfBirth") {
             setLocation({...location, dateOfBirth: event.toDate()})
+
             return;
         }
 
@@ -68,10 +71,13 @@ const CreateEditLocationModal = (props) => {
                 .then(res => {
                     setCreatedLocationId(res.data);
                     horizontalStepperHandleNext.current();
+                    addToast('Successfully added location', {appearance: 'success'});
                 })
                 .catch(err => console.log(err))
             : EditLocation(createdLocationId, location)
-                .then(() => horizontalStepperHandleNext.current())
+                .then(() => {
+                    horizontalStepperHandleNext.current();
+                })
                 .catch(err => console.log(err))
     }
 
@@ -79,13 +85,16 @@ const CreateEditLocationModal = (props) => {
         event.preventDefault();
 
         EditLocation(createdLocationId, location)
-            .then(() => horizontalStepperHandleNext.current())
+            .then(() => {
+                horizontalStepperHandleNext.current();
+            })
             .catch(err => console.log(err))
     }
 
     const handleThirdStepSubmit = event => {
         event.preventDefault();
         props.onClose();
+        addToast('Successfully applied', {appearance: 'success'});
     }
 
     const onFileUpload = (event) => {
@@ -93,7 +102,8 @@ const CreateEditLocationModal = (props) => {
         formData.append("file", event.target.files[0]);
         UploadFile(locationRoute, createdLocationId, formData, FileType.Profile)
             .then((r) => {
-                setLocationImage(r.data)
+                setLocationImage(r.data);
+                addToast('Successfully uploaded file', {appearance: 'success'});
             })
     }
 
@@ -224,7 +234,8 @@ const CreateEditLocationModal = (props) => {
                     <CustomStep>
                         <form id={"location-logo"} onSubmit={handleThirdStepSubmit}
                               className={"d-flex justify-content-center"}>
-                            <UploadShowProfilePicture width={250} height={250} src={locationImage} alt={FileType.Profile}
+                            <UploadShowProfilePicture width={250} height={250} src={locationImage}
+                                                      alt={FileType.Profile}
                                                       onUpload={onFileUpload}/>
                         </form>
                     </CustomStep>

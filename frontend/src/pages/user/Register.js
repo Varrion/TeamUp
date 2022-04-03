@@ -10,10 +10,12 @@ import {Link, navigate, Redirect} from "@reach/router";
 import {Gender, RegisterUser} from "../../services/UserService";
 import {useAuthContext} from "../../configurations/AuthContext";
 import useStyles from "../../components/MaterialStyles";
+import {useToasts} from "react-toast-notifications";
 
 const Register = (props) => {
     const {loggedUser} = useAuthContext();
     const classes = useStyles();
+    const {addToast}= useToasts();
     const [showRoleModal, setShowRoleModal] = useState(true);
     const [user, setUser] = useState({
         username: "",
@@ -37,7 +39,10 @@ const Register = (props) => {
         event.preventDefault();
 
         RegisterUser(user)
-            .then(() => navigate("/login"))
+            .then(() =>{
+                navigate("/login");
+                addToast("Successfuly registered", { appearance: 'success' })
+            } )
     }
 
 

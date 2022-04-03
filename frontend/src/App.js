@@ -25,6 +25,20 @@ const App = props => {
                     : <Footer show={false}/>
                 }
             </Match>
+
+            <Match path="/sportsman">
+                {(props) => props.match
+                    ? <Footer show={true}/>
+                    : <Footer show={false}/>
+                }
+            </Match>
+
+            <Match path="/locationowner">
+                {(props) => props.match
+                    ? <Footer show={true}/>
+                    : <Footer show={false}/>
+                }
+            </Match>
         </AuthProvider>
     );
 }

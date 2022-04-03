@@ -17,6 +17,7 @@ import {useAuthContext} from "../../../configurations/AuthContext";
 import {GetAllUsers, UserRole} from "../../../services/UserService";
 import StyledTextField from "../../../components/StyledTextField";
 import {CreateTeam, DeleteTeam, EditTeam} from "../../../services/TeamService";
+import {useToasts} from "react-toast-notifications";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -31,12 +32,14 @@ const MenuProps = {
 
 const CreateEditTeamModal = (props) => {
     const classes = useStyles();
+    const {addToast} = useToasts();
     const {loggedUser} = useAuthContext();
     const [players, setPlayers] = useState(null);
 
     useEffect(() => {
         GetAllUsers(UserRole.User)
             .then(response => setPlayers(response.data))
+
     }, [])
 
     const [team, setTeam] = useState({
@@ -63,17 +66,28 @@ const CreateEditTeamModal = (props) => {
 
     const handleDelete = () => {
         DeleteTeam(props.team.id)
-            .then(() => props.onClose(true));
+            .then(() => {
+                props.onClose(true);
+                addToast('Successfully deleted', {appearance: 'success'});
+            });
+
     }
 
     const handleSubmit = event => {
         event.preventDefault();
         if (props.team) {
             EditTeam(props.team.id, team)
-                .then(() => props.onClose())
+                .then(() => {
+                    props.onClose()
+                    addToast('Successfully updated team', {appearance: 'success'});
+                })
+
         } else {
             CreateTeam(team)
-                .then(() => props.onClose())
+                .then(() => {
+                    props.onClose();
+                    addToast('Successfully created team', {appearance: 'success'});
+                })
                 .catch(err => console.log(err))
         }
     }

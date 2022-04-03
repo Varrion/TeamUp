@@ -5,6 +5,7 @@ import "../styles/Home.css";
 import TeamUpLogo from "../assets/images/TeamUpLogo2Transparent.png";
 import AttributeCard from "../components/cards/AttributeCard";
 import RoleCard from "../components/cards/RoleCard";
+import {Link} from "@reach/router";
 
 const Home = () => {
     let attributes = ["Stamina", "Speed", "Strength", "Skills", "Spirit"];
@@ -37,24 +38,22 @@ const Home = () => {
                 <Typography variant={"h3"} className={"text-center"}>
                     Team Up
                 </Typography>
-                <Typography className={"pl-5 pr-5 pt-2 text-justify"} variant={"body1"}>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Etiam mattis eros quis diam finibus efficitur.
-                    Praesent vel purus et ante vulputate ultricies.
-                    Maecenas et molestie sapien, quis pellentesque ligula.
-                    Curabitur leo eros, scelerisque sit amet pretium id, accumsan id libero.
-                    Suspendisse a enim velit. Fusce luctus non tellus a vehicula. Ut scelerisque vitae quam placerat
-                    pulvinar.
-                    Fusce tincidunt diam dolor, in fermentum justo sollicitudin vel. Praesent quis elit in ex fringilla
-                    elementum a nec elit.
+                <Typography className={"pl-5 pr-5 pt-2 text-justify text-center"} variant={"body1"} >
+                    Grab your chance to be part of our community.
+                    Get to know people near you who love the same sports as you and have fun!
                 </Typography>
             </div>
             <Grid container>
                 <Grid item lg={6} xs={12}>
-                    <RoleCard isOwner={false} chooseRole={false}/>
+                    <Link to={"/sportsman"} className='me-4 text-reset'>
+                        <RoleCard isOwner={false} chooseRole={false}/>
+                    </Link>
+
                 </Grid>
                 <Grid item lg={6} xs={12}>
-                    <RoleCard isOwner={true} chooseRole={false}/>
+                    <Link to={"/locationowner"} className='me-4 text-reset'>
+                        <RoleCard isOwner={true} chooseRole={false}/>
+                    </Link>
                 </Grid>
             </Grid>
         </>

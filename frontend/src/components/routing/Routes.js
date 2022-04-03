@@ -5,10 +5,13 @@ import Register from "../../pages/user/Register";
 import Login from "../../pages/user/Login";
 import Profile from "../../pages/user/Profile";
 import UsersPage from "../../pages/user/UsersPage";
+import TeamList from "../../pages/team/TeamList";
 import TeamDetails from "../../pages/team/TeamDetails";
 import LocationDetails from "../../pages/location/LocationDetails";
 import LocationList from "../../pages/location/LocationList";
 import TerrainDetails from "../../pages/terrain/TerrainDetails";
+import SportsmanPage from "../../pages/SportsmanPage";
+import LocationOwnerPage from "../../pages/LocationOwnerPage";
 import TeamsPage from "../../pages/team/TeamsPage";
 
 const Routes = () => {
@@ -17,6 +20,8 @@ const Routes = () => {
             <Home path={"/"}/>
             <Register path={"/register"}/>
             <Login path={"/login"}/>
+            <SportsmanPage path={"/sportsman"}/>
+            <LocationOwnerPage path={"/locationowner"}/>
             <Redirect from={"*"} to={"/"} noThrow/>
         </Route>
         <Route container={true} path={"/users"}>

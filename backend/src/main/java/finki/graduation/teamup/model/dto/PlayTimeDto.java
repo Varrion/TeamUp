@@ -14,5 +14,5 @@ public class PlayTimeDto {
 
     LocalDateTime gameEndTime;
 
-    Optional<Long> teamId;
+    Long teamId;
 }

@@ -113,25 +113,24 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
                 startDate = startDate.plusHours(8);
                 continue;
             }
-            FieldStatus status = allPlayingIntervalsForGivenField
-                    .stream()
-                    .map(PlayTimeProjection::getGameStartTime)
-                    .toList()
-                    .contains(startDate) ? FieldStatus.Reserved : FieldStatus.Open;
-
             LocalDateTime finalStartDate = startDate;
+
+            Optional<PlayTimeProjection> playTimeInterval = allPlayingIntervalsForGivenField
+                    .stream()
+                    .filter(x -> x.getGameStartTime().equals(finalStartDate))
+                    .findFirst();
 
             PlayTimeDto playTimeDto = new PlayTimeDto();
             playTimeDto.setGameStartTime(startDate);
             playTimeDto.setGameEndTime(startDate.plusHours(1));
-            playTimeDto.setFieldStatus(status);
+            playTimeDto.setFieldStatus(FieldStatus.Open);
 
-            Optional<Long> teamId = allPlayingIntervalsForGivenField
-                    .stream()
-                    .filter(x -> x.getGameStartTime().equals(finalStartDate))
-                    .map(PlayTimeProjection::getTeamId)
-                    .toList().stream().findFirst();
-            playTimeDto.setTeamId(teamId);
+            if(playTimeInterval.isPresent()) {
+                if(playTimeInterval.get().getTeam().isPresent()) {
+                    playTimeDto.setTeamId(playTimeInterval.get().getTeam().get().getId());
+                }
+                playTimeDto.setFieldStatus(FieldStatus.valueOf(playTimeInterval.get().getFieldStatus()));
+            }
 
             response.add(playTimeDto);
 
@@ -154,8 +153,8 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
         PlayTime playTime = new PlayTime();
         playTime.setGameStartTime(playingFieldDto.getGameStartTime());
         playTime.setGameEndTime(playingFieldDto.getGameEndTime());
-        if (playingFieldDto.getTeamId().isPresent()) {
-            teamService.findById(playingFieldDto.getTeamId().get()).ifPresent(playTime::setTeam);
+        if (playingFieldDto.getTeamId() != null) {
+            teamService.findById(playingFieldDto.getTeamId()).ifPresent(playTime::setTeam);
         }
         playTime.setFieldStatus(playingFieldDto.getFieldStatus());
         playTime.setPlayingField(playingField);

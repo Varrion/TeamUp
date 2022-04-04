@@ -1,9 +1,7 @@
 package finki.graduation.teamup.service.impl;
 
-import finki.graduation.teamup.model.File;
-import finki.graduation.teamup.model.Location;
-import finki.graduation.teamup.model.PlayTime;
-import finki.graduation.teamup.model.PlayingField;
+import com.jayway.jsonpath.Option;
+import finki.graduation.teamup.model.*;
 import finki.graduation.teamup.model.dto.PlayTimeDto;
 import finki.graduation.teamup.model.dto.PlayingFieldDto;
 import finki.graduation.teamup.model.enums.FieldStatus;
@@ -14,19 +12,21 @@ import finki.graduation.teamup.model.projection.PlayTimeProjection;
 import finki.graduation.teamup.model.projection.PlayingFieldProjection;
 import finki.graduation.teamup.repository.PlayTimeRepository;
 import finki.graduation.teamup.repository.PlayingFieldRepository;
+import finki.graduation.teamup.repository.TeamRepository;
 import finki.graduation.teamup.service.FileService;
 import finki.graduation.teamup.service.LocationService;
 import finki.graduation.teamup.service.PlayingFieldService;
+import finki.graduation.teamup.service.TeamService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalTime;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,14 +35,19 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
     private final LocationService locationService;
     private final PlayTimeRepository playTimeRepository;
     private final FileService fileService;
+    private final TeamRepository teamService;
 
     public PlayingFieldServiceImpl(PlayingFieldRepository playingFieldRepository,
                                    LocationService locationService,
-                                   PlayTimeRepository playTimeRepository, FileService fileService) {
+                                   PlayTimeRepository playTimeRepository,
+                                   FileService fileService,
+                                   TeamRepository teamService
+    ) {
         this.playingFieldRepository = playingFieldRepository;
         this.locationService = locationService;
         this.playTimeRepository = playTimeRepository;
         this.fileService = fileService;
+        this.teamService = teamService;
     }
 
     @Override
@@ -96,8 +101,40 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
 
     //FieldPlayTime
     @Override
-    public List<PlayTimeProjection> getAllFieldPlayingIntervals(Long fieldId) {
-        return playTimeRepository.findAllPlayingIntervalsForGivenField(fieldId);
+    public List<PlayTimeDto> getAllFieldPlayingIntervals(Long fieldId) {
+        LocalDateTime endDate = LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT).plusDays(30);
+        List<PlayTimeProjection> allPlayingIntervalsForGivenField = playTimeRepository.findAllPlayingIntervalsForGivenField(fieldId, endDate);
+
+        LocalDateTime startDate = LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT);;
+        List<PlayTimeDto> response = new ArrayList<PlayTimeDto>();
+
+        while (!startDate.equals(endDate)) {
+            FieldStatus status = allPlayingIntervalsForGivenField
+                    .stream()
+                    .map(PlayTimeProjection::getGameStartTime)
+                    .toList()
+                    .contains(startDate) ? FieldStatus.Reserved : FieldStatus.Open;
+
+            LocalDateTime finalStartDate = startDate;
+
+            PlayTimeDto playTimeDto = new PlayTimeDto();
+            playTimeDto.setGameStartTime(startDate);
+            playTimeDto.setGameEndTime(startDate.plusHours(1));
+            playTimeDto.setFieldStatus(status);
+
+            Optional<Long> teamId = allPlayingIntervalsForGivenField
+                    .stream()
+                    .filter(x -> x.getGameStartTime().equals(finalStartDate))
+                    .map(PlayTimeProjection::getTeamId)
+                    .toList().stream().findFirst();
+            playTimeDto.setTeamId(teamId);
+
+            response.add(playTimeDto);
+
+            startDate = startDate.plusHours(1);
+        }
+
+        return response;
     }
 
     @Override
@@ -109,10 +146,13 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
     public Long addFieldPlayTimeInterval(PlayTimeDto playingFieldDto, Long fieldId) {
         PlayingField playingField = findPlayingFieldOrThrowException(fieldId);
 
+
         PlayTime playTime = new PlayTime();
         playTime.setGameStartTime(playingFieldDto.getGameStartTime());
         playTime.setGameEndTime(playingFieldDto.getGameEndTime());
-
+        if (playingFieldDto.getTeamId().isPresent()) {
+            teamService.findById(playingFieldDto.getTeamId().get()).ifPresent(playTime::setTeam);
+        }
         playTime.setFieldStatus(playingFieldDto.getFieldStatus());
         playTime.setPlayingField(playingField);
 

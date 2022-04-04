@@ -10,4 +10,6 @@ public interface PlayTimeProjection extends BaseIdProjection {
     LocalDateTime getGameStartTime();
 
     LocalDateTime getGameEndTime();
+
+    Long getTeamId();
 }

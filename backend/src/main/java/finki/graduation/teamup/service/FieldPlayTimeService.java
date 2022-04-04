@@ -4,9 +4,10 @@ import finki.graduation.teamup.model.dto.PlayTimeDto;
 import finki.graduation.teamup.model.projection.PlayTimeProjection;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FieldPlayTimeService {
-    List<PlayTimeProjection> getAllFieldPlayingIntervals(Long fieldId);
+    List<PlayTimeDto> getAllFieldPlayingIntervals(Long fieldId);
 
     PlayTimeProjection getPlayTimeInterval(Long fieldId, Long playTimeId);
 

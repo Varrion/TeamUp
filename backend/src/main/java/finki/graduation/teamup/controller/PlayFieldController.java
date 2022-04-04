@@ -58,7 +58,7 @@ public class PlayFieldController extends FileController<Long> {
 
     //Playing Time Intervals
     @GetMapping("{fieldId}/playing-intervals")
-    public List<PlayTimeProjection> getAllPlayingIntervalsForGivenField(@PathVariable Long fieldId) {
+    public List<PlayTimeDto> getAllPlayingIntervalsForGivenField(@PathVariable Long fieldId) {
         return playingFieldService.getAllFieldPlayingIntervals(fieldId);
     }
 

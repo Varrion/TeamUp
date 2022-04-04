@@ -4,6 +4,7 @@ import finki.graduation.teamup.model.enums.FieldStatus;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Data
 public class PlayTimeDto {
@@ -12,4 +13,6 @@ public class PlayTimeDto {
     LocalDateTime gameStartTime;
 
     LocalDateTime gameEndTime;
+
+    Optional<Long> teamId;
 }

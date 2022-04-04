@@ -32,4 +32,7 @@ public class PlayTime extends BaseCreatedOnDeletedOn {
 
     @ManyToOne
     PlayingField playingField;
+
+    @ManyToOne
+    Team team;
 }

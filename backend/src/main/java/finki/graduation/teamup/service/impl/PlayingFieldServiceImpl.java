@@ -102,13 +102,17 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
     //FieldPlayTime
     @Override
     public List<PlayTimeDto> getAllFieldPlayingIntervals(Long fieldId) {
-        LocalDateTime endDate = LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT).plusDays(30);
+        LocalDateTime endDate = LocalDateTime.of(LocalDate.now(), LocalTime.of(8,0)).plusDays(30);
         List<PlayTimeProjection> allPlayingIntervalsForGivenField = playTimeRepository.findAllPlayingIntervalsForGivenField(fieldId, endDate);
 
-        LocalDateTime startDate = LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT);;
+        LocalDateTime startDate = LocalDateTime.of(LocalDate.now(), LocalTime.of(8,0));;
         List<PlayTimeDto> response = new ArrayList<PlayTimeDto>();
 
         while (!startDate.equals(endDate)) {
+            if(startDate.getHour() == 0) {
+                startDate = startDate.plusHours(8);
+                continue;
+            }
             FieldStatus status = allPlayingIntervalsForGivenField
                     .stream()
                     .map(PlayTimeProjection::getGameStartTime)

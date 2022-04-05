@@ -3,13 +3,14 @@ import {IconButton, Menu, MenuItem} from "@material-ui/core";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Fade from '@material-ui/core/Fade';
 
-const MenuButton = ({actionParams, menuOptions}) => {
+const MenuButton = ({actionParams, menuOptions, setSelectedItem}) => {
     const anchorRef = useRef(null);
     const [open, setOpen] = useState(false);
     const ITEM_HEIGHT = 48;
 
     const handleToggleMenu = (event) => {
         anchorRef.current = event.currentTarget;
+        setSelectedItem(actionParams);
         setOpen((prevOpen) => !prevOpen);
     };
 
@@ -49,7 +50,7 @@ const MenuButton = ({actionParams, menuOptions}) => {
                     },
                 }}
             >
-                {menuOptions && menuOptions.length > 0 && menuOptions.map((option, index) => (
+                {menuOptions && menuOptions.length > 0 && menuOptions.filter(option => option != null).map((option, index) => (
                     <MenuItem
                         key={index}
                         onClick={() => option.action(actionParams)}

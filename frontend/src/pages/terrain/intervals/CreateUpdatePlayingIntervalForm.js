@@ -4,6 +4,7 @@ import MomentUtils from "@date-io/moment";
 import Button from "@material-ui/core/Button";
 import React from "react";
 import {FieldStatus} from "../../../services/PlayingFieldService";
+import moment from "moment";
 
 const CreateUpdatePlayingIntervalForm = ({
                                              formId,
@@ -19,15 +20,15 @@ const CreateUpdatePlayingIntervalForm = ({
     return (<form id={formId} className={"d-flex align-items-center flex-column"}
                   onSubmit={formSubmit}>
         <Grid container justify={"space-between"}>
-            <Grid item xl={6}>
+            <Grid item xl={6} className={"pr-4"}>
                 <MuiPickersUtilsProvider utils={MomentUtils}>
                     <DateTimePicker
-                        inputVariant="filled"
                         label="From"
                         format="DD/MM/YYYY HH:mm:ss"
                         fullWidth
+                        disabled
                         className={"mt-2"}
-                        value={playingInterval.gameStartTime}
+                        value={moment(new Date(playingInterval.gameStartTime)).utc().format("DD.MM.YYYY HH:mm")}
                         onChange={handlePlayingIntervalChange("gameStartTime")}
                     />
                 </MuiPickersUtilsProvider>
@@ -36,12 +37,12 @@ const CreateUpdatePlayingIntervalForm = ({
             <Grid item xl={6}>
                 <MuiPickersUtilsProvider utils={MomentUtils}>
                     <DateTimePicker
-                        inputVariant="filled"
+                        disabled
                         label="To"
                         format="DD/MM/YYYY HH:mm:ss"
                         fullWidth
                         className={"mt-2"}
-                        value={playingInterval.gameEndTime}
+                        value={moment(new Date(playingInterval.gameEndTime)).utc().format("DD.MM.YYYY HH:mm")}
                         onChange={handlePlayingIntervalChange("gameEndTime")}
                     />
                 </MuiPickersUtilsProvider>
@@ -53,12 +54,12 @@ const CreateUpdatePlayingIntervalForm = ({
                                component="legend">Status</FormLabel>
                     <RadioGroup row aria-label="fieldStatus" name="fieldStatus" value={playingInterval.fieldStatus}
                                 onChange={handlePlayingIntervalChange("fieldStatus")}>
-                        {fieldStatuses.map((status, index) =>
+                        {fieldStatuses.filter(status => status !== FieldStatus.Open).map((status, index) =>
                             <FormControlLabel key={index}
                                               value={status}
                                               label={status}
                                               control={<Radio
-                                                  color={status === FieldStatus.Open ? "primary" : "secondary"}/>
+                                                  color={"secondary"}/>
                                               }/>
                         )}
                     </RadioGroup>

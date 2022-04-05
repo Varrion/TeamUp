@@ -27,4 +27,15 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     List<TeamProjection> getAllTeamsByMemberUsername(@Param("username") String username);
 
     boolean existsByName(String name);
+
+    @Query("SELECT team " +
+            "FROM Team team " +
+            "INNER JOIN team.teamMembers teamMember " +
+            "INNER JOIN teamMember.user user " +
+            "WHERE teamMember.deletedOn IS NULL " +
+            "   AND user.deletedOn IS NULL " +
+            "   AND team.deletedOn IS NULL " +
+            "   AND teamMember.isTeamLead = TRUE " +
+            "   AND user.username = :username ")
+    TeamProjection findTeamByTeamLeadUsername(String username);
 }

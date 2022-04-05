@@ -1,7 +1,7 @@
 import axios from "axios";
 import {terrainRoute} from "./PlayingFieldService";
 
-const AddPlayingInterval = (terrainId, playingInterval) => {
+const ReserveClosePlayingInterval = (terrainId, playingInterval) => {
     return axios.post(`${terrainRoute}/${terrainId}/playing-intervals`, playingInterval)
 }
 
@@ -18,7 +18,7 @@ const GetAllPlayingIntervalsForTerrain = (terrainId) => {
 }
 
 export {
-    AddPlayingInterval,
+    ReserveClosePlayingInterval,
     UpdatePlayingInterval,
     DeletePlayingInterval,
     GetAllPlayingIntervalsForTerrain,

@@ -1,6 +1,7 @@
 package finki.graduation.teamup.model;
 
 import finki.graduation.teamup.model.base.BaseDescription;
+import finki.graduation.teamup.model.enums.Sport;
 import finki.graduation.teamup.model.enums.TeamStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,6 +37,9 @@ public class Team extends BaseDescription {
 
     @OneToOne
     File logo;
+
+    @Enumerated(EnumType.STRING)
+    Sport sport;
 
     @Override
     public boolean equals(Object o) {

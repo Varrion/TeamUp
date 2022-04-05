@@ -14,10 +14,11 @@ import java.util.List;
 public interface TeamService extends BaseGetDeleteService<TeamProjection, Long, TeamStatus>, BaseSaveUpdateService<CreateUpdateTeamRequestDto, Long>, BaseFileService<Long> {
     TeamProjection changeStatus(String status, Long id);
 
-    TeamProjection changeMemberStatusInTeam(ChangeTeamMemberStatusRequestDto requestDto, Long id, TeamMemberStatus changeStatus);
+    void changeMemberStatusInTeam(ChangeTeamMemberStatusRequestDto requestDto, Long id, TeamMemberStatus changeStatus);
 
     List<TeamProjection> getAllTeamsByMemberUsername(String username);
 
     void applyInTeam(String username, Long teamId);
 
+    TeamProjection findTeamByTeamLeadUsername(String username);
 }

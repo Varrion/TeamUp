@@ -47,12 +47,12 @@ const Header = props => {
                         <span className={"nav-link h6"}>/</span>
                         <Link to={"/register"} className={"nav-link h6 mr-3"}>REGISTER</Link>
                     </> :
-                    <>
+                    <div className={"d-flex align-items-baseline"}>
                         <Link to={`/users/${loggedUser}`} className={"nav-link h6"}>
                             Welcome {loggedUser}
                         </Link>
                         <Button className={"nav-link h6"} onClick={logout}>logout</Button>
-                    </>
+                    </div>
                 }
             </Nav>
         </Navbar.Collapse>

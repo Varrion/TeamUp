@@ -1,12 +1,14 @@
 import {createContext, useContext, useEffect, useState} from 'react'
 import {navigate} from "@reach/router";
 import {useToasts} from "react-toast-notifications";
+import {UserRole} from "../services/UserService";
 
 const AuthContext = createContext(null);
 
 const AuthProvider = props => {
     const [loggedUser, setLoggedUser] = useState(null);
     const [loggedUserRole, setLoggedUserRole] = useState(null);
+    const [leadingTeamId, setLeadingTeamId] = useState(null);
     const {addToast} = useToasts();
 
     useEffect(() => {
@@ -14,13 +16,16 @@ const AuthProvider = props => {
         if (authData) {
             let username = atob(authData.userCredential.split(" ")[1]).split(":")[0].trim();
             let role = authData.userRole;
-            login(username, role);
+            let leadingTeamId = authData.leadingTeamId;
+            login(username, role, leadingTeamId);
         }
     }, [])
 
-    const login = (username, role) => {
+    const login = (username, role, leadingTeamId) => {
         setLoggedUser(username);
         setLoggedUserRole(role);
+
+        role === UserRole.User && setLeadingTeamId(leadingTeamId)
     }
 
     const logout = () => {
@@ -31,7 +36,7 @@ const AuthProvider = props => {
 
         setLoggedUser(null);
         setLoggedUserRole(null);
-
+        setLeadingTeamId(null);
     }
 
     const isAuthorized = (username) => {
@@ -43,6 +48,7 @@ const AuthProvider = props => {
             value={{
                 loggedUser: loggedUser,
                 loggedUserRole: loggedUserRole,
+                leadingTeamId: leadingTeamId,
                 login: login,
                 logout: logout,
                 isAuthorized: isAuthorized

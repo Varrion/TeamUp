@@ -4,9 +4,9 @@ import React from "react";
 import {FieldStatus} from "../../services/PlayingFieldService";
 import MenuButton from "../buttons/MenuButton";
 
-const PlayIntervalListItem = ({interval, menuOptions}) => {
+const PlayIntervalListItem = ({interval, menuOptions, setSelectedElement}) => {
 
-    return <div className={"d-flex align-baseline m-2 interval-list-item"}>
+    return <div className={"d-flex align-baseline justify-content-center m-2 interval-list-item"}>
         <Divider orientation={"vertical"}/>
         <ListItem divider>
             <span
@@ -18,11 +18,11 @@ const PlayIntervalListItem = ({interval, menuOptions}) => {
                         : 'badge-warning'}`}> {interval.fieldStatus}
             </span>
             <ListItemText
-                primary={moment(interval.gameStartTime).format("DD.MM.YYYY HH:mm")}
-                secondary={moment(interval.gameEndTime).format("DD.MM.YYYY HH:mm")}
+                primary={moment(interval.gameStartTime).utc().format("DD.MM.YYYY HH:mm")}
+                secondary={moment(interval.gameEndTime).utc().format("DD.MM.YYYY HH:mm")}
             />
             <ListItemSecondaryAction className={"text-right"}>
-                <MenuButton actionParams={interval} menuOptions={menuOptions}/>
+                <MenuButton actionParams={interval} menuOptions={menuOptions} setSelectedItem={setSelectedElement}/>
             </ListItemSecondaryAction>
         </ListItem>
         <Divider orientation={"vertical"}/>

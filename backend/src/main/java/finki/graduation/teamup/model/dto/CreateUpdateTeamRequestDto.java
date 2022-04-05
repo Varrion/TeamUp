@@ -1,5 +1,7 @@
 package finki.graduation.teamup.model.dto;
 
+import finki.graduation.teamup.model.enums.Sport;
+import finki.graduation.teamup.model.enums.TeamStatus;
 import lombok.Value;
 
 import java.util.Set;
@@ -15,4 +17,8 @@ public class CreateUpdateTeamRequestDto {
     String teamLead;
 
     Set<String> membersUsernames;
+
+    TeamStatus teamStatus;
+
+    Sport sport;
 }

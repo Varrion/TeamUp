@@ -16,6 +16,40 @@ const TeamMemberStatus = {
     Accepted: 'Accepted'
 }
 
+const GetAllTeamMembersInTeam = (team) => {
+    return team.teamMembers.filter(teamMember => !teamMember.isTeamLead && teamMember.memberStatus === TeamMemberStatus.Accepted);
+}
+
+const GetAllPendingToAcceptTeamInvitationTeamMembers = (team) => {
+    return team.teamMembers.filter(teamMember => !teamMember.isTeamLead && teamMember.memberStatus === TeamMemberStatus.PendingToAcceptTeamInvitation);
+}
+
+const GetAllPendingToBeAcceptedInTeamMembers = (team) => {
+    return team.teamMembers.filter(teamMember => !teamMember.isTeamLead && teamMember.memberStatus === TeamMemberStatus.PendingToBeAcceptedInTeam);
+}
+
+const CalculateMissingMembers = (team) => {
+    if (team) {
+        return team?.teamMembers?.filter(teamMember => teamMember.memberStatus === TeamMemberStatus.Accepted);
+    }
+}
+
+const AddAvatarsForMissingMembers = (team) => {
+    if (team) {
+        const missingMembers = [];
+        let iterator = CalculateMissingMembers(team).length;
+        while (iterator < team.size) {
+            if (iterator > 6) {
+                break;
+            }
+            missingMembers.push(iterator)
+            iterator++;
+        }
+
+        return missingMembers;
+    }
+}
+
 const GetAllTeams = (status = null, search = "") => {
     return axios.get(teamsRoute, {
         params: {status: status, search: search}
@@ -46,6 +80,22 @@ const GetTeamsByMemberUsername = (username) => {
     return axios.get(`${teamsRoute}/members/${username}`)
 }
 
+const GetTeamByTeamLeadUsername = (username) => {
+    return axios.get(`${teamsRoute}/leading/${username}`)
+}
+
+const ApproveMemberIntoTeam = (request, teamId) => {
+    return axios.post(`${teamsRoute}/${teamId}/members/add`, request)
+}
+
+const RemoveOrRejectTeamMember = (request, teamId) => {
+    return axios.post(`${teamsRoute}/${teamId}/members/remove`, request)
+}
+
+const SendInvitationToJoinInTeam = (request, teamId) => {
+    return axios.post(`${teamsRoute}/${teamId}/members/apply`, request)
+}
+
 export {
     teamsRoute,
     TeamStatus,
@@ -56,5 +106,14 @@ export {
     DeleteTeam,
     EditTeam,
     UpdateTeamStatus,
-    GetTeamsByMemberUsername
+    GetTeamsByMemberUsername,
+    GetTeamByTeamLeadUsername,
+    CalculateMissingMembers,
+    GetAllTeamMembersInTeam,
+    GetAllPendingToBeAcceptedInTeamMembers,
+    GetAllPendingToAcceptTeamInvitationTeamMembers,
+    AddAvatarsForMissingMembers,
+    ApproveMemberIntoTeam,
+    RemoveOrRejectTeamMember,
+    SendInvitationToJoinInTeam
 }

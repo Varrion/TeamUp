@@ -13,6 +13,7 @@ import {BasicAuth, LoginUser} from "../../services/UserService";
 import {useAuthContext} from "../../configurations/AuthContext";
 import {useToggleTheme} from "../../configurations/MuiThemeContext";
 import {useToasts} from "react-toast-notifications";
+import {GetTeamByTeamLeadUsername} from "../../services/TeamService";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -46,15 +47,22 @@ const Login = () => {
 
         LoginUser(user)
             .then((res) => {
-                let authData = {
-                    userCredential: BasicAuth(res.data.username, res.data.password),
-                    userRole: res.data.role
-                }
-                sessionStorage.setItem('authData', JSON.stringify(authData));
-                changeMainColorByUserGender(res.data.gender);
-                login(res.data.username, res.data.role);
-                addToast("Successfuly logged in", { appearance: 'success' })
+                const userRole = res.data.role;
 
+
+                GetTeamByTeamLeadUsername(res.data.username)
+                    .then(r => {
+                        let authData = {
+                            userCredential: BasicAuth(res.data.username, res.data.password),
+                            leadingTeamId: r.data.id,
+                            userRole: userRole
+                        }
+
+                        sessionStorage.setItem('authData', JSON.stringify(authData));
+                        changeMainColorByUserGender(res.data.gender);
+                        login(res.data.username, res.data.role, authData.leadingTeamId);
+                        addToast("Successfuly logged in", {appearance: 'success'})
+                    });
             })
     }
 

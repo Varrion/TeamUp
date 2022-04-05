@@ -3,6 +3,7 @@ import Avatar from "@material-ui/core/Avatar";
 import {truncate} from "../Functions";
 import TeamMemberGrid from "../grids/TeamMemberGrid";
 import {navigate} from "@reach/router";
+import {GetAllTeamMembersInTeam} from "../../services/TeamService";
 
 const TeamCard = ({team}) => {
     return (
@@ -16,7 +17,7 @@ const TeamCard = ({team}) => {
                 </Typography>
                 <Typography className={"text-left card-description"}
                             variant={"subtitle1"}>{truncate(team.description, 50, 50)}</Typography>
-                <TeamMemberGrid team={team}/>
+                <TeamMemberGrid team={team} teamMembers={GetAllTeamMembersInTeam(team)}/>
             </CardContent>
         </Card>
     )

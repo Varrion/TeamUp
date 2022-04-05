@@ -25,7 +25,7 @@ public class TeamController extends FileController<Long> {
     public List<TeamProjection> getAllTeams(@RequestParam(value = "status", required = false) TeamStatus teamStatus, @RequestParam(value = "search", required = false) String search) {
         List<TeamProjection> teams = teamService.getAll(teamStatus);
 
-        if (!search.isEmpty()) {
+        if (search != null && !search.isEmpty()) {
             teams = teams.stream().filter(s -> s.getName().toLowerCase().startsWith(search)).toList();
         }
 
@@ -63,18 +63,23 @@ public class TeamController extends FileController<Long> {
     }
 
     @PostMapping("{id}/members/add")
-    public TeamProjection addUserInTeam(@RequestBody ChangeTeamMemberStatusRequestDto changeTeamMemberStatusRequestDto, @PathVariable Long id) {
-        return teamService.changeMemberStatusInTeam(changeTeamMemberStatusRequestDto, id, TeamMemberStatus.Accepted);
+    public void addUserInTeam(@RequestBody ChangeTeamMemberStatusRequestDto changeTeamMemberStatusRequestDto, @PathVariable Long id) {
+        teamService.changeMemberStatusInTeam(changeTeamMemberStatusRequestDto, id, TeamMemberStatus.Accepted);
     }
 
     @PostMapping("{id}/members/remove")
-    public TeamProjection removeUserFromTeam(@RequestBody ChangeTeamMemberStatusRequestDto changeTeamMemberStatusRequestDto,
-                                             @PathVariable Long id) {
-        return teamService.changeMemberStatusInTeam(changeTeamMemberStatusRequestDto, id, TeamMemberStatus.Rejected);
+    public void removeUserFromTeam(@RequestBody ChangeTeamMemberStatusRequestDto changeTeamMemberStatusRequestDto,
+                                   @PathVariable Long id) {
+        teamService.changeMemberStatusInTeam(changeTeamMemberStatusRequestDto, id, TeamMemberStatus.Rejected);
     }
 
     @PostMapping("{id}/members/apply")
     public void applyToJoinInTeam(@RequestBody String memberToJoin, @PathVariable Long id) {
         teamService.applyInTeam(memberToJoin, id);
+    }
+
+    @GetMapping("leading/{username}")
+    public TeamProjection findLeadingTeamByUsername(@PathVariable String username) {
+        return teamService.findTeamByTeamLeadUsername(username);
     }
 }

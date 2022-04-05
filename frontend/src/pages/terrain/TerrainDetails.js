@@ -1,34 +1,35 @@
 import React, {useEffect, useState} from "react";
-import {DeleteTerrain, GetTerrain} from "../../services/PlayingFieldService";
+import {DeleteTerrain, FieldStatus, GetTerrain} from "../../services/PlayingFieldService";
 import {CarouselItem} from "react-bootstrap";
 import {FileType} from "../../services/FileService";
 import CustomCarousel from "../../components/carousel/CustomCarousel";
 import {DummyTerrainPictures} from "../../components/DummyTerrainPicturesArray";
-import {
-    Card,
-    CardActions,
-    CardContent,
-    CardHeader,
-    Grid,
-    IconButton,
-    Link,
-    List,
-    Tooltip,
-    Typography
-} from "@material-ui/core";
+import {Card, CardActions, CardContent, CardHeader, Grid, Link, List, Tooltip, Typography} from "@material-ui/core";
 import SplitButton from "../../components/buttons/SplitButton";
-import {AddCircle, Delete, Edit} from "@material-ui/icons";
+import {Delete, Edit} from "@material-ui/icons";
 import CreateEditTerrainModal from "./modal/CreateEditTerrainModal";
 import {navigate} from "@reach/router";
 import PlayIntervalListItem from "../../components/lists/PlayIntervalListItem";
-import {DeletePlayingInterval, GetAllPlayingIntervalsForTerrain} from "../../services/PlayingIntervalService";
+import {
+    DeletePlayingInterval,
+    GetAllPlayingIntervalsForTerrain,
+    ReserveClosePlayingInterval
+} from "../../services/PlayingIntervalService";
 import CreateEditPlayingIntervalModal from "./modal/CreateEditPlayingIntervalModal";
 import TitleWithButtonGrid from "../../components/grids/TitleWithButtonGrid";
+import {useAuthContext} from "../../configurations/AuthContext";
+import {UserRole} from "../../services/UserService";
+import DoneIcon from '@material-ui/icons/Done';
+import ClearIcon from '@material-ui/icons/Clear';
+import {useToasts} from "react-toast-notifications";
 
 const TerrainDetails = (props) => {
+    const {addToast} = useToasts();
+    const {leadingTeamId, loggedUserRole, isAuthorized} = useAuthContext();
     const [terrain, setTerrain] = useState(null);
     const [playingIntervals, setPlayingIntervals] = useState(null);
     const [openUpdateModal, setOpenUpdateModal] = useState(null);
+    const [terrainOwner, setTerrainOwner] = useState(null);
 
     const terrainMenuButtonActions = [
         {
@@ -47,21 +48,33 @@ const TerrainDetails = (props) => {
     const [openPlayingIntervalModal, setOpenPlayingIntervalModal] = useState(false);
     const [hasIntervalUpdate, setHasIntervalUpdate] = useState(true);
 
-    const terrainIntervalMenuButtonActions = [
+    const terrainIntervalMenuButtonActionsForOwner = [
         {
             text: <><Edit/> Edit </>,
             action: (interval) => onIntervalUpdate(interval)
         },
-        {
-            text: <><Delete/> Delete </>,
+        selectedInterval && selectedInterval.fieldStatus !== FieldStatus.Open ? {
+            text: <><Delete/> Restore </>,
             action: (interval) => onIntervalDelete(interval)
-        }]
+        } : null]
+
+    const terrainIntervalMenuButtonActionsForTeamLeaders = [
+        selectedInterval && selectedInterval.teamId !== leadingTeamId
+            ? {
+                text: <><DoneIcon/> Reserve </>,
+                action: (interval) => reserveInterval(interval)
+            }
+            : {
+                text: <><ClearIcon/> Cancel </>,
+                action: (interval) => onIntervalDelete(interval)
+            }]
 
 
     useEffect(() => {
         GetTerrain(props.id)
             .then(r => {
                 setTerrain(r.data);
+                setTerrainOwner(r.data?.location?.owner?.username);
             })
     }, [openUpdateModal])
 
@@ -70,9 +83,21 @@ const TerrainDetails = (props) => {
             .then(res => {
                 setPlayingIntervals(res.data);
                 setHasIntervalUpdate(false);
-            })
+            });
+
     }, [terrain, hasIntervalUpdate])
 
+
+    const reserveInterval = (interval) => {
+        interval.teamId = leadingTeamId;
+        interval.fieldStatus = FieldStatus.Reserved;
+
+        ReserveClosePlayingInterval(terrain.id, interval)
+            .then(() => {
+                addToast('Successfully reserved a period for playing', {appearance: 'success'});
+                setHasIntervalUpdate(true);
+            })
+    }
 
     const onIntervalUpdate = (interval) => {
         setSelectedInterval(interval);
@@ -83,7 +108,10 @@ const TerrainDetails = (props) => {
 
     const onIntervalDelete = (interval) => {
         return DeletePlayingInterval(terrain.id, interval.id)
-            .then(() => setHasIntervalUpdate(true));
+            .then(() => {
+                addToast('The given interval is again available for selection.', {appearance: 'success'});
+                setHasIntervalUpdate(true);
+            });
     }
 
     return (terrain &&
@@ -115,17 +143,18 @@ const TerrainDetails = (props) => {
                 {terrain.fieldType} Terrain
             </Typography>
             <Grid container justify={"space-between"} className={"mt-4"}>
-                <Grid item md={4} sm={12} className={"pr-4"}>
-                    <Card>
+                <Grid item sm={12}>
+                    <Card className={"pl-4"}>
                         <CardContent>
                             <TitleWithButtonGrid title={terrain.name}
                                                  variant={"h4"}
-                                                 button={<SplitButton buttonColor={"secondary"}
-                                                                      buttonVariant={"contained"}
-                                                                      text={<><Edit/> Edit</>}
-                                                                      menuOptions={terrainMenuButtonActions}
-                                                                      classes={"float-right"}
-                                                                      mainOption={() => setOpenUpdateModal(true)}/>}
+                                                 button={isAuthorized(terrainOwner) &&
+                                                     <SplitButton buttonColor={"secondary"}
+                                                                  buttonVariant={"contained"}
+                                                                  text={<><Edit/> Edit</>}
+                                                                  menuOptions={terrainMenuButtonActions}
+                                                                  classes={"float-right"}
+                                                                  mainOption={() => setOpenUpdateModal(true)}/>}
                             />
                             <Typography className={"mt-2"} variant={"body1"}>{terrain.description}</Typography>
                         </CardContent>
@@ -141,28 +170,26 @@ const TerrainDetails = (props) => {
                         </CardActions>
                     </Card>
                 </Grid>
-                <Grid item md={8} sm={12}>
+                <Grid item sm={12} className={"mt-5"}>
                     <Card>
-                        <CardHeader title={<TitleWithButtonGrid title={"Intervals"}
-                                                                variant={"h5"}
-                                                                button={<Tooltip title={"Add"} placement={"left"}>
-                                                                    <IconButton color="inherit"
-                                                                                onClick={() => setOpenPlayingIntervalModal(true)}><AddCircle
-                                                                        fontSize="default"/></IconButton>
-                                                                </Tooltip>}
-                        />}/>
+                        <CardHeader title={"Intervals for the next 2 weeks"}/>
                         <CardContent>
-                            {playingIntervals && playingIntervals.length > 0 ? <List className={"d-flex flex-wrap"}>
-                                    {playingIntervals.map(interval =>
+                            {playingIntervals && playingIntervals.length > 0 ?
+                                <List className={"d-flex flex-wrap justify-content-center"}>
+                                    {playingIntervals.map((interval, index) =>
                                         <PlayIntervalListItem
-                                            key={interval.id}
-                                            menuOptions={terrainIntervalMenuButtonActions}
+                                            key={index}
+                                            setSelectedElement={setSelectedInterval}
+                                            menuOptions={isAuthorized(terrainOwner)
+                                                ? terrainIntervalMenuButtonActionsForOwner
+                                                : (loggedUserRole === UserRole.User && leadingTeamId != null)
+                                                    ? terrainIntervalMenuButtonActionsForTeamLeaders
+                                                    : null}
                                             interval={interval}/>)}
                                 </List>
                                 : <div>
                                     No elements yet
                                 </div>}
-
                         </CardContent>
                     </Card>
                 </Grid>

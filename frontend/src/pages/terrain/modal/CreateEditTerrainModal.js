@@ -17,9 +17,8 @@ import DropzoneUploader from "../../../components/dropzone/DropzoneUploader";
 import {BulkUploadFiles} from "../../../services/FileService";
 import PlayIntervalListItem from "../../../components/lists/PlayIntervalListItem";
 import {
-    AddPlayingInterval,
     DeletePlayingInterval,
-    GetAllPlayingIntervalsForTerrain
+    GetAllPlayingIntervalsForTerrain, ReserveClosePlayingInterval
 } from "../../../services/PlayingIntervalService";
 import {Delete} from "@material-ui/icons";
 import CreateUpdatePlayingIntervalForm from "../intervals/CreateUpdatePlayingIntervalForm";
@@ -33,6 +32,7 @@ const CreateEditTerrainModal = ({field, locationId = null, onIntervalUpdate, ...
         fieldType: locationId ? FieldType.Private.toString() : FieldType.Public.toString(),
         fieldFor: field?.fieldFor ?? ""
     });
+
     const [terrainId, setTerrainId] = useState(field?.id ?? null);
 
     const [fieldPlayingIntervals, setFieldPlayingIntervals] = useState(null);
@@ -41,6 +41,7 @@ const CreateEditTerrainModal = ({field, locationId = null, onIntervalUpdate, ...
         fieldStatus: FieldStatus.Open,
         gameStartTime: new Date(),
         gameEndTime: new Date(),
+        teamId: null,
     });
 
     const [filesTerrain, setFilesTerrain] = useState([]);
@@ -144,7 +145,7 @@ const CreateEditTerrainModal = ({field, locationId = null, onIntervalUpdate, ...
     }
 
     const InsertPlayingGameInterval = () => {
-        AddPlayingInterval(terrainId, playingInterval)
+        ReserveClosePlayingInterval(terrainId, playingInterval)
             .then(() => setTerrainIntervalsHasChanges(true))
     }
 

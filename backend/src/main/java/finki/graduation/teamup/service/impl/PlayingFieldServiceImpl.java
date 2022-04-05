@@ -1,13 +1,14 @@
 package finki.graduation.teamup.service.impl;
 
-import com.jayway.jsonpath.Option;
-import finki.graduation.teamup.model.*;
+import finki.graduation.teamup.model.File;
+import finki.graduation.teamup.model.Location;
+import finki.graduation.teamup.model.PlayTime;
+import finki.graduation.teamup.model.PlayingField;
 import finki.graduation.teamup.model.dto.PlayTimeDto;
 import finki.graduation.teamup.model.dto.PlayingFieldDto;
 import finki.graduation.teamup.model.enums.FieldStatus;
 import finki.graduation.teamup.model.enums.FieldType;
 import finki.graduation.teamup.model.enums.FileType;
-import finki.graduation.teamup.model.enums.Sport;
 import finki.graduation.teamup.model.projection.PlayTimeProjection;
 import finki.graduation.teamup.model.projection.PlayingFieldProjection;
 import finki.graduation.teamup.repository.PlayTimeRepository;
@@ -16,7 +17,6 @@ import finki.graduation.teamup.repository.TeamRepository;
 import finki.graduation.teamup.service.FileService;
 import finki.graduation.teamup.service.LocationService;
 import finki.graduation.teamup.service.PlayingFieldService;
-import finki.graduation.teamup.service.TeamService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,8 +26,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 public class PlayingFieldServiceImpl implements PlayingFieldService {
@@ -102,20 +100,23 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
     //FieldPlayTime
     @Override
     public List<PlayTimeDto> getAllFieldPlayingIntervals(Long fieldId) {
-        LocalDateTime endDate = LocalDateTime.of(LocalDate.now(), LocalTime.of(8,0)).plusDays(30);
-        List<PlayTimeProjection> allPlayingIntervalsForGivenField = playTimeRepository.findAllPlayingIntervalsForGivenField(fieldId, endDate);
+        int startingWorkingHour = 8 + 2; // 2 hours difference between UTC and Local Date Time
 
-        LocalDateTime startDate = LocalDateTime.of(LocalDate.now(), LocalTime.of(8,0));;
-        List<PlayTimeDto> response = new ArrayList<PlayTimeDto>();
+        LocalDateTime endDate = LocalDateTime.of(LocalDate.now(), LocalTime.of(startingWorkingHour, 0)).plusDays(14);
+        List<PlayTime> allPlayingIntervalsForGivenField = playTimeRepository.findAllPlayingIntervalsForGivenField(fieldId, endDate);
+
+        LocalDateTime startDate = LocalDateTime.of(LocalDate.now(), LocalTime.of(startingWorkingHour, 0));
+        ;
+        List<PlayTimeDto> response = new ArrayList<>();
 
         while (!startDate.equals(endDate)) {
-            if(startDate.getHour() == 0) {
+            if (startDate.getHour() == 0) {
                 startDate = startDate.plusHours(8);
                 continue;
             }
             LocalDateTime finalStartDate = startDate;
 
-            Optional<PlayTimeProjection> playTimeInterval = allPlayingIntervalsForGivenField
+            Optional<PlayTime> playTimeInterval = allPlayingIntervalsForGivenField
                     .stream()
                     .filter(x -> x.getGameStartTime().equals(finalStartDate))
                     .findFirst();
@@ -125,11 +126,13 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
             playTimeDto.setGameEndTime(startDate.plusHours(1));
             playTimeDto.setFieldStatus(FieldStatus.Open);
 
-            if(playTimeInterval.isPresent()) {
-                if(playTimeInterval.get().getTeam().isPresent()) {
-                    playTimeDto.setTeamId(playTimeInterval.get().getTeam().get().getId());
+            if (playTimeInterval.isPresent()) {
+                if (playTimeInterval.get().getTeam() != null) {
+                    playTimeDto.setId(playTimeInterval.get().getId());
+                    playTimeDto.setTeamId(playTimeInterval.get().getTeam().getId());
                 }
-                playTimeDto.setFieldStatus(FieldStatus.valueOf(playTimeInterval.get().getFieldStatus()));
+
+                playTimeDto.setFieldStatus(playTimeInterval.get().getFieldStatus());
             }
 
             response.add(playTimeDto);
@@ -153,9 +156,11 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
         PlayTime playTime = new PlayTime();
         playTime.setGameStartTime(playingFieldDto.getGameStartTime());
         playTime.setGameEndTime(playingFieldDto.getGameEndTime());
+
         if (playingFieldDto.getTeamId() != null) {
             teamService.findById(playingFieldDto.getTeamId()).ifPresent(playTime::setTeam);
         }
+
         playTime.setFieldStatus(playingFieldDto.getFieldStatus());
         playTime.setPlayingField(playingField);
 

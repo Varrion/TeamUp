@@ -5,7 +5,6 @@ import Register from "../../pages/user/Register";
 import Login from "../../pages/user/Login";
 import Profile from "../../pages/user/Profile";
 import UsersPage from "../../pages/user/UsersPage";
-import TeamList from "../../pages/team/TeamList";
 import TeamDetails from "../../pages/team/TeamDetails";
 import LocationDetails from "../../pages/location/LocationDetails";
 import LocationList from "../../pages/location/LocationList";
@@ -21,7 +20,7 @@ const Routes = () => {
             <Register path={"/register"}/>
             <Login path={"/login"}/>
             <SportsmanPage path={"/sportsman"}/>
-            <LocationOwnerPage path={"/locationowner"}/>
+            <LocationOwnerPage path={"/location-owner"}/>
             <Redirect from={"*"} to={"/"} noThrow/>
         </Route>
         <Route container={true} path={"/users"}>

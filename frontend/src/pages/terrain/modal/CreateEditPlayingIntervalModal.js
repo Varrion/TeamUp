@@ -2,10 +2,11 @@ import {Dialog, DialogContent, DialogTitle, IconButton, Typography} from "@mater
 import CloseIcon from "@material-ui/icons/Close";
 import React, {useState} from "react";
 import CreateUpdatePlayingIntervalForm from "../intervals/CreateUpdatePlayingIntervalForm";
-import {AddPlayingInterval, UpdatePlayingInterval} from "../../../services/PlayingIntervalService";
+import {ReserveClosePlayingInterval} from "../../../services/PlayingIntervalService";
 import useStyles from "../../../components/MaterialStyles";
 import {FieldStatus} from "../../../services/PlayingFieldService";
 import {useToasts} from "react-toast-notifications";
+import moment from "moment";
 
 const CreateEditPlayingIntervalModal = ({terrainId, playingInterval, isEdit, ...props}) => {
     const classes = useStyles();
@@ -20,16 +21,11 @@ const CreateEditPlayingIntervalModal = ({terrainId, playingInterval, isEdit, ...
     const handleSubmit = event => {
         event.preventDefault();
 
-        isEdit ? UpdatePlayingInterval(terrainId, playingInterval.id, interval)
-                .then(() => {
-                    props.onClose();
-                    addToast('Successfully updated playing interval', {appearance: 'success'});
-                })
-            : AddPlayingInterval(terrainId, interval)
-                .then(() => {
-                    props.onClose();
-                    addToast('Successfully added playing interval', {appearance: 'success'});
-                })
+        ReserveClosePlayingInterval(terrainId, interval)
+            .then(() => {
+                props.onClose();
+                addToast('Successfully added playing interval', {appearance: 'success'});
+            })
     }
 
     const handleChange = name => event => {
@@ -38,7 +34,7 @@ const CreateEditPlayingIntervalModal = ({terrainId, playingInterval, isEdit, ...
             return;
         }
 
-        setInterval({...interval, [name]: event.toDate()});
+        setInterval({...interval, [name]: moment(event.toDate()).utc().format("DD.MM.YYYY HH:mm")});
     }
 
     return (

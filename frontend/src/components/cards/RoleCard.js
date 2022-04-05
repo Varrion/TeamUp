@@ -4,6 +4,7 @@ import Sportsman from "../../assets/images/sportsman.jpg";
 import LocationOwner from "../../assets/images/business-owner.jpg";
 import SportTeam from "../../assets/images/SportTeam.png";
 import OwnersTeam from "../../assets/images/OwnersTeam.png";
+import {navigate} from "@reach/router";
 
 const RoleCard = (props) => {
     return (
@@ -18,11 +19,13 @@ const RoleCard = (props) => {
                 </CardContent>
                 :
                 <CardContent className={"d-flex flex-column align-content-center justify-content-center"}>
-                    <Typography variant="h3" component="h2" className={"role-card-text"}>
+                    <Typography variant="h3" className={"role-card-text"}>
                         {props.isOwner ? "Location Owner" : "Sportsman"}
                     </Typography>
                     <Button variant="contained" size={"large"}
-                            className={"role-card-button"}>{props.isOwner ? "Find out more" : "Start Sporting"}  </Button>
+                            onClick={() => navigate(props.isOwner ? "/sportsman" : "/location-owner")}
+                            className={"role-card-button"}>Find out more
+                    </Button>
                 </CardContent>}
         </Card>
     )

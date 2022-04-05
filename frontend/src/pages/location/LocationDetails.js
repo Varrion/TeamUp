@@ -12,6 +12,7 @@ import {AddCircle, Delete, EditLocation} from "@material-ui/icons";
 import SplitButton from "../../components/buttons/SplitButton";
 import {FileType, GetLastFilePath} from "../../services/FileService";
 import LocationInfoGrid from "../../components/grids/LocationInfoGrid";
+import TitleWithButtonGrid from "../../components/grids/TitleWithButtonGrid";
 
 const LocationDetails = ({id}) => {
     const {isAuthorized} = useAuthContext();
@@ -59,17 +60,15 @@ const LocationDetails = ({id}) => {
                                               alt={FileType.Profile}/>
                 </Grid>
                 <Grid item lg={10}>
-                    <Typography variant={"h1"}> {location.name}
-                        {isAuthorized(location.owner?.username.trim()) &&
-                            <SplitButton buttonColor={"secondary"} buttonVariant={"contained"}
-                                         text={<><EditLocation/> Edit</>}
-                                         menuOptions={locationMenuButtonActions}
-                                         classes={"float-right"}
-                                         mainOption={() => setOpenUpdateModal(true)}
-                            />
-                        }
-                    </Typography>
-
+                    <TitleWithButtonGrid title={location.name}
+                                         variant={"h1"}
+                                         button={<SplitButton buttonColor={"secondary"} buttonVariant={"contained"}
+                                                              text={<><EditLocation/> Edit</>}
+                                                              menuOptions={locationMenuButtonActions}
+                                                              classes={"float-right"}
+                                                              mainOption={() => setOpenUpdateModal(true)}
+                                         />}
+                    />
                     <Typography className={"mt-3"} variant={"body1"}>
                         {location.description ?? "Nothing here for now"}
                     </Typography>

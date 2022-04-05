@@ -69,9 +69,10 @@ public class TeamServiceImpl implements TeamService {
         }
 
         Team team = new Team();
-        team.setTeamStatus(TeamStatus.LookingForMore);
+        team.setTeamStatus(requestDto.getTeamStatus());
         team.setName(requestDto.getName());
         team.setDescription(requestDto.getDescription());
+        team.setSport(requestDto.getSport());
 
         team.setSize(requestDto.getMaxSize());
         teamRepository.save(team);
@@ -98,6 +99,7 @@ public class TeamServiceImpl implements TeamService {
         team.setName(requestDto.getName());
         team.setDescription(requestDto.getDescription());
         team.setSize(requestDto.getMaxSize());
+        team.setSport(requestDto.getSport());
 
         teamRepository.save(team);
     }
@@ -116,7 +118,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public TeamProjection changeMemberStatusInTeam(ChangeTeamMemberStatusRequestDto requestDto, Long id, TeamMemberStatus changeStatus) {
+    public void changeMemberStatusInTeam(ChangeTeamMemberStatusRequestDto requestDto, Long id, TeamMemberStatus changeStatus) {
         Team team = findTeamOrThrowException(id);
         TeamMember teamLead = findTeamMemberOrThrowException(team.getId(), requestDto.getTeamLeadUsername());
         Set<TeamMember> teamMembers = teamMemberRepository.findUsersByTeamIdAndMemberStatus(team.getId(), TeamMemberStatus.Accepted);
@@ -133,6 +135,10 @@ public class TeamServiceImpl implements TeamService {
                 if (team.getSize() == teamMembers.size()) {
                     team.setTeamStatus(TeamStatus.Full);
                 }
+
+                if (memberToChange.getMemberStatus() != TeamMemberStatus.PendingToBeAcceptedInTeam) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+                }
             }
             case Rejected -> {
                 if (memberToChange.getMemberStatus() != TeamMemberStatus.PendingToBeAcceptedInTeam || memberToChange.getMemberStatus() != TeamMemberStatus.Accepted) {
@@ -145,9 +151,6 @@ public class TeamServiceImpl implements TeamService {
 
         teamRepository.save(team);
         teamMemberRepository.save(memberToChange);
-
-        ProjectionFactory pf = new SpelAwareProxyProjectionFactory();
-        return pf.createProjection(TeamProjection.class, team);
     }
 
     @Override
@@ -162,6 +165,11 @@ public class TeamServiceImpl implements TeamService {
 
         TeamMember teamMember = new TeamMember(team, user, TeamMemberStatus.PendingToBeAcceptedInTeam, false);
         teamMemberRepository.save(teamMember);
+    }
+
+    @Override
+    public TeamProjection findTeamByTeamLeadUsername(String username) {
+        return teamRepository.findTeamByTeamLeadUsername(username);
     }
 
     private Team findTeamOrThrowException(Long id) {

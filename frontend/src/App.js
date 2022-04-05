@@ -33,7 +33,7 @@ const App = props => {
                 }
             </Match>
 
-            <Match path="/locationowner">
+            <Match path="/location-owner">
                 {(props) => props.match
                     ? <Footer show={true}/>
                     : <Footer show={false}/>

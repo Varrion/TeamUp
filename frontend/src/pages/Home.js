@@ -38,22 +38,17 @@ const Home = () => {
                 <Typography variant={"h3"} className={"text-center"}>
                     Team Up
                 </Typography>
-                <Typography className={"pl-5 pr-5 pt-2 text-justify text-center"} variant={"body1"} >
+                <Typography className={"pl-5 pr-5 pt-2 text-justify text-center"} variant={"body1"}>
                     Grab your chance to be part of our community.
                     Get to know people near you who love the same sports as you and have fun!
                 </Typography>
             </div>
             <Grid container>
                 <Grid item lg={6} xs={12}>
-                    <Link to={"/sportsman"} className='me-4 text-reset'>
-                        <RoleCard isOwner={false} chooseRole={false}/>
-                    </Link>
-
+                    <RoleCard isOwner={false} chooseRole={false}/>
                 </Grid>
                 <Grid item lg={6} xs={12}>
-                    <Link to={"/locationowner"} className='me-4 text-reset'>
-                        <RoleCard isOwner={true} chooseRole={false}/>
-                    </Link>
+                    <RoleCard isOwner={true} chooseRole={false}/>
                 </Grid>
             </Grid>
         </>

@@ -16,8 +16,9 @@ import useStyles from "../../../components/MaterialStyles";
 import {useAuthContext} from "../../../configurations/AuthContext";
 import {GetAllUsers, UserRole} from "../../../services/UserService";
 import StyledTextField from "../../../components/StyledTextField";
-import {CreateTeam, DeleteTeam, EditTeam} from "../../../services/TeamService";
+import {CreateTeam, DeleteTeam, EditTeam, TeamStatus} from "../../../services/TeamService";
 import {useToasts} from "react-toast-notifications";
+import SportRadioButton from "../../../components/SportRadioButton";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -47,7 +48,9 @@ const CreateEditTeamModal = (props) => {
         description: props.team?.description ?? "",
         maxSize: props.team?.size ?? 2,
         teamLead: props.team?.teamLead ?? loggedUser,
-        membersUsernames: props.team?.teamMembers.map(teamMember => teamMember.user.username) ?? [loggedUser]
+        membersUsernames: props.team?.teamMembers.map(teamMember => teamMember.user.username) ?? [loggedUser],
+        sport: props.team?.sport ?? "",
+        teamStatus: TeamStatus.LookingForMore
     });
 
     const handleChange = name => event => {
@@ -96,7 +99,7 @@ const CreateEditTeamModal = (props) => {
         <Dialog
             disableBackdropClick
             fullWidth={true}
-            maxWidth={"md"}
+            maxWidth={"lg"}
             {...props}
             aria-labelledby="choose-role-title"
         >
@@ -179,6 +182,7 @@ const CreateEditTeamModal = (props) => {
                                 </Select>
                             </FormControl>
                         </Grid>
+                        <SportRadioButton value={team.sport} handleChange={handleChange("sport")}/>
                         <Grid container>
                             <Grid item lg={6}>
                                 {props.team &&

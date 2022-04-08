@@ -12,6 +12,7 @@ import MomentUtils from "@date-io/moment";
 import UploadShowProfilePicture from "../../../components/pictures/UploadShowProfilePicture";
 import {FileType, GetLastFilePath, UploadFile} from "../../../services/FileService";
 import {useToasts} from "react-toast-notifications";
+import LocationLogo from "../../../assets/images/business_profile-cover.jpg";
 
 
 const CreateEditLocationModal = (props) => {
@@ -33,7 +34,7 @@ const CreateEditLocationModal = (props) => {
         dateOfBirth: props.location?.dateOfBirth ? new Date(props.location.dateOfBirth) : new Date()
     });
 
-    const [locationImage, setLocationImage] = useState(GetLastFilePath(location.files));
+    const [locationImage, setLocationImage] = useState(GetLastFilePath(location.files, LocationLogo));
     const horizontalStepperHandleNext = useRef(null);
 
     const steps = [
@@ -199,6 +200,7 @@ const CreateEditLocationModal = (props) => {
                                         longitude={location.longitude}
                                         latitude={location.latitude}
                                         hideLongitudeLatitude={true}
+                                        allowScrolling={true}
                                         onMarkerChange={(longitude, latitude) => setLocation({
                                             ...location,
                                             longitude: longitude,

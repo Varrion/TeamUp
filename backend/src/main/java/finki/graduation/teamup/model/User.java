@@ -48,9 +48,6 @@ public class User extends PersonalInfo implements UserDetails, Serializable {
     @OneToMany(orphanRemoval = true)
     Set<File> files;
 
-    @ManyToOne
-    Game game;
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     Set<TeamMember> teamMembers = new HashSet<>();

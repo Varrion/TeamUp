@@ -3,41 +3,40 @@ import GoogleMapReact from 'google-map-react';
 import Marker from "./Marker";
 import {CircularProgress} from "@material-ui/core";
 
-const mapOptions = (maps) => {
-    return {
-        streetViewControl: false,
-        scaleControl: true,
-        fullscreenControl: false,
-        styles: [{
-            featureType: "poi.business",
-            elementType: "labels",
-            stylers: [{
-                visibility: "off"
-            }]
-        }],
-        gestureHandling: "greedy",
+const GoogleMap = ({longitude, latitude, onMarkerChange, hideLongitudeLatitude, height, allowScrolling = false}) => {
+    const mapOptions = (maps) => {
+        return {
+            streetViewControl: false,
+            scaleControl: true,
+            fullscreenControl: false,
+            styles: [{
+                featureType: "poi.business",
+                elementType: "labels",
+                stylers: [{
+                    visibility: "off"
+                }]
+            }],
+            gestureHandling: "greedy",
 
-        mapTypeControl: true,
-        mapTypeId: maps.MapTypeId.ROADMAP,
-        mapTypeControlOptions: {
-            style: maps.MapTypeControlStyle.HORIZONTAL_BAR,
-            position: maps.ControlPosition.BOTTOM_CENTER,
-            mapTypeIds: [
-                maps.MapTypeId.ROADMAP,
-                maps.MapTypeId.SATELLITE,
-                maps.MapTypeId.HYBRID
-            ]
-        },
+            mapTypeControl: true,
+            mapTypeId: maps.MapTypeId.ROADMAP,
+            mapTypeControlOptions: {
+                style: maps.MapTypeControlStyle.HORIZONTAL_BAR,
+                position: maps.ControlPosition.BOTTOM_CENTER,
+                mapTypeIds: [
+                    maps.MapTypeId.ROADMAP,
+                    maps.MapTypeId.SATELLITE,
+                    maps.MapTypeId.HYBRID
+                ]
+            },
 
-        zoomControl: true,
-        clickableIcons: false,
-        scrollwheel: false,
-    };
-}
+            zoomControl: true,
+            clickableIcons: false,
+            scrollwheel: allowScrolling,
+        };
+    }
 
 
-
-const GoogleMap = ({longitude, latitude, onMarkerChange, hideLongitudeLatitude, height}) => {
     const [googleMap, setGoogleMap] = useState({
         mapApiLoaded: false,
         mapInstance: null,

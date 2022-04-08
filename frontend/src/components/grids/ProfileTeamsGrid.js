@@ -7,6 +7,7 @@ import SportsIcon from "@material-ui/icons/Sports";
 import TeamCard from "../cards/TeamCard";
 import React from "react";
 import {useAuthContext} from "../../configurations/AuthContext";
+import {GetAllTeamMembersInTeam} from "../../services/TeamService";
 
 const ProfileTeamsGrid = ({myTeam, joinedTeams, pendingToAcceptTeams, user, showTeamModal}) => {
     const {isAuthorized} = useAuthContext();
@@ -28,9 +29,7 @@ const ProfileTeamsGrid = ({myTeam, joinedTeams, pendingToAcceptTeams, user, show
                             <Typography className={"text-left mb-2"} variant={"subtitle1"}>
                                 {myTeam.description}
                             </Typography>
-
-                            <TeamMemberGrid team={myTeam}/>
-
+                            <TeamMemberGrid team={myTeam} teamMembers={GetAllTeamMembersInTeam(myTeam)}/>
                         </CardContent>
                     </Card>
                     : <Card className={"text-center"}>

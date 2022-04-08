@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {
+    ApplyToJoinIntoTeam,
     CalculateMissingMembers,
     GetAllPendingToAcceptTeamInvitationTeamMembers,
     GetAllPendingToBeAcceptedInTeamMembers,
@@ -8,7 +9,7 @@ import {
     teamsRoute,
     TeamStatus
 } from "../../services/TeamService";
-import {Card, CardContent, CardHeader, Grid, IconButton, Tooltip} from "@material-ui/core";
+import {Button, Card, CardContent, CardHeader, Grid, IconButton, Tooltip} from "@material-ui/core";
 import UploadShowProfilePicture from "../../components/pictures/UploadShowProfilePicture";
 import {FileType, GetLastFilePath, UploadFile} from "../../services/FileService";
 import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
@@ -24,6 +25,7 @@ import SportsCover from "../../assets/images/sports_profile-cover.png";
 import TeamLogo from "../../assets/images/TeamupTransparent.png";
 import {Sport} from "../../services/PlayingFieldService";
 import ThumbUpIcon from '@material-ui/icons/ThumbUp';
+import {useToasts} from "react-toast-notifications";
 
 
 const TeamDetails = ({id}) => {
@@ -32,17 +34,21 @@ const TeamDetails = ({id}) => {
     const [teamLead, setTeamLead] = useState(null);
     const [showUpdateTeamModal, setShowUpdateTeamModal] = useState(false);
     const [team, setTeam] = useState(null);
+    const [changeOccurred, setChangeOccurred] = useState(true);
+
+    const {addToast} = useToasts();
 
     useEffect(() => {
-        GetOneTeam(id)
+        changeOccurred && GetOneTeam(id)
             .then(res => {
-                console.log(res.data);
+                setChangeOccurred(false);
+
                 setTeam(res.data);
                 const teamLead = res.data?.teamMembers.find(member => member.isTeamLead);
                 setTeamLead(teamLead);
                 setIsLoggedUserTeamLead(teamLead?.user.username === loggedUser);
             })
-    }, [isLoggedUserTeamLead, showUpdateTeamModal])
+    }, [isLoggedUserTeamLead, showUpdateTeamModal, changeOccurred])
 
     const onFileUpload = (event) => {
         let formData = new FormData();
@@ -50,6 +56,7 @@ const TeamDetails = ({id}) => {
         UploadFile(teamsRoute, team.id, formData, FileType.Profile)
             .then(r => console.log('vlagam tuka'))
     }
+
 
     const approvePendingMemberIntoTeam = (event) => {
         event.preventDefault();
@@ -63,6 +70,17 @@ const TeamDetails = ({id}) => {
         UploadFile(teamsRoute, team.id, formData, FileType.Profile)
             .then(r => console.log('vlagam tuka'))
     }
+
+    const ApplyInTeam = event => {
+        event.preventDefault();
+
+        ApplyToJoinIntoTeam(loggedUser, team.id)
+            .then(r => {
+                setChangeOccurred(true);
+                addToast('Successfully applied', {appearance: 'success'});
+            })
+    }
+
 
     return (team &&
         <Grid container direction={"column"} justify={"space-between"}>
@@ -93,6 +111,13 @@ const TeamDetails = ({id}) => {
                                               src={team.logo ?? TeamLogo}
                                               classes={"justify-content-center d-flex align-content-center"}
                                               alt={FileType.Profile}/>
+
+                    {!isAuthorized(teamLead?.user?.username) && !team.teamMembers.find(teamMember => isAuthorized(teamMember.user.username)) &&
+                        <div className={"text-center mt-5"}>
+                            <Button variant={"outlined"} color={"primary"} onClick={ApplyInTeam}>Apply
+                                Now</Button>
+                        </div>
+                    }
                 </Grid>
                 <Grid item sm={4}>
                     <Card>
@@ -155,7 +180,8 @@ const TeamDetails = ({id}) => {
                 <Grid item sm={12} md={6}>
                     <Card className={"mt-5"}>
                         <CardContent>
-                            <Typography variant={"h5"} align={"center"}>Pending applicants</Typography>
+                            <Typography variant={"h5"} align={"center"} className={"mb-3"}>Pending
+                                applicants</Typography>
                             <TeamMemberGrid teamMembers={GetAllPendingToBeAcceptedInTeamMembers(team)}
                                             team={team} hideMissingMembers={true} buttonIcon={ThumbUpIcon}/>
                         </CardContent>
@@ -164,7 +190,8 @@ const TeamDetails = ({id}) => {
                 <Grid item sm={12} md={6} className={"pl-5"}>
                     <Card className={"mt-5"}>
                         <CardContent>
-                            <Typography variant={"h5"} align={"center"}>Awaiting their approval</Typography>
+                            <Typography variant={"h5"} className={"mb-3"} align={"center"}>Awaiting their
+                                approval</Typography>
                             <TeamMemberGrid teamMembers={GetAllPendingToAcceptTeamInvitationTeamMembers(team)}
                                             team={team} hideMissingMembers={true}/>
                         </CardContent>

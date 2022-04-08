@@ -1,11 +1,16 @@
 import {
-    Box, Chip,
+    Box,
+    Chip,
     Dialog,
     DialogContent,
     DialogTitle,
     FormControl,
     Grid,
-    IconButton, InputLabel, MenuItem, OutlinedInput, Select,
+    IconButton,
+    InputLabel,
+    MenuItem,
+    OutlinedInput,
+    Select,
     TextField,
     Typography
 } from "@material-ui/core";
@@ -19,6 +24,7 @@ import StyledTextField from "../../../components/StyledTextField";
 import {CreateTeam, DeleteTeam, EditTeam, TeamStatus} from "../../../services/TeamService";
 import {useToasts} from "react-toast-notifications";
 import SportRadioButton from "../../../components/SportRadioButton";
+import {Sport} from "../../../services/PlayingFieldService";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -43,13 +49,16 @@ const CreateEditTeamModal = (props) => {
 
     }, [])
 
+
+    console.log(props.team);
+
     const [team, setTeam] = useState({
         name: props.team?.name ?? "",
         description: props.team?.description ?? "",
         maxSize: props.team?.size ?? 2,
         teamLead: props.team?.teamLead ?? loggedUser,
         membersUsernames: props.team?.teamMembers.map(teamMember => teamMember.user.username) ?? [loggedUser],
-        sport: props.team?.sport ?? "",
+        sport: props.team?.sport ?? Sport.Other,
         teamStatus: TeamStatus.LookingForMore
     });
 

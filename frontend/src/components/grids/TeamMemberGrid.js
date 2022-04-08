@@ -11,8 +11,7 @@ const TeamMemberGrid = ({team, teamMembers, buttonAction, buttonIcon, hideMissin
     const missingMembersNumber = AddAvatarsForMissingMembers(team);
 
     return (
-        <Grid container
-              justify={"space-between"}>
+        <Grid container>
             {
                 teamMembers.map(teamMember =>
                     <Grid key={teamMember?.user.id} item lg={3}>
@@ -26,8 +25,6 @@ const TeamMemberGrid = ({team, teamMembers, buttonAction, buttonIcon, hideMissin
                             {buttonAction &&
                                 <Button variant={"contained"} onClick={buttonAction} color={"primary"} size={"small"}
                                         className={"rounded"}>{buttonIcon}</Button>}
-                        </div>
-                        <div>
                         </div>
                     </Grid>)
             }

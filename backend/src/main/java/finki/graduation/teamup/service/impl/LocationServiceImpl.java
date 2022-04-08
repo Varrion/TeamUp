@@ -19,8 +19,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
-import static finki.graduation.teamup.model.enums.FileType.valueOf;
-
 @Service
 public class LocationServiceImpl implements LocationService {
     private final LocationRepository locationRepository;

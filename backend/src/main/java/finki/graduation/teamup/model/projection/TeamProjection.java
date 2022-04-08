@@ -1,6 +1,7 @@
 package finki.graduation.teamup.model.projection;
 
 import finki.graduation.teamup.model.Team;
+import finki.graduation.teamup.model.enums.Sport;
 import finki.graduation.teamup.model.projection.base.BaseNameDescriptionProjection;
 import org.springframework.data.rest.core.config.Projection;
 
@@ -17,4 +18,6 @@ public interface TeamProjection extends BaseNameDescriptionProjection {
     Set<TeamMemberProjection> getTeamMembers();
 
     FileProjection getLogo();
+
+    Sport getSport();
 }

@@ -13,6 +13,7 @@ import SplitButton from "../../components/buttons/SplitButton";
 import {FileType, GetLastFilePath} from "../../services/FileService";
 import LocationInfoGrid from "../../components/grids/LocationInfoGrid";
 import TitleWithButtonGrid from "../../components/grids/TitleWithButtonGrid";
+import LocationLogo from "../../assets/images/business_profile-cover.jpg";
 
 const LocationDetails = ({id}) => {
     const {isAuthorized} = useAuthContext();
@@ -56,18 +57,21 @@ const LocationDetails = ({id}) => {
         <Grid container direction={"column"} justify={"center"} alignItems={"center"}>
             <Grid container alignItems={"center"} justify={"space-between"}>
                 <Grid item lg={2}>
-                    <UploadShowProfilePicture width={200} height={200} src={GetLastFilePath(location.files)}
+                    <UploadShowProfilePicture width={200} height={200}
+                                              src={GetLastFilePath(location.files, LocationLogo)}
                                               alt={FileType.Profile}/>
+
                 </Grid>
                 <Grid item lg={10}>
                     <TitleWithButtonGrid title={location.name}
                                          variant={"h1"}
-                                         button={<SplitButton buttonColor={"secondary"} buttonVariant={"contained"}
-                                                              text={<><EditLocation/> Edit</>}
-                                                              menuOptions={locationMenuButtonActions}
-                                                              classes={"float-right"}
-                                                              mainOption={() => setOpenUpdateModal(true)}
-                                         />}
+                                         button={isAuthorized(location.owner.username) &&
+                                             <SplitButton buttonColor={"secondary"} buttonVariant={"contained"}
+                                                          text={<><EditLocation/> Edit</>}
+                                                          menuOptions={locationMenuButtonActions}
+                                                          classes={"float-right"}
+                                                          mainOption={() => setOpenUpdateModal(true)}
+                                             />}
                     />
                     <Typography className={"mt-3"} variant={"body1"}>
                         {location.description ?? "Nothing here for now"}
@@ -77,6 +81,7 @@ const LocationDetails = ({id}) => {
 
             <LocationInfoGrid location={location}/>
             <GoogleMap height={"600px"} latitude={location.latitude} longitude={location.longitude}
+                       allowScrolling={false}
                        hideLongitudeLatitude={true}/>
 
             <Typography variant={"h2"}> Terrains </Typography>

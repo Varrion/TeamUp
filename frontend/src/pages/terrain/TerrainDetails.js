@@ -59,7 +59,7 @@ const TerrainDetails = (props) => {
         } : null]
 
     const terrainIntervalMenuButtonActionsForTeamLeaders = [
-        selectedInterval && selectedInterval.teamId !== leadingTeamId
+        selectedInterval && selectedInterval.teamId === null && selectedInterval.fieldStatus === FieldStatus.Open
             ? {
                 text: <><DoneIcon/> Reserve </>,
                 action: (interval) => reserveInterval(interval)

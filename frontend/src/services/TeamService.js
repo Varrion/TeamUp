@@ -92,8 +92,8 @@ const RemoveOrRejectTeamMember = (request, teamId) => {
     return axios.post(`${teamsRoute}/${teamId}/members/remove`, request)
 }
 
-const SendInvitationToJoinInTeam = (request, teamId) => {
-    return axios.post(`${teamsRoute}/${teamId}/members/apply`, request)
+const ApplyToJoinIntoTeam = (applicantUsername, teamId) => {
+    return axios.post(`${teamsRoute}/${teamId}/members/apply`, applicantUsername)
 }
 
 export {
@@ -115,5 +115,5 @@ export {
     AddAvatarsForMissingMembers,
     ApproveMemberIntoTeam,
     RemoveOrRejectTeamMember,
-    SendInvitationToJoinInTeam
+    ApplyToJoinIntoTeam
 }

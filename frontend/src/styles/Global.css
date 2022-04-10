@@ -240,5 +240,9 @@
 .interval-list-item {
     width: 270px;
 }
-
-
+.navbar {
+    padding: 25px 25px;
+}
+.navbar .nav-link {
+    color: #fff !important;
+}

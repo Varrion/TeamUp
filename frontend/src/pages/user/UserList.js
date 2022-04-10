@@ -1,9 +1,9 @@
-import {useEffect, useState} from "react";
-import {GetAllUsers, UserRole} from "../../services/UserService";
-import {Grid, makeStyles} from "@material-ui/core";
+import { useEffect, useState } from "react";
+import { GetAllUsers, UserRole } from "../../services/UserService";
+import { Grid, makeStyles } from "@material-ui/core";
 import UserCard from "../../components/cards/UserCard";
 
-const useStyles = makeStyles(({palette}) => ({
+const useStyles = makeStyles(({ palette }) => ({
     card: {
         borderRadius: 12,
         minWidth: 256,
@@ -44,8 +44,8 @@ const UserList = (props) => {
     return (
         props.users && props.users.length > 0 &&
         <Grid container>
-            {props.users.map(user => <Grid key={user.id} item lg={3} xs={6}>
-                <UserCard user={user}/>
+            {props.users.map(user => <Grid key={user.id} item xs={12} md={6} lg={4}>
+                <UserCard user={user} />
             </Grid>)}
         </Grid>
     )

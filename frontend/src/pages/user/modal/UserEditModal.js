@@ -14,19 +14,19 @@ import {
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import useStyles from "../../../components/MaterialStyles";
-import {EditUser, Gender} from "../../../services/UserService";
-import {useState} from "react";
+import { EditUser, Gender } from "../../../services/UserService";
+import { useState } from "react";
 import Button from "@material-ui/core/Button";
-import {KeyboardDatePicker, MuiPickersUtilsProvider,} from '@material-ui/pickers';
+import { KeyboardDatePicker, MuiPickersUtilsProvider, } from '@material-ui/pickers';
 import MomentUtils from '@date-io/moment';
-import {useToggleTheme} from "../../../configurations/MuiThemeContext";
-import {useToasts} from "react-toast-notifications";
+import { useToggleTheme } from "../../../configurations/MuiThemeContext";
+import { useToasts } from "react-toast-notifications";
 
 const UserEditModal = (props) => {
     const classes = useStyles();
     const { addToast } = useToasts();
 
-    const {changeMainColorByUserGender} = useToggleTheme();
+    const { changeMainColorByUserGender } = useToggleTheme();
 
     const [user, setUser] = useState({
         username: props.profile?.username ?? "",
@@ -44,11 +44,11 @@ const UserEditModal = (props) => {
 
     const handleChange = name => event => {
         if (name === "dateOfBirth") {
-            setUser({...user, dateOfBirth: event.toDate()})
+            setUser({ ...user, dateOfBirth: event.toDate() })
             return;
         }
 
-        setUser({...user, [name]: event.target.value});
+        setUser({ ...user, [name]: event.target.value });
     };
 
     const handleSubmit = event => {
@@ -74,7 +74,7 @@ const UserEditModal = (props) => {
                 <Typography variant={"h4"} className={"font-weight-bolder"}> Edit Profile </Typography>
             </DialogTitle>
             <IconButton aria-label="close" className={classes.closeButton} onClick={() => props.onClose()}>
-                <CloseIcon/>
+                <CloseIcon />
             </IconButton>
             <DialogContent className={"mb-3"}>
                 <form onSubmit={handleSubmit}>
@@ -93,6 +93,7 @@ const UserEditModal = (props) => {
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <TextField
+                                required
                                 id="lastName"
                                 name="lastName"
                                 label="Last name"
@@ -104,6 +105,7 @@ const UserEditModal = (props) => {
                         </Grid>
                         <Grid item xs={12}>
                             <TextField
+                                required
                                 id="email"
                                 name="email"
                                 label="Email address"
@@ -124,6 +126,7 @@ const UserEditModal = (props) => {
                                 value={user.phoneNumber}
                                 onChange={handleChange("phoneNumber")}
                                 autoComplete="phone number"
+                                type="number"
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -153,7 +156,7 @@ const UserEditModal = (props) => {
                                     label="Date of Birth"
                                     format="DD/MM/YYYY"
                                     value={user.dateOfBirth}
-                                    InputAdornmentProps={{position: "start"}}
+                                    InputAdornmentProps={{ position: "start" }}
                                     onChange={handleChange("dateOfBirth")}
                                 />
                             </Grid>
@@ -161,15 +164,15 @@ const UserEditModal = (props) => {
                         <Grid item xs={12}>
                             <FormControl component="fieldset">
                                 <FormLabel color={user.gender === Gender.Male ? "primary" : "secondary"}
-                                           component="legend">Gender</FormLabel>
+                                    component="legend">Gender</FormLabel>
                                 <RadioGroup row aria-label="gender" name="gender" value={user.gender}
-                                            onChange={handleChange("gender")}>
-                                    <FormControlLabel value={Gender.Male} control={<Radio color={"primary"}/>}
-                                                      label={Gender.Male}/>
-                                    <FormControlLabel value={Gender.Female} control={<Radio/>}
-                                                      label={Gender.Female}/>
-                                    <FormControlLabel value={Gender.Other} control={<Radio color={"default"}/>}
-                                                      label={Gender.Other}/>
+                                    onChange={handleChange("gender")}>
+                                    <FormControlLabel value={Gender.Male} control={<Radio color={"primary"} />}
+                                        label={Gender.Male} />
+                                    <FormControlLabel value={Gender.Female} control={<Radio />}
+                                        label={Gender.Female} />
+                                    <FormControlLabel value={Gender.Other} control={<Radio color={"default"} />}
+                                        label={Gender.Other} />
                                 </RadioGroup>
                             </FormControl>
                         </Grid>

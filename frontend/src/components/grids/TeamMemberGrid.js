@@ -11,7 +11,7 @@ const TeamMemberGrid = ({team, teamMembers, buttonAction, buttonIcon, hideMissin
     const missingMembersNumber = AddAvatarsForMissingMembers(team);
 
     return (
-        <Grid container>
+        <Grid container className="pl-4 pr-4">
             {
                 teamMembers.map(teamMember =>
                     <Grid key={teamMember?.user.id} item lg={3}>

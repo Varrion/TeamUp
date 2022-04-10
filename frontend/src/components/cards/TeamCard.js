@@ -18,7 +18,7 @@ const TeamCard = ({ team }) => {
                 </Typography>
                 <Typography className={"text-center card-description m-0 mb-4"}
                 >{truncate(team.description, 50, 50)}</Typography>
-                <hr style={{width:"80%"}}/>
+                <hr style={{width:"90%"}}/>
                 <TeamMemberGrid team={team} teamMembers={GetAllTeamMembersInTeam(team)} />
             </CardContent>
         </Card>

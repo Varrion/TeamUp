@@ -33,11 +33,11 @@ const SearchBar = (props) => {
     }
 
     return (
-        <Grid container>
+        <Grid container className="mb-5">
             <TextField
                 id="standard-full-width"
                 // label="Search"
-                style={{margin: 8}}
+                style={{margin: "10px auto",maxWidth:'450px'}}
                 placeholder="Search something..."
                 onChange={e => handleChange(e)}
                 fullWidth

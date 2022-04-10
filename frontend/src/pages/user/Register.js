@@ -49,8 +49,8 @@ const Register = (props) => {
     return (loggedUser ? <Redirect to={"/"} noThrow/> :
             showRoleModal && (user.roleType === null || user.roleType === undefined) ?
                 <ChooseRole open={showRoleModal} onClose={() => setShowRoleModal(false)} roleset={chooseRole}/>
-                : <Container component="main" maxWidth="xs">
-                    <Paper elevation={0} className={"d-flex flex-column align-items-center pt-5"}>
+                : <Container component="main" maxWidth="xs" className="register-container-custom">
+                    <Paper elevation={0} className={"d-flex flex-column align-items-center pt-5 register-paper-custom"}>
                         <Avatar className={classes.avatar}>
                             <LockOutlinedIcon/>
                         </Avatar>

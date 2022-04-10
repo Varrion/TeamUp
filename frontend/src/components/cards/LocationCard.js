@@ -1,32 +1,33 @@
-import {Card, CardContent, Divider, Typography} from "@material-ui/core";
-import {navigate} from "@reach/router";
+import { Card, CardContent, Divider, Typography } from "@material-ui/core";
+import { navigate } from "@reach/router";
 import Avatar from "@material-ui/core/Avatar";
-import {FileType, GetLastFilePath} from "../../services/FileService";
+import { FileType, GetLastFilePath } from "../../services/FileService";
 import React from "react";
 import LocationInfoGrid from "../grids/LocationInfoGrid";
 import GoogleMap from "../maps/GoogleMap";
 
-const LocationCard = ({location}) => {
+const LocationCard = ({ location }) => {
     return (
         <>
 
-            <Card onClick={() => navigate(`/locations/${location.id}`)}>
+            <Card onClick={() => navigate(`/locations/${location.id}`)}
+                className={`card-zoom cursor-pointer card-height m-3 text-center`}>
                 <CardContent>
                     <Avatar className={"profile-avatar"}
-                            src={GetLastFilePath(location.files, "https://i.pravatar.cc/300")}
-                            alt={FileType.Profile}/>
+                        src={GetLastFilePath(location.files, "https://i.pravatar.cc/300")}
+                        alt={FileType.Profile} />
                     <Typography variant={"h4"}
-                                className={"font-weight-bold text-center mt-2"}>{location.name.toUpperCase()}
+                        className={"font-weight-bold text-center mt-2"}>{location.name.toUpperCase()}
                     </Typography>
 
                     <Typography variant={"body1"} className={"mt-2"}>{location.description.substring(0, 50)}
                     </Typography>
 
                     <GoogleMap height={"300px"} latitude={location.latitude} longitude={location.longitude}
-                               hideLongitudeLatitude={true}/>
+                        hideLongitudeLatitude={true} />
                 </CardContent>
-                <Divider light/>
-                <LocationInfoGrid location={location}/>
+                <hr style={{ maxWidth: "90%" }} />
+                <LocationInfoGrid location={location} />
             </Card>
         </>
     )

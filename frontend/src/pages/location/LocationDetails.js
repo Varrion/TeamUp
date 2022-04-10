@@ -100,7 +100,7 @@ const LocationDetails = ({id}) => {
                                                                     in={checked}
                                                                     style={{transformOrigin: '0 0 0'}}
                                                                     {...(checked ? {timeout: 5000} : {})}>
-                    <Grid item lg={4} xs={6}>
+                    <Grid item  xs={12} md={6} lg={4}>
                         <TerrainCard terrain={terrain}/>
                     </Grid>
                 </Grow>)}

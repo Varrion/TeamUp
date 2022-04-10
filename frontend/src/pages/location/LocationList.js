@@ -46,11 +46,13 @@ const LocationList = ({ locationId }) => {
                             </Tooltip>}
                     </Grid>
 
-                    {publicTerrains && publicTerrains.length > 0 &&
-                        publicTerrains.map(terrain => <Grid item md={4} sm={6}
-                            key={terrain.id}>
-                            <TerrainCard terrain={terrain} />
-                        </Grid>)}
+                    <Grid container className="mb-5">
+                        {publicTerrains && publicTerrains.length > 0 &&
+                            publicTerrains.map(terrain => <Grid item xs={12} md={6} lg={4}
+                                key={terrain.id}>
+                                <TerrainCard terrain={terrain} />
+                            </Grid>)}
+                    </Grid>
                 </Grid>}
 
             {createCustomTerrainModal && <CreateEditTerrainModal open={createCustomTerrainModal}

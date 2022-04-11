@@ -1,6 +1,5 @@
 package finki.graduation.teamup.controller;
 
-import finki.graduation.teamup.model.dto.ChangeTeamMemberStatusRequestDto;
 import finki.graduation.teamup.model.dto.CreateUpdateTeamRequestDto;
 import finki.graduation.teamup.model.enums.TeamMemberStatus;
 import finki.graduation.teamup.model.enums.TeamStatus;
@@ -62,15 +61,9 @@ public class TeamController extends FileController<Long> {
         teamService.deleteById(id);
     }
 
-    @PostMapping("{id}/members/add")
-    public void addUserInTeam(@RequestBody ChangeTeamMemberStatusRequestDto changeTeamMemberStatusRequestDto, @PathVariable Long id) {
-        teamService.changeMemberStatusInTeam(changeTeamMemberStatusRequestDto, id, TeamMemberStatus.Accepted);
-    }
-
-    @PostMapping("{id}/members/remove")
-    public void removeUserFromTeam(@RequestBody ChangeTeamMemberStatusRequestDto changeTeamMemberStatusRequestDto,
-                                   @PathVariable Long id) {
-        teamService.changeMemberStatusInTeam(changeTeamMemberStatusRequestDto, id, TeamMemberStatus.Rejected);
+    @PostMapping("{id}/members")
+    public void changeTeamMemberStatus(@RequestBody String memberUsername, @RequestParam(value = "action", required = false) TeamMemberStatus action, @PathVariable Long id) {
+        teamService.changeMemberStatusInTeam(memberUsername, id, action);
     }
 
     @PostMapping("{id}/members/apply")

@@ -3,10 +3,8 @@ import moment from "moment";
 import React from "react";
 import {FieldStatus} from "../../services/PlayingFieldService";
 import MenuButton from "../buttons/MenuButton";
-import {useAuthContext} from "../../configurations/AuthContext";
 
 const PlayIntervalListItem = ({interval, menuOptions, setSelectedElement}) => {
-    const {leadingTeamId} = useAuthContext();
     return <div className={"d-flex align-baseline justify-content-center m-2 interval-list-item"}>
         <Divider orientation={"vertical"}/>
         <ListItem divider>
@@ -23,9 +21,8 @@ const PlayIntervalListItem = ({interval, menuOptions, setSelectedElement}) => {
                 secondary={moment(interval.gameEndTime).utc().format("DD.MM.YYYY HH:mm")}
             />
             <ListItemSecondaryAction className={"text-right"}>
-                {(interval.teamId === leadingTeamId || interval.fieldStatus === FieldStatus.Open) &&
-                    <MenuButton actionParams={interval} menuOptions={menuOptions}
-                                setSelectedItem={setSelectedElement}/>}
+                {menuOptions && <MenuButton actionParams={interval} menuOptions={menuOptions}
+                                            setSelectedItem={setSelectedElement}/>}
             </ListItemSecondaryAction>
         </ListItem>
         <Divider orientation={"vertical"}/>

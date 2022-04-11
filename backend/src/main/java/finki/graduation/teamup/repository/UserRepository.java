@@ -27,9 +27,9 @@ public interface UserRepository extends JpaRepository<User, Long>, PagingAndSort
     List<UserProjection> findAllUsers(@Param("role") Role role);
 
     @Query("SELECT user " +
-            "FROM Team team " +
-            "   INNER JOIN team.teamMembers teamMembers " +
-            "   INNER JOIN teamMembers.user user " +
+            "FROM User user " +
+            "   INNER JOIN user.teamMembers teamMembers " +
+            "   INNER JOIN teamMembers.team team " +
             "WHERE user.deletedOn IS NULL " +
             "      AND team.id = :teamId " +
             "      AND teamMembers.memberStatus = :memberStatus " +

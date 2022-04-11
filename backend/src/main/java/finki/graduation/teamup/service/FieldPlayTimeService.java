@@ -4,7 +4,6 @@ import finki.graduation.teamup.model.dto.PlayTimeDto;
 import finki.graduation.teamup.model.projection.PlayTimeProjection;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface FieldPlayTimeService {
     List<PlayTimeDto> getAllFieldPlayingIntervals(Long fieldId);
@@ -16,4 +15,6 @@ public interface FieldPlayTimeService {
     void updatePlayTimeIntervalStatus(PlayTimeDto playTimeDto, Long playTimeId);
 
     void deleteFieldPlayTime(Long playTimeId);
+
+    List<PlayTimeProjection> getAllFuturePlayingIntervalsByTeamId(Long teamId);
 }

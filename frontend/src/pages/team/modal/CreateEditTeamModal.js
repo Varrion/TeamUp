@@ -21,7 +21,7 @@ import useStyles from "../../../components/MaterialStyles";
 import {useAuthContext} from "../../../configurations/AuthContext";
 import {GetAllUsers, UserRole} from "../../../services/UserService";
 import StyledTextField from "../../../components/StyledTextField";
-import {CreateTeam, DeleteTeam, EditTeam, TeamStatus} from "../../../services/TeamService";
+import {CreateTeam, DeleteTeam, EditTeam, TeamMemberStatus, TeamStatus} from "../../../services/TeamService";
 import {useToasts} from "react-toast-notifications";
 import SportRadioButton from "../../../components/SportRadioButton";
 import {Sport} from "../../../services/PlayingFieldService";
@@ -42,22 +42,28 @@ const CreateEditTeamModal = (props) => {
     const {addToast} = useToasts();
     const {loggedUser} = useAuthContext();
     const [players, setPlayers] = useState(null);
+    const [getAllNonRejectedTeamMembers, setGetAllNonRejectedTeamMembers] = useState(null);
 
     useEffect(() => {
+        // console.log(props.team);
+        // props.team && GetTeamMembers(props.team.id)
+        //     .then(res => setGetAllNonRejectedTeamMembers(res.data))
+
         GetAllUsers(UserRole.User)
-            .then(response => setPlayers(response.data))
+            .then(response => {
+                setPlayers(response.data)
+            })
 
     }, [])
-
-
-    console.log(props.team);
 
     const [team, setTeam] = useState({
         name: props.team?.name ?? "",
         description: props.team?.description ?? "",
         maxSize: props.team?.size ?? 2,
         teamLead: props.team?.teamLead ?? loggedUser,
-        membersUsernames: props.team?.teamMembers.map(teamMember => teamMember.user.username) ?? [loggedUser],
+        membersUsernames: props.team?.teamMembers
+            .filter(teamMember => teamMember.memberStatus === TeamMemberStatus.PendingToAcceptTeamInvitation || teamMember.memberStatus === TeamMemberStatus.Accepted)
+            .map(teamMember => teamMember.user.username) ?? [loggedUser],
         sport: props.team?.sport ?? Sport.Other,
         teamStatus: TeamStatus.LookingForMore
     });

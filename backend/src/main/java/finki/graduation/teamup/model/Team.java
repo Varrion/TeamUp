@@ -29,11 +29,11 @@ public class Team extends BaseDescription {
     @Enumerated(EnumType.STRING)
     TeamStatus teamStatus;
 
-    @OneToMany
-    Set<Game> games;
-
     @OneToMany(mappedBy = "team")
     Set<TeamMember> teamMembers = new HashSet<>();
+
+    @OneToMany(mappedBy = "team")
+    Set<PlayTime> playingIntervals = new HashSet<>();
 
     @OneToOne
     File logo;

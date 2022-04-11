@@ -79,7 +79,7 @@ const LocationDetails = ({id}) => {
                 </Grid>
             </Grid>
 
-            <LocationInfoGrid location={location}/>
+            <LocationInfoGrid location={location} singleRow={true}/>
             <GoogleMap height={"600px"} latitude={location.latitude} longitude={location.longitude}
                        allowScrolling={false}
                        hideLongitudeLatitude={true}/>

@@ -1,4 +1,4 @@
-import {Grid, Typography} from "@material-ui/core";
+import {Badge, Grid, IconButton, Typography, Link as MuiLink} from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import MissingMember from "../../assets/images/MissingPlayer.png";
 import {GetLastFilePath} from "../../services/FileService";
@@ -6,8 +6,11 @@ import {Link} from "@reach/router";
 import React from "react";
 import {AddAvatarsForMissingMembers, CalculateMissingMembers} from "../../services/TeamService";
 import Button from "@material-ui/core/Button";
+import CancelIcon from '@material-ui/icons/Cancel';
+import ThumbUpIcon from "@material-ui/icons/ThumbUp";
+import {truncate} from "../Functions";
 
-const TeamMemberGrid = ({team, teamMembers, buttonAction, buttonIcon, hideMissingMembers = false}) => {
+const TeamMemberGrid = ({team, teamMembers, approveAction, removeAction, hideMissingMembers = false}) => {
     const missingMembersNumber = AddAvatarsForMissingMembers(team);
 
     return (
@@ -15,16 +18,31 @@ const TeamMemberGrid = ({team, teamMembers, buttonAction, buttonIcon, hideMissin
             {
                 teamMembers.map(teamMember =>
                     <Grid key={teamMember?.user.id} item lg={3}>
-                        <Avatar className={"profile-avatar"}
-                                src={GetLastFilePath(teamMember?.user?.files, MissingMember)}/>
+                        <div className={"text-center"}>
+                            <Badge
+                                overlap={"circle"}
+                                anchorOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                badgeContent={removeAction &&
+                                    <IconButton onClick={removeAction(teamMember)} className={"ml-3"}
+                                                color={"secondary"}> <CancelIcon/>
+                                    </IconButton>}
+                            >
+                                <Avatar className={"profile-avatar"}
+                                        src={GetLastFilePath(teamMember?.user?.files, MissingMember)}/>
+                            </Badge>
+                        </div>
                         <div className={"text-center text-uppercase mt-2 mb-2"}>
-                            <Link className={"text-black-50 font-weight-bolder"}
-                                  to={`/users/${teamMember.user.username}`}>@{teamMember.user.username} </Link>
+                            <MuiLink component={Link} className={"text-black-50 font-weight-bolder mui-link-color"}
+                                     to={`/users/${teamMember.user.username}`}>@{teamMember.user.username} </MuiLink>
                             <Typography
-                                variant={"h6"}>{teamMember.user.name} {teamMember.user.surname}</Typography>
-                            {buttonAction &&
-                                <Button variant={"contained"} onClick={buttonAction} color={"primary"} size={"small"}
-                                        className={"rounded"}>{buttonIcon}</Button>}
+                                variant={"h6"}>{truncate(`${teamMember.user.name} ${teamMember.user.surname}`, 10, 12)}  </Typography>
+                            {approveAction &&
+                                <Button variant={"contained"} onClick={approveAction(teamMember)} color={"primary"}
+                                        size={"small"}
+                                        className={"rounded"}><ThumbUpIcon/></Button>}
                         </div>
                     </Grid>)
             }

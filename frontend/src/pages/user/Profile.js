@@ -3,18 +3,22 @@ import React, {useEffect, useState} from "react";
 import {GetUser, UserRole, usersRoute} from "../../services/UserService";
 import UserEditModal from "./modal/UserEditModal";
 import CreateEditTeamModal from "../team/modal/CreateEditTeamModal";
-import {GetTeamsByMemberUsername, TeamMemberStatus} from "../../services/TeamService";
+import {ChangeTeamMemberStatus, GetTeamsByMemberUsername, TeamMemberStatus} from "../../services/TeamService";
 import {FileType, GetLastFilePath, UploadFile} from "../../services/FileService";
 import ProfileInfoGrid from "../../components/grids/ProfileInfoGrid";
 import ProfileTeamsGrid from "../../components/grids/ProfileTeamsGrid";
 import ProfileLeftDetailsGrid from "../../components/grids/ProfileLeftDetailsGrid";
 import {DeleteLocation, GetLocationByOwnerUsername} from "../../services/LocationService";
 import CreateEditLocationModal from "../location/modal/CreateEditLocationModal";
+import {useToasts} from "react-toast-notifications";
 
 const User = props => {
+    const {addToast} = useToasts();
     const [user, setUser] = useState(null);
     const [profileImage, setProfileImage] = useState(null);
     const [imageUploadedToggle, setImageUploadedToggle] = useState(false);
+
+    const [changeOccurred, setChangeOccurred] = useState(true);
 
     //teams
     const [myTeam, setMyTeam] = useState(null);
@@ -42,9 +46,11 @@ const User = props => {
     }, [props.username, showUpdateModal, imageUploadedToggle])
 
     useEffect(() => {
-        if (user) {
+        if (user && changeOccurred) {
             user.role === UserRole.User ?
                 GetTeamsByMemberUsername(user.username).then(r => {
+                    setChangeOccurred(false);
+
                     const teamsData = r.data;
                     setIsMemberOfTeam(!!teamsData.length);
 
@@ -64,10 +70,11 @@ const User = props => {
                                 && teamMember.user.username === user.username)))
                 })
                 : GetLocationByOwnerUsername(user.username).then(r => {
+                    setChangeOccurred(false);
                     setMyLocation(r.data);
                 });
         }
-    }, [user, showTeamModal, showLocationModal, locationDeleted])
+    }, [user, showTeamModal, showLocationModal, locationDeleted, changeOccurred])
 
     const onFileUpload = (event) => {
         let formData = new FormData();
@@ -87,6 +94,26 @@ const User = props => {
             .then(() => setLocationDeleted(true));
     }
 
+    const AcceptTeamInvitation = team => event => {
+        event.preventDefault();
+
+        ChangeTeamMemberStatus(user.username, team.id, TeamMemberStatus.Accepted)
+            .then(() => {
+                addToast("You have succesfully joined the team", {appearance: "success"})
+                setChangeOccurred(true);
+            })
+    }
+
+    const RejectTeamInvitation = team => event => {
+        event.preventDefault();
+
+        ChangeTeamMemberStatus(user.username, team.id, TeamMemberStatus.Rejected)
+            .then(() => {
+                addToast("You have rejected the team invitation", {appearance: "success"})
+                setChangeOccurred(true);
+            })
+    }
+
     return (user &&
         <Grid container>
             <ProfileLeftDetailsGrid profileImage={profileImage} user={user} isMemberOfTeam={isMemberOfTeam}
@@ -100,6 +127,8 @@ const User = props => {
                 <ProfileInfoGrid user={user}
                                  showUpdateInfoModal={() => setShowUpdateModal(true)}/> :
                 <ProfileTeamsGrid user={user} myTeam={myTeam} joinedTeams={joinedTeams}
+                                  acceptPendingTeamInvitation={AcceptTeamInvitation}
+                                  rejectPendingTeamInvitation={RejectTeamInvitation}
                                   pendingToAcceptTeams={pendingToAcceptTeams}
                                   showTeamModal={() => setShowTeamModal(true)}/>
             }

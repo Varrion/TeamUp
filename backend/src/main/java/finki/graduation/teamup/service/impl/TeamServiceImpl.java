@@ -1,10 +1,10 @@
 package finki.graduation.teamup.service.impl;
 
+import finki.graduation.teamup.config.AuthUserContext;
 import finki.graduation.teamup.model.File;
 import finki.graduation.teamup.model.Team;
 import finki.graduation.teamup.model.TeamMember;
 import finki.graduation.teamup.model.User;
-import finki.graduation.teamup.model.dto.ChangeTeamMemberStatusRequestDto;
 import finki.graduation.teamup.model.dto.CreateUpdateTeamRequestDto;
 import finki.graduation.teamup.model.enums.FileType;
 import finki.graduation.teamup.model.enums.TeamMemberStatus;
@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.projection.SpelAwareProxyProjectionFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -118,11 +119,21 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public void changeMemberStatusInTeam(ChangeTeamMemberStatusRequestDto requestDto, Long id, TeamMemberStatus changeStatus) {
+    public void changeMemberStatusInTeam(String memberUsername, Long id, TeamMemberStatus changeStatus) {
         Team team = findTeamOrThrowException(id);
-        TeamMember teamLead = findTeamMemberOrThrowException(team.getId(), requestDto.getTeamLeadUsername());
-        Set<TeamMember> teamMembers = teamMemberRepository.findUsersByTeamIdAndMemberStatus(team.getId(), TeamMemberStatus.Accepted);
-        TeamMember memberToChange = findTeamMemberOrThrowException(team.getId(), requestDto.getMemberUsernameToChange());
+        UserDetails teamLeadUser = AuthUserContext.GetLoggedUserData();
+
+        if (teamLeadUser == null) {
+            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED);
+        }
+
+        Set<TeamMember> teamMembers = team.getTeamMembers();
+        TeamMember memberToChange = findTeamMemberOrThrowException(team.getId(), memberUsername);
+
+        TeamMember teamLead = null;
+        if (memberToChange.getMemberStatus() != TeamMemberStatus.PendingToAcceptTeamInvitation) {
+            teamLead = findTeamMemberOrThrowException(team.getId(), teamLeadUser.getUsername());
+        }
 
         validate(teamLead, team, teamMembers, memberToChange);
 
@@ -136,12 +147,12 @@ public class TeamServiceImpl implements TeamService {
                     team.setTeamStatus(TeamStatus.Full);
                 }
 
-                if (memberToChange.getMemberStatus() != TeamMemberStatus.PendingToBeAcceptedInTeam) {
+                if (memberToChange.getMemberStatus() != TeamMemberStatus.PendingToBeAcceptedInTeam && memberToChange.getMemberStatus() != TeamMemberStatus.PendingToAcceptTeamInvitation) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
                 }
             }
             case Rejected -> {
-                if (memberToChange.getMemberStatus() != TeamMemberStatus.PendingToBeAcceptedInTeam || memberToChange.getMemberStatus() != TeamMemberStatus.Accepted) {
+                if (memberToChange.getMemberStatus() != TeamMemberStatus.PendingToBeAcceptedInTeam && memberToChange.getMemberStatus() != TeamMemberStatus.Accepted) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
                 }
             }
@@ -177,23 +188,30 @@ public class TeamServiceImpl implements TeamService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    private TeamMember findTeamMemberOrThrowException(Long teamId, String teamLeadUsername) {
-        return teamMemberRepository.findUserByTeamIdAndUserUsername(teamId, teamLeadUsername)
+    private TeamMember findTeamMemberOrThrowException(Long teamId, String teamMemberUsername) {
+        return teamMemberRepository.findUserByTeamIdAndUserUsername(teamId, teamMemberUsername)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    private void validate(TeamMember teamMember, Team team, Set<TeamMember> teamMembers, TeamMember memberToChange) {
+    private void validate(TeamMember teamLead, Team team, Set<TeamMember> teamMembers, TeamMember memberToChange) {
         if (!teamMembers.contains(memberToChange)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        if (team.getSize() < teamMembers.size() || team.getTeamStatus() != TeamStatus.LookingForMore || (!teamMember.isTeamLead() && teamMember != memberToChange)) {
+        if (memberToChange.getMemberStatus() == TeamMemberStatus.Rejected) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
+        if (team.getSize() < teamMembers.size() || team.getTeamStatus() != TeamStatus.LookingForMore) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 
-        if (teamMember != memberToChange && memberToChange.getMemberStatus() != TeamMemberStatus.PendingToBeAcceptedInTeam ||
-                teamMember == memberToChange && memberToChange.getMemberStatus() != TeamMemberStatus.PendingToAcceptTeamInvitation) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        if (teamLead == null) {
+            return;
+        }
+
+        if (!teamLead.isTeamLead() || teamLead == memberToChange) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
     }
 
@@ -244,7 +262,13 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public String saveFileToEntity(Long id, MultipartFile multipartFile, FileType fileType) throws Exception {
-        return "";
+        Team team = findTeamOrThrowException(id);
+
+        File teamLogo = fileService.save(multipartFile, fileType);
+        team.setLogo(teamLogo);
+
+        teamRepository.save(team);
+        return teamLogo.getFilePath();
     }
 
     @Override

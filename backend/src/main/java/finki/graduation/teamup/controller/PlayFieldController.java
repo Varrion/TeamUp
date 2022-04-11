@@ -62,6 +62,11 @@ public class PlayFieldController extends FileController<Long> {
         return playingFieldService.getAllFieldPlayingIntervals(fieldId);
     }
 
+    @GetMapping("playing-intervals/team/{teamId}")
+    public List<PlayTimeProjection> getAllFuturePlayingIntervalsForGivenTeam(@PathVariable Long teamId) {
+        return playingFieldService.getAllFuturePlayingIntervalsByTeamId(teamId);
+    }
+
     @PostMapping("{fieldId}/playing-intervals")
     public Long addPlayTime(@RequestBody PlayTimeDto playTimeDto, @PathVariable Long fieldId) {
         return playingFieldService.addFieldPlayTimeInterval(playTimeDto, fieldId);

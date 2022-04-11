@@ -104,6 +104,18 @@
     margin: auto;
 }
 
+.profile-avatar-large {
+    width: 150px !important;
+    height: 150px !important;
+    margin: auto;
+}
+
+.profile-avatar-extra-large {
+    width: 200px !important;
+    height: 200px !important;
+    margin: auto;
+}
+
 .bold {
     font-weight: 600;
 }
@@ -248,6 +260,10 @@
 }
 .navbar .nav-link {
     color: #fff !important;
+}
+
+.mui-link-color {
+    color: darkorange !important;
 }
 
 .register-container-custom {

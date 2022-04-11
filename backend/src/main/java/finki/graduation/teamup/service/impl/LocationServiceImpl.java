@@ -124,6 +124,6 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public File getFileByPath(String filePath) {
-        return null;
+        return fileService.findByFilePath(filePath);
     }
 }

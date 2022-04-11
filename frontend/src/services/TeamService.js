@@ -16,8 +16,8 @@ const TeamMemberStatus = {
     Accepted: 'Accepted'
 }
 
-const GetAllTeamMembersInTeam = (team) => {
-    return team.teamMembers.filter(teamMember => !teamMember.isTeamLead && teamMember.memberStatus === TeamMemberStatus.Accepted);
+const GetAllTeamMembersInTeam = (team, filterTeamLead = true) => {
+    return team.teamMembers.filter(teamMember => (!teamMember.isTeamLead || !filterTeamLead) && teamMember.memberStatus === TeamMemberStatus.Accepted);
 }
 
 const GetAllPendingToAcceptTeamInvitationTeamMembers = (team) => {
@@ -26,6 +26,10 @@ const GetAllPendingToAcceptTeamInvitationTeamMembers = (team) => {
 
 const GetAllPendingToBeAcceptedInTeamMembers = (team) => {
     return team.teamMembers.filter(teamMember => !teamMember.isTeamLead && teamMember.memberStatus === TeamMemberStatus.PendingToBeAcceptedInTeam);
+}
+
+const GetAllNonRejectedTeamMembers = (team) => {
+    return team.teamMembers.filter(teamMember => teamMember.memberStatus !== TeamMemberStatus.Rejected);
 }
 
 const CalculateMissingMembers = (team) => {
@@ -84,12 +88,10 @@ const GetTeamByTeamLeadUsername = (username) => {
     return axios.get(`${teamsRoute}/leading/${username}`)
 }
 
-const ApproveMemberIntoTeam = (request, teamId) => {
-    return axios.post(`${teamsRoute}/${teamId}/members/add`, request)
-}
-
-const RemoveOrRejectTeamMember = (request, teamId) => {
-    return axios.post(`${teamsRoute}/${teamId}/members/remove`, request)
+const ChangeTeamMemberStatus = (memberUsername, teamId, status) => {
+    return axios.post(`${teamsRoute}/${teamId}/members`, memberUsername, {
+        params: {"action": status}
+    })
 }
 
 const ApplyToJoinIntoTeam = (applicantUsername, teamId) => {
@@ -112,8 +114,8 @@ export {
     GetAllTeamMembersInTeam,
     GetAllPendingToBeAcceptedInTeamMembers,
     GetAllPendingToAcceptTeamInvitationTeamMembers,
+    GetAllNonRejectedTeamMembers,
     AddAvatarsForMissingMembers,
-    ApproveMemberIntoTeam,
-    RemoveOrRejectTeamMember,
+    ChangeTeamMemberStatus,
     ApplyToJoinIntoTeam
 }

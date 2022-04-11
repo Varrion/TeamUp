@@ -17,9 +17,14 @@ const GetAllPlayingIntervalsForTerrain = (terrainId) => {
     return axios.get(`${terrainRoute}/${terrainId}/playing-intervals`)
 }
 
+const GetAllFuturePlayingIntervalsForTeam = (teamId) => {
+    return axios.get(`${terrainRoute}/playing-intervals/team/${teamId}`)
+}
+
 export {
     ReserveClosePlayingInterval,
     UpdatePlayingInterval,
     DeletePlayingInterval,
     GetAllPlayingIntervalsForTerrain,
+    GetAllFuturePlayingIntervalsForTeam
 }

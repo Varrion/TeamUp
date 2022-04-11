@@ -182,7 +182,8 @@ const TerrainDetails = (props) => {
                                             setSelectedElement={setSelectedInterval}
                                             menuOptions={isAuthorized(terrainOwner)
                                                 ? terrainIntervalMenuButtonActionsForOwner
-                                                : (loggedUserRole === UserRole.User && leadingTeamId != null)
+                                                : (loggedUserRole === UserRole.User && leadingTeamId != null &&
+                                                    ((interval.teamId === leadingTeamId || interval.team?.id === leadingTeamId || interval.fieldStatus === FieldStatus.Open)))
                                                     ? terrainIntervalMenuButtonActionsForTeamLeaders
                                                     : null}
                                             interval={interval}/>)}

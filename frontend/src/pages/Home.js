@@ -5,7 +5,6 @@ import "../styles/Home.css";
 import TeamUpLogo from "../assets/images/TeamUpLogo2Transparent.png";
 import AttributeCard from "../components/cards/AttributeCard";
 import RoleCard from "../components/cards/RoleCard";
-import {Link} from "@reach/router";
 
 const Home = () => {
     let attributes = ["Stamina", "Speed", "Strength", "Skills", "Spirit"];
@@ -33,7 +32,7 @@ const Home = () => {
                     </Typography>
                 </div>
             </div>
-            <div className={"d-flex flex-column justify-content-center pt-3 pb-3 team-up-section"}>
+            <div className={`d-flex flex-column justify-content-center pt-3 pb-3`}>
                 <img className={"center-position pt-2"} src={TeamUpLogo} alt={"team-up"} height={180}/>
                 <Typography variant={"h3"} className={"text-center"}>
                     Team Up

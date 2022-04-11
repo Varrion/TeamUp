@@ -24,4 +24,6 @@ public interface PlayTimeRepository extends JpaRepository<PlayTime, Long> {
     List<PlayTime> findAllPlayingIntervalsForGivenField(@Param("fieldId") Long fieldId, @Param("dueDate") LocalDateTime dueDate);
 
     PlayTimeProjection findPlayTimeByPlayingFieldIdAndId(Long playingFieldId, Long intervalId);
+
+    List<PlayTimeProjection> findAllByGameEndTimeAfterAndTeamId(@Param("gameEndTime") LocalDateTime gameEndTime, @Param("teamId") Long teamId);
 }

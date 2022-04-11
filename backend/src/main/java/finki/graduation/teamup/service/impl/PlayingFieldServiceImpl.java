@@ -186,6 +186,11 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
         playTimeRepository.save(playTime);
     }
 
+    @Override
+    public List<PlayTimeProjection> getAllFuturePlayingIntervalsByTeamId(Long teamId) {
+        return playTimeRepository.findAllByGameEndTimeAfterAndTeamId(LocalDateTime.now(), teamId);
+    }
+
     private PlayingField findPlayingFieldOrThrowException(Long id) {
         PlayingField playingField = playingFieldRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));

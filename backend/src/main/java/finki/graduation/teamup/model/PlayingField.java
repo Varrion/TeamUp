@@ -12,6 +12,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.sql.Time;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
@@ -34,11 +35,17 @@ public class PlayingField extends BaseDescription {
     @ManyToOne
     Location location;
 
-    @ManyToMany
+    @OneToMany(orphanRemoval = true, mappedBy = "playingField")
     Set<PlayTime> playIntervals;
 
     @OneToMany(orphanRemoval = true)
     Set<File> files;
+
+    int pricePerHour;
+
+    Time openFrom;
+
+    Time openTo;
 
     public void updateField(PlayingFieldDto fieldDto) {
         setFieldFor(fieldDto.getFieldFor());

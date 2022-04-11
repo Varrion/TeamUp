@@ -8,7 +8,7 @@ import {Gender} from "../services/UserService";
 const CustomThemeContext = React.createContext(null);
 
 const CustomThemeProvider = ({children}) => {
-    const [dark, setDark] = useState(false);
+    const [dark, setDark] = useState(sessionStorage.getItem("preferDarkMode") === 'true');
     const [loggedUserGender, setLoggedUserGender] = useState(Gender.Male);
 
     const myTheme = {
@@ -28,8 +28,9 @@ const CustomThemeProvider = ({children}) => {
         }
     }
 
-    const toggleDarkMode = () => {
-        setDark(!dark);
+    const toggleDarkMode = (darkMode) => {
+        setDark(!darkMode);
+        return dark;
     }
 
     const changeMainColorByUserGender = (gender) => {

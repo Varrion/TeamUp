@@ -9,7 +9,7 @@ const TeamList = (props) => {
             props.teams.length > 0 &&
             props.teams.map((team) => (
               <Grid key={team.id} item  xs={12} md={6} lg={4}>
-                <TeamCard team={team} />
+                <TeamCard team={team} filterTeamLead={false}/>
               </Grid>
             ))}
         </Grid> 

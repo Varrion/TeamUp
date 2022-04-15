@@ -38,7 +38,18 @@ const Header = props => {
 
         window.addEventListener("scroll", listenScrollEvent);
         return () => window.removeEventListener("scroll", listenScrollEvent)
-    }, [props.isTransparent, background])
+    }, [props.isTransparent, background]);
+
+
+    const ProfileMenuButtonActions = [
+        {
+            text: <div className={"d-flex align-items-baseline"}>
+                <Link to={`/users/${loggedUser}`} className={"nav-link h6"}>
+                    Welcome {loggedUser}
+                </Link>
+                <Button className={"nav-link h6"} onClick={logout}>logout</Button>
+            </div>
+        }];
 
     return <Navbar bg={background} fixed={!isMobile && "top"} sticky={(isMobile || !props.isTransparent) && "top"}
                    expand="lg" variant="dark">
@@ -71,8 +82,9 @@ const Header = props => {
                         <Link to={"/register"} className={"nav-link h6 mr-3"}>REGISTER</Link>
                     </> :
                     <div className={"d-flex align-items-baseline"}>
+                        {/*<MenuButton isIconButton={false} menuOptions={ProfileMenuButtonActions}/>*/}
                         <Link to={`/users/${loggedUser}`} className={"nav-link h6"}>
-                            Welcome {loggedUser}
+                            {loggedUser.toUpperCase()}
                         </Link>
                         <Button className={"nav-link h6"} onClick={logout}>logout</Button>
                     </div>

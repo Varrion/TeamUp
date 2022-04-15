@@ -34,13 +34,13 @@ const TeamMemberGrid = ({team, teamMembers, approveAction, removeAction, hideMis
                                         src={GetLastFilePath(teamMember?.user?.files, MissingMember)}/>
                             </Badge>
                         </div>
-                        <div className={"text-center text-uppercase mt-2 mb-2"}>
-                            <MuiLink component={Link} className={"text-black-50 font-weight-bolder mui-link-color"}
+                        <div className={"text-center mt-2 mb-2"}>
+                            <MuiLink component={Link} className={"text-black-50 text-uppercase font-weight-bolder mui-link-color"}
                                      to={`/users/${teamMember.user.username}`}>@{teamMember.user.username} </MuiLink>
                             <Typography
-                                variant={"h6"}>{truncate(`${teamMember.user.name} ${teamMember.user.surname}`, 10, 12)}  </Typography>
+                                variant={"body1"}>{truncate(`${teamMember.user.name} ${teamMember.user.surname}`, 15, 16)}  </Typography>
                             {approveAction &&
-                                <Button variant={"contained"} onClick={approveAction(teamMember)} color={"primary"}
+                                <Button variant={"text"} onClick={approveAction(teamMember)} color={"primary"}
                                         size={"small"}
                                         className={"rounded"}><ThumbUpIcon/></Button>}
                         </div>

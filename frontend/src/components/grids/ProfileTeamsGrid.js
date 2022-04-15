@@ -7,10 +7,19 @@ import SportsIcon from "@material-ui/icons/Sports";
 import TeamCard from "../cards/TeamCard";
 import React from "react";
 import {useAuthContext} from "../../configurations/AuthContext";
-import {ChangeTeamMemberStatus, GetAllTeamMembersInTeam, TeamMemberStatus} from "../../services/TeamService";
+import {GetAllTeamMembersInTeam} from "../../services/TeamService";
 import {navigate} from "@reach/router";
 
-const ProfileTeamsGrid = ({myTeam, joinedTeams, pendingToAcceptTeams, acceptPendingTeamInvitation, rejectPendingTeamInvitation, user, showTeamModal}) => {
+const ProfileTeamsGrid = ({
+                              myTeam,
+                              joinedTeams,
+                              pendingToAcceptTeams,
+                              pendingToBeAcceptedInTeam,
+                              acceptPendingTeamInvitation,
+                              rejectPendingTeamInvitation,
+                              user,
+                              showTeamModal
+                          }) => {
     const {isAuthorized} = useAuthContext();
 
     return (
@@ -23,7 +32,8 @@ const ProfileTeamsGrid = ({myTeam, joinedTeams, pendingToAcceptTeams, acceptPend
                                 <EditOutlinedIcon/>
                             </IconButton>}/>
                         <CardContent>
-                            <Avatar className={"profile-avatar"} src={myTeam.logo?.filePath ?? 'https://i.pravatar.cc/300'}/>
+                            <Avatar className={"profile-avatar"}
+                                    src={myTeam.logo?.filePath ?? 'https://i.pravatar.cc/300'}/>
                             <Typography variant={"h5"}
                                         className={"font-weight-bold mb-3"}>{myTeam.name}
                             </Typography>
@@ -55,7 +65,7 @@ const ProfileTeamsGrid = ({myTeam, joinedTeams, pendingToAcceptTeams, acceptPend
             }
             {joinedTeams && joinedTeams.length > 0 &&
                 <Card className={"mt-4 text-center"}>
-                    <CardHeader title={"JOINED"}/>
+                    <CardHeader title={"OTHER"}/>
                     <CardContent>
                         <Grid container>
                             {joinedTeams.map(team => <Grid key={team.id} item xs={12} md={6} lg={4}>
@@ -72,7 +82,22 @@ const ProfileTeamsGrid = ({myTeam, joinedTeams, pendingToAcceptTeams, acceptPend
                     <CardContent>
                         <Grid container>
                             {pendingToAcceptTeams.map(team => <Grid key={team.id} item xs={12} md={6} lg={4}>
-                                <TeamCard team={team} onAccept={acceptPendingTeamInvitation} onCancel={rejectPendingTeamInvitation}/>
+                                <TeamCard team={team} onAccept={acceptPendingTeamInvitation}
+                                          filterTeamLead={false}
+                                          onCancel={rejectPendingTeamInvitation}/>
+                            </Grid>)}
+                        </Grid>
+                    </CardContent>
+                </Card>
+            }
+
+            {pendingToBeAcceptedInTeam && pendingToBeAcceptedInTeam.length > 0 &&
+                <Card className={"mt-4 text-center"}>
+                    <CardHeader title={"AWAITING APPROVAL IN"}/>
+                    <CardContent>
+                        <Grid container>
+                            {pendingToBeAcceptedInTeam.map(team => <Grid key={team.id} item xs={12} md={6} lg={4}>
+                                <TeamCard team={team}/>
                             </Grid>)}
                         </Grid>
                     </CardContent>

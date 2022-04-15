@@ -1,10 +1,12 @@
-import { Card, CardContent, Divider, Typography } from "@material-ui/core";
-import { navigate } from "@reach/router";
+import {Card, CardContent, Typography} from "@material-ui/core";
+import {navigate} from "@reach/router";
 import Avatar from "@material-ui/core/Avatar";
-import { FileType, GetLastFilePath } from "../../services/FileService";
+import {FileType, GetLastFilePath} from "../../services/FileService";
 import React from "react";
 import LocationInfoGrid from "../grids/LocationInfoGrid";
 import GoogleMap from "../maps/GoogleMap";
+import LocationLogo from "../../assets/images/business_profile-cover.jpg";
+
 
 const LocationCard = ({ location }) => {
     return (
@@ -14,7 +16,7 @@ const LocationCard = ({ location }) => {
                 className={`card-zoom cursor-pointer card-height m-3 text-center`}>
                 <CardContent>
                     <Avatar className={"profile-avatar"}
-                        src={GetLastFilePath(location.files, "https://i.pravatar.cc/300")}
+                        src={GetLastFilePath(location.files, LocationLogo)}
                         alt={FileType.Profile} />
                     <Typography variant={"h4"}
                         className={"font-weight-bold text-center mt-2"}>{location.name.toUpperCase()}

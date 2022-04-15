@@ -25,7 +25,7 @@ public class TeamController extends FileController<Long> {
         List<TeamProjection> teams = teamService.getAll(teamStatus);
 
         if (search != null && !search.isEmpty()) {
-            teams = teams.stream().filter(s -> s.getName().toLowerCase().startsWith(search)).toList();
+            teams = teams.stream().filter(s -> s.getName().toLowerCase().startsWith(search.toLowerCase())).toList();
         }
 
         return teams;

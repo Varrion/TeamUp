@@ -124,6 +124,10 @@
     min-height: 300px;
 }
 
+.team-card {
+    height: 600px;
+}
+
 .card-carousel-height {
     height: 360px;
 }
@@ -255,9 +259,11 @@
 .interval-list-item {
     width: 270px;
 }
+
 .navbar {
     padding: 25px 25px;
 }
+
 .navbar .nav-link {
     color: #fff !important;
 }
@@ -271,6 +277,7 @@
     max-width: 100% !important;
     background-size: cover;
 }
+
 .register-paper-custom {
     position: relative;
     top: 80px;
@@ -282,6 +289,7 @@
     -webkit-box-shadow: -4px 3px 27px 20px rgba(0, 0, 0, 0.56) !important;
     -moz-box-shadow: -4px 3px 27px 20px rgba(0, 0, 0, 0.56) !important;
 }
+
 @media only screen and (max-width: 1250px) {
     .register-paper-custom {
         left: 20%;

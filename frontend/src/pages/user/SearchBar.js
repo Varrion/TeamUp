@@ -1,23 +1,21 @@
-import {TextField} from "@material-ui/core";
-import {SearchUsers, usersRoute} from "../../services/UserService";
-import {UserRole} from "../../services/UserService";
-import {Grid} from "@material-ui/core";
+import {Grid, TextField} from "@material-ui/core";
+import {SearchUsers, UserRole, usersRoute} from "../../services/UserService";
 import {useLocation} from "@reach/router";
 import {GetAllTeams, teamsRoute} from "../../services/TeamService";
+import {useAuthContext} from "../../configurations/AuthContext";
 
 const SearchBar = (props) => {
     const location = useLocation();
+    const {loggedUserRole} = useAuthContext();
 
     const handleChange = (e) => {
         let input = e.target.value
         if (input.length >= 2 || input.length === 0) {
-            console.log(location.pathname);
             // eslint-disable-next-line default-case
             switch (location.pathname) {
                 case usersRoute:
-                    SearchUsers(input, UserRole.User)
+                    SearchUsers(input, loggedUserRole ?? UserRole.User)
                         .then(res => {
-                            console.log("users");
                             props.setUsers(res.data)
                         })
                     break;
@@ -25,7 +23,6 @@ const SearchBar = (props) => {
                     GetAllTeams(null, input)
                         .then(res => {
                             props.setTeams(res.data);
-                            console.log("teams", res.data);
                         })
                     break;
             }
@@ -37,7 +34,7 @@ const SearchBar = (props) => {
             <TextField
                 id="standard-full-width"
                 // label="Search"
-                style={{margin: "10px auto",maxWidth:'450px'}}
+                style={{margin: "10px auto", maxWidth: '450px'}}
                 placeholder="Search something..."
                 onChange={e => handleChange(e)}
                 fullWidth

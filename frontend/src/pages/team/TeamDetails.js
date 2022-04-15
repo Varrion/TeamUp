@@ -108,13 +108,28 @@ const TeamDetails = ({id}) => {
             })
     }
 
-    const ApplyInTeam = event => {
+    const ApplyInTeam = isApply => event => {
         event.preventDefault();
 
-        ApplyToJoinIntoTeam(loggedUser, team.id)
+        isApply ? ApplyToJoinIntoTeam(loggedUser, team.id)
+                .then(() => {
+                    setChangeOccurred(true);
+                    addToast('Successfully applied', {appearance: 'success'});
+                })
+            : ChangeTeamMemberStatus(loggedUser, team.id, TeamMemberStatus.Accepted)
+                .then(() => {
+                    setChangeOccurred(true);
+                    addToast("success", {appearance: "success"});
+                })
+    }
+
+    const LeaveTeam = event => {
+        event.preventDefault();
+
+        ChangeTeamMemberStatus(loggedUser, team.id, TeamMemberStatus.Rejected)
             .then(() => {
                 setChangeOccurred(true);
-                addToast('Successfully applied', {appearance: 'success'});
+                addToast("success", {appearance: "success"});
             })
     }
 
@@ -160,11 +175,26 @@ const TeamDetails = ({id}) => {
                                               classes={"justify-content-center d-flex align-content-center"}
                                               alt={FileType.Profile}/>
 
-                    {loggedUserRole === UserRole.User && !isAuthorized(teamLead?.user?.username) && !team.teamMembers.find(teamMember => isAuthorized(teamMember.user.username)) &&
-                        <div className={"text-center mt-5"}>
-                            <Button variant={"outlined"} color={"primary"} onClick={ApplyInTeam}>Apply
-                                Now</Button>
-                        </div>
+                    {loggedUserRole === UserRole.User && !isAuthorized(teamLead?.user?.username) &&
+                        <>
+                            {!GetAllTeamMembersInTeam(team).find(teamMember => isAuthorized(teamMember.user.username)) ?
+                                <div className={"text-center mt-5"}>
+                                    {
+                                        !GetAllPendingToAcceptTeamInvitationTeamMembers(team).some(teamMember => isAuthorized(teamMember.user.username)) ?
+                                            <Button variant={"outlined"}
+                                                    disabled={GetAllPendingToBeAcceptedInTeamMembers(team).some(teamMember => isAuthorized(teamMember.user.username))}
+                                                    color={"primary"} onClick={ApplyInTeam(true)}>Apply Now</Button>
+                                            : <Button variant={"outlined"}
+                                                      disabled={GetAllPendingToBeAcceptedInTeamMembers(team).some(teamMember => isAuthorized(teamMember.user.username))}
+                                                      color={"primary"} onClick={ApplyInTeam(false)}>Accept Invitation</Button>
+                                    }
+
+                                </div>
+                                : <div className={"text-center mt-5"}>
+                                    <Button variant={"outlined"} color={"secondary"} onClick={LeaveTeam}>Leave
+                                        Team</Button>
+                                </div>}
+                        </>
                     }
                 </Grid>
                 <Grid item sm={4}>
@@ -257,6 +287,7 @@ const TeamDetails = ({id}) => {
                             </Typography>
                             <TeamMemberGrid teamMembers={GetAllPendingToBeAcceptedInTeamMembers(team)}
                                             team={team} hideMissingMembers={true}
+                                            removeAction={isAuthorized(teamLead.user.username) && RemoveFromTeam}
                                             approveAction={isAuthorized(teamLead.user.username) && ApprovePendingMemberIntoTeam}
                             />
                         </CardContent>
@@ -276,7 +307,10 @@ const TeamDetails = ({id}) => {
             </Grid>
 
             {showUpdateTeamModal && <CreateEditTeamModal team={team} open={showUpdateTeamModal}
-                                                         onClose={() => setShowUpdateTeamModal(false)}/>}
+                                                         onClose={() => {
+                                                             setShowUpdateTeamModal(false);
+                                                             setChangeOccurred(true);
+                                                         }}/>}
         </Grid>
     )
 }

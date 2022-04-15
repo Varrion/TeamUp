@@ -17,5 +17,6 @@ public class PlayTimeDto {
 
     LocalDateTime gameEndTime;
 
+    @Nullable
     Long teamId;
 }

@@ -28,7 +28,7 @@ const AttributeCard = (props) => {
             image = Stamina;
     }
     return (
-        <Card>
+        <Card className={"card-zoom"}>
             <CardContent>
                 <img src={image} alt={props.attribute}
                      width={props.attribute === "Speed" ? 200 : 180} height={180}/>

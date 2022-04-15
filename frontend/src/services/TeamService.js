@@ -17,19 +17,19 @@ const TeamMemberStatus = {
 }
 
 const GetAllTeamMembersInTeam = (team, filterTeamLead = true) => {
-    return team.teamMembers.filter(teamMember => (!teamMember.isTeamLead || !filterTeamLead) && teamMember.memberStatus === TeamMemberStatus.Accepted);
+    return team?.teamMembers?.filter(teamMember => (!teamMember.isTeamLead || !filterTeamLead) && teamMember.memberStatus === TeamMemberStatus.Accepted);
 }
 
 const GetAllPendingToAcceptTeamInvitationTeamMembers = (team) => {
-    return team.teamMembers.filter(teamMember => !teamMember.isTeamLead && teamMember.memberStatus === TeamMemberStatus.PendingToAcceptTeamInvitation);
+    return team?.teamMembers?.filter(teamMember => !teamMember.isTeamLead && teamMember.memberStatus === TeamMemberStatus.PendingToAcceptTeamInvitation);
 }
 
 const GetAllPendingToBeAcceptedInTeamMembers = (team) => {
-    return team.teamMembers.filter(teamMember => !teamMember.isTeamLead && teamMember.memberStatus === TeamMemberStatus.PendingToBeAcceptedInTeam);
+    return team?.teamMembers?.filter(teamMember => !teamMember.isTeamLead && teamMember.memberStatus === TeamMemberStatus.PendingToBeAcceptedInTeam);
 }
 
 const GetAllNonRejectedTeamMembers = (team) => {
-    return team.teamMembers.filter(teamMember => teamMember.memberStatus !== TeamMemberStatus.Rejected);
+    return team?.teamMembers?.filter(teamMember => teamMember.memberStatus !== TeamMemberStatus.Rejected);
 }
 
 const CalculateMissingMembers = (team) => {

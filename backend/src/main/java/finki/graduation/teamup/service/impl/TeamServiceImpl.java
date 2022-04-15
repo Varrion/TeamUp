@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class TeamServiceImpl implements TeamService {
@@ -121,19 +122,27 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public void changeMemberStatusInTeam(String memberUsername, Long id, TeamMemberStatus changeStatus) {
         Team team = findTeamOrThrowException(id);
-        UserDetails teamLeadUser = AuthUserContext.GetLoggedUserData();
+        UserDetails loggedUser = AuthUserContext.GetLoggedUserData();
 
-        if (teamLeadUser == null) {
+        if (loggedUser == null) {
             throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED);
         }
 
-        Set<TeamMember> teamMembers = team.getTeamMembers();
+        Set<TeamMember> teamMembers = team.getTeamMembers()
+                .stream()
+                .filter(teamMember -> teamMember.getMemberStatus() != TeamMemberStatus.Rejected)
+                .collect(Collectors.toSet());
         TeamMember memberToChange = findTeamMemberOrThrowException(team.getId(), memberUsername);
 
         TeamMember teamLead = null;
-        if (memberToChange.getMemberStatus() != TeamMemberStatus.PendingToAcceptTeamInvitation) {
-            teamLead = findTeamMemberOrThrowException(team.getId(), teamLeadUser.getUsername());
+        if (memberToChange.getMemberStatus() != TeamMemberStatus.PendingToAcceptTeamInvitation && changeStatus != TeamMemberStatus.Rejected) {
+            teamLead = findTeamMemberOrThrowException(team.getId(), loggedUser.getUsername());
+
+            if (!teamLead.isTeamLead()) {
+                throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED);
+            }
         }
+
 
         validate(teamLead, team, teamMembers, memberToChange);
 
@@ -141,10 +150,6 @@ public class TeamServiceImpl implements TeamService {
             case Accepted -> {
                 if (team.getTeamStatus() != TeamStatus.LookingForMore) {
                     throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-                }
-
-                if (team.getSize() == teamMembers.size()) {
-                    team.setTeamStatus(TeamStatus.Full);
                 }
 
                 if (memberToChange.getMemberStatus() != TeamMemberStatus.PendingToBeAcceptedInTeam && memberToChange.getMemberStatus() != TeamMemberStatus.PendingToAcceptTeamInvitation) {
@@ -156,6 +161,12 @@ public class TeamServiceImpl implements TeamService {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
                 }
             }
+        }
+
+        if (team.getSize() == teamMembers.stream().filter(teamMember -> teamMember.getMemberStatus() == TeamMemberStatus.Accepted).collect(Collectors.toSet()).size()) {
+            team.setTeamStatus(TeamStatus.Full);
+        } else {
+            team.setTeamStatus(TeamStatus.LookingForMore);
         }
 
         memberToChange.setMemberStatus(changeStatus);
@@ -174,7 +185,14 @@ public class TeamServiceImpl implements TeamService {
         Team team = findTeamOrThrowException(teamId);
         User user = (User) userService.loadUserByUsername(username);
 
-        TeamMember teamMember = new TeamMember(team, user, TeamMemberStatus.PendingToBeAcceptedInTeam, false);
+        TeamMember teamMember = teamMemberRepository
+                .findUserByTeamIdAndUserUsername(teamId, username)
+                .orElse(new TeamMember(team, user, TeamMemberStatus.PendingToBeAcceptedInTeam, false));
+
+        if (teamMember.getMemberStatus() != TeamMemberStatus.PendingToBeAcceptedInTeam) {
+            teamMember.setMemberStatus(TeamMemberStatus.PendingToBeAcceptedInTeam);
+        }
+
         teamMemberRepository.save(teamMember);
     }
 
@@ -202,7 +220,7 @@ public class TeamServiceImpl implements TeamService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
-        if (team.getSize() < teamMembers.size() || team.getTeamStatus() != TeamStatus.LookingForMore) {
+        if (team.getSize() < teamMembers.stream().filter(teamMember -> teamMember.getMemberStatus() == TeamMemberStatus.Accepted).collect(Collectors.toSet()).size() || team.getTeamStatus() != TeamStatus.LookingForMore) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 

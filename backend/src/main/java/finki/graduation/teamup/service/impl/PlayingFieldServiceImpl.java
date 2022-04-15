@@ -127,8 +127,8 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
             playTimeDto.setFieldStatus(FieldStatus.Open);
 
             if (playTimeInterval.isPresent()) {
+                playTimeDto.setId(playTimeInterval.get().getId());
                 if (playTimeInterval.get().getTeam() != null) {
-                    playTimeDto.setId(playTimeInterval.get().getId());
                     playTimeDto.setTeamId(playTimeInterval.get().getTeam().getId());
                 }
 
@@ -171,9 +171,6 @@ public class PlayingFieldServiceImpl implements PlayingFieldService {
     public void updatePlayTimeIntervalStatus(PlayTimeDto playTimeDto, Long playTimeId) {
         PlayTime playTime = findPlayTimeOrThrowException(playTimeId);
         playTime.setFieldStatus(playTimeDto.getFieldStatus());
-
-        playTime.setGameStartTime(playTimeDto.getGameStartTime());
-        playTime.setGameEndTime(playTimeDto.getGameEndTime());
 
         playTimeRepository.save(playTime);
     }

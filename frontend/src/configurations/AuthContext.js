@@ -51,7 +51,8 @@ const AuthProvider = props => {
                 leadingTeamId: leadingTeamId,
                 login: login,
                 logout: logout,
-                isAuthorized: isAuthorized
+                isAuthorized: isAuthorized,
+                setLeadingTeamId: setLeadingTeamId
             }}
         >
             {props.children}

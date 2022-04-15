@@ -25,6 +25,7 @@ import {CreateTeam, DeleteTeam, EditTeam, TeamMemberStatus, TeamStatus} from "..
 import {useToasts} from "react-toast-notifications";
 import SportRadioButton from "../../../components/SportRadioButton";
 import {Sport} from "../../../services/PlayingFieldService";
+import {navigate} from "@reach/router";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -40,15 +41,10 @@ const MenuProps = {
 const CreateEditTeamModal = (props) => {
     const classes = useStyles();
     const {addToast} = useToasts();
-    const {loggedUser} = useAuthContext();
+    const {loggedUser, setLeadingTeamId} = useAuthContext();
     const [players, setPlayers] = useState(null);
-    const [getAllNonRejectedTeamMembers, setGetAllNonRejectedTeamMembers] = useState(null);
 
     useEffect(() => {
-        // console.log(props.team);
-        // props.team && GetTeamMembers(props.team.id)
-        //     .then(res => setGetAllNonRejectedTeamMembers(res.data))
-
         GetAllUsers(UserRole.User)
             .then(response => {
                 setPlayers(response.data)
@@ -62,18 +58,18 @@ const CreateEditTeamModal = (props) => {
         maxSize: props.team?.size ?? 2,
         teamLead: props.team?.teamLead ?? loggedUser,
         membersUsernames: props.team?.teamMembers
-            .filter(teamMember => teamMember.memberStatus === TeamMemberStatus.PendingToAcceptTeamInvitation || teamMember.memberStatus === TeamMemberStatus.Accepted)
+            .filter(teamMember => teamMember.memberStatus !== TeamMemberStatus.Rejected)
             .map(teamMember => teamMember.user.username) ?? [loggedUser],
         sport: props.team?.sport ?? Sport.Other,
         teamStatus: TeamStatus.LookingForMore
     });
 
     const handleChange = name => event => {
-        if (name === "membersUsernames") {
-            if (team.maxSize < event.target.value.length) {
-                return;
-            }
-        }
+        // if (name === "membersUsernames") {
+        //     if (team.maxSize < event.target.value.length) {
+        //         return;
+        //     }
+        // }
 
         if (name === "maxSize" && event.target.value < team.membersUsernames.length) {
             return;
@@ -85,8 +81,9 @@ const CreateEditTeamModal = (props) => {
     const handleDelete = () => {
         DeleteTeam(props.team.id)
             .then(() => {
-                props.onClose(true);
-                addToast('Successfully deleted', {appearance: 'success'});
+                navigate("/teams")
+                    .then(() => addToast('Successfully deleted your team', {appearance: 'success'}));
+
             });
 
     }
@@ -96,14 +93,16 @@ const CreateEditTeamModal = (props) => {
         if (props.team) {
             EditTeam(props.team.id, team)
                 .then(() => {
-                    props.onClose()
+                    props.onClose();
+                    setLeadingTeamId(props.team.id)
                     addToast('Successfully updated team', {appearance: 'success'});
                 })
 
         } else {
             CreateTeam(team)
-                .then(() => {
+                .then((res) => {
                     props.onClose();
+                    setLeadingTeamId(res.data.id)
                     addToast('Successfully created team', {appearance: 'success'});
                 })
                 .catch(err => console.log(err))

@@ -20,10 +20,10 @@ const RoleCard = (props) => {
                 :
                 <CardContent className={"d-flex flex-column align-content-center justify-content-center"}>
                     <Typography variant="h3" className={"role-card-text"}>
-                        {props.isOwner ? "Location Owner" : "Sportsman"}
+                        {props.isOwner ? "Location Owner" : "Sportist"}
                     </Typography>
                     <Button variant="contained" size={"large"}
-                            onClick={() => navigate(props.isOwner ? "/sportsman" : "/location-owner")}
+                            onClick={() => navigate(props.isOwner ? "/location-owner" : "/sportsman")}
                             className={"role-card-button"}>Find out more
                     </Button>
                 </CardContent>}

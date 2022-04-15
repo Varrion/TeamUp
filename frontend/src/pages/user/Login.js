@@ -44,7 +44,6 @@ const Login = () => {
 
     const handleSubmit = event => {
         event.preventDefault();
-
         LoginUser(user)
             .then((res) => {
                 const userRole = res.data.role;
@@ -64,6 +63,7 @@ const Login = () => {
                         addToast("Successfuly logged in", {appearance: 'success'})
                     });
             })
+            .catch(() => addToast("Incorrect credentials. Try again", {appearance: 'error'}))
     }
 
     return (loggedUser ? <Redirect to={"/"} noThrow/> :
@@ -100,7 +100,6 @@ const Login = () => {
                                 label="Password"
                                 type="password"
                                 id="password"
-                                autoComplete="current-password"
                             />
                             <Button
                                 type="submit"

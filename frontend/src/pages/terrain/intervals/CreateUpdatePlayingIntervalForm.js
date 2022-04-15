@@ -24,11 +24,11 @@ const CreateUpdatePlayingIntervalForm = ({
                 <MuiPickersUtilsProvider utils={MomentUtils}>
                     <DateTimePicker
                         label="From"
-                        format="DD/MM/YYYY HH:mm:ss"
+                        format="DD MMM YYYY HH:mm:ss"
                         fullWidth
                         disabled
                         className={"mt-2"}
-                        value={moment(new Date(playingInterval.gameStartTime)).utc().format("DD.MM.YYYY HH:mm")}
+                        value={moment(playingInterval.gameStartTime).utc().format("DD MMM YYYY HH:mm:ss")}
                         onChange={handlePlayingIntervalChange("gameStartTime")}
                     />
                 </MuiPickersUtilsProvider>
@@ -39,10 +39,10 @@ const CreateUpdatePlayingIntervalForm = ({
                     <DateTimePicker
                         disabled
                         label="To"
-                        format="DD/MM/YYYY HH:mm:ss"
+                        format="DD MMM YYYY HH:mm:ss"
                         fullWidth
                         className={"mt-2"}
-                        value={moment(new Date(playingInterval.gameEndTime)).utc().format("DD.MM.YYYY HH:mm")}
+                        value={moment(playingInterval.gameEndTime).utc().format("DD MMM YYYY HH:mm")}
                         onChange={handlePlayingIntervalChange("gameEndTime")}
                     />
                 </MuiPickersUtilsProvider>

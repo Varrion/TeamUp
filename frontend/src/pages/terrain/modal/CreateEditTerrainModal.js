@@ -96,7 +96,7 @@ const CreateEditTerrainModal = ({field, locationId = null, onIntervalUpdate, ...
         BulkUploadFiles(terrainRoute, terrainId, formData)
             .then(() => {
                     props.onClose();
-                    addToast('Intervals for playing will be automatically generated for the next 2 weeks.', {appearance: 'success'});
+                    addToast('REMINDER: Intervals for playing will be automatically be generated for the next 2 weeks.', {appearance: 'success'});
                 }
             )
     }

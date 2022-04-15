@@ -13,7 +13,7 @@ const UsersPage = () => {
     useEffect(() => {
         GetAllUsers(loggedUserRole)
             .then(res => setUsers(res.data))
-    }, [])
+    }, [loggedUserRole])
 
     return (
         <div>

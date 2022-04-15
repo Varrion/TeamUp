@@ -60,7 +60,6 @@ const Register = (props) => {
                                 <Grid item xs={12} sm={6}>
                                     <TextField
                                         onChange={handleChange("name")}
-                                        autoComplete="fname"
                                         name="firstName"
                                         variant="outlined"
                                         required

@@ -36,7 +36,6 @@ const GoogleMap = ({longitude, latitude, onMarkerChange, hideLongitudeLatitude, 
         };
     }
 
-
     const [googleMap, setGoogleMap] = useState({
         mapApiLoaded: false,
         mapInstance: null,
@@ -107,7 +106,6 @@ const GoogleMap = ({longitude, latitude, onMarkerChange, hideLongitudeLatitude, 
     return (
         <div className={"autocomplete-wrapper"}>
             {!googleMap.lng ? <CircularProgress/> : <>
-                {/*<LocationSearchInput/>*/}
                 <GoogleMapReact
                     options={mapOptions}
                     style={{height: height ?? "400px", position: "relative"}}
@@ -135,7 +133,6 @@ const GoogleMap = ({longitude, latitude, onMarkerChange, hideLongitudeLatitude, 
                     <div className="map-details">Latitude: <span>{googleMap.lat}</span>,
                         Longitude: <span>{googleMap.lng}</span>
                     </div>
-                    {/*<div className="map-details">Zoom: <span>{googleMap.zoom}</span></div>*/}
                 </div>}
             </>}
         </div>

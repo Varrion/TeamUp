@@ -2,7 +2,7 @@ import {Dialog, DialogContent, DialogTitle, IconButton, Typography} from "@mater
 import CloseIcon from "@material-ui/icons/Close";
 import React, {useState} from "react";
 import CreateUpdatePlayingIntervalForm from "../intervals/CreateUpdatePlayingIntervalForm";
-import {ReserveClosePlayingInterval} from "../../../services/PlayingIntervalService";
+import {ReserveClosePlayingInterval, UpdatePlayingInterval} from "../../../services/PlayingIntervalService";
 import useStyles from "../../../components/MaterialStyles";
 import {FieldStatus} from "../../../services/PlayingFieldService";
 import {useToasts} from "react-toast-notifications";
@@ -13,6 +13,7 @@ const CreateEditPlayingIntervalModal = ({terrainId, playingInterval, isEdit, ...
     const {addToast} = useToasts();
 
     const [interval, setInterval] = useState({
+        id: playingInterval?.id ?? null,
         gameStartTime: playingInterval?.gameStartTime ?? new Date(),
         gameEndTime: playingInterval?.gameEndTime ?? new Date(),
         fieldStatus: playingInterval?.fieldStatus ?? FieldStatus.Open
@@ -21,11 +22,19 @@ const CreateEditPlayingIntervalModal = ({terrainId, playingInterval, isEdit, ...
     const handleSubmit = event => {
         event.preventDefault();
 
-        ReserveClosePlayingInterval(terrainId, interval)
-            .then(() => {
-                props.onClose();
-                addToast('Successfully added playing interval', {appearance: 'success'});
-            })
+        !interval.id ?
+            ReserveClosePlayingInterval(terrainId, interval)
+                .then(() => {
+                    props.onClose();
+                    addToast('Successfully added playing interval', {appearance: 'success'});
+                })
+            :
+            UpdatePlayingInterval(terrainId, interval.id, interval)
+                .then(() => {
+                    props.onClose();
+                    addToast("Successfully updated the terrain status.", {appearance: "success"});
+                })
+
     }
 
     const handleChange = name => event => {

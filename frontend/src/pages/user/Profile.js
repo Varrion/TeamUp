@@ -25,6 +25,7 @@ const User = props => {
     const [isMemberOfTeam, setIsMemberOfTeam] = useState(false);
     const [joinedTeams, setJoinedTeams] = useState(null);
     const [pendingToAcceptTeams, setPendingToAcceptTeams] = useState(null);
+    const [pendingToBeAcceptedInTeam, setPendingToBeAcceptedInTeam] = useState(null);
     const [toggleTeams, setToggleTeams] = useState(false);
 
     //location
@@ -43,14 +44,13 @@ const User = props => {
                 setProfileImage(GetLastFilePath(userData.files));
                 setUser(userData);
             })
-    }, [props.username, showUpdateModal, imageUploadedToggle])
+    }, [props.username, showUpdateModal, showTeamModal, showLocationModal, imageUploadedToggle])
 
     useEffect(() => {
         if (user && changeOccurred) {
             user.role === UserRole.User ?
                 GetTeamsByMemberUsername(user.username).then(r => {
                     setChangeOccurred(false);
-
                     const teamsData = r.data;
                     setIsMemberOfTeam(!!teamsData.length);
 
@@ -68,13 +68,20 @@ const User = props => {
                             .find(teamMember => !teamMember.isTeamLead
                                 && teamMember.memberStatus === TeamMemberStatus.PendingToAcceptTeamInvitation
                                 && teamMember.user.username === user.username)))
+
+                    setPendingToBeAcceptedInTeam(teamsData
+                        .filter(team => team?.teamMembers
+                            .find(teamMember => !teamMember.isTeamLead
+                                && teamMember.memberStatus === TeamMemberStatus.PendingToBeAcceptedInTeam
+                                && teamMember.user.username === user.username)))
+
                 })
                 : GetLocationByOwnerUsername(user.username).then(r => {
                     setChangeOccurred(false);
                     setMyLocation(r.data);
                 });
         }
-    }, [user, showTeamModal, showLocationModal, locationDeleted, changeOccurred])
+    }, [user, locationDeleted, changeOccurred])
 
     const onFileUpload = (event) => {
         let formData = new FormData();
@@ -91,7 +98,11 @@ const User = props => {
 
     const handleDeleteLocation = () => {
         DeleteLocation(myLocation.id)
-            .then(() => setLocationDeleted(true));
+            .then(() => {
+                addToast("Succesfully deleted your location", {appearance: "success"});
+                setLocationDeleted(true);
+                setChangeOccurred(true);
+            });
     }
 
     const AcceptTeamInvitation = team => event => {
@@ -126,20 +137,28 @@ const User = props => {
             {!toggleTeams ?
                 <ProfileInfoGrid user={user}
                                  showUpdateInfoModal={() => setShowUpdateModal(true)}/> :
-                <ProfileTeamsGrid user={user} myTeam={myTeam} joinedTeams={joinedTeams}
+                <ProfileTeamsGrid user={user} myTeam={myTeam}
                                   acceptPendingTeamInvitation={AcceptTeamInvitation}
                                   rejectPendingTeamInvitation={RejectTeamInvitation}
+                                  joinedTeams={joinedTeams}
                                   pendingToAcceptTeams={pendingToAcceptTeams}
+                                  pendingToBeAcceptedInTeam={pendingToBeAcceptedInTeam}
                                   showTeamModal={() => setShowTeamModal(true)}/>
             }
 
             {showUpdateModal && <UserEditModal profile={user} open={showUpdateModal}
                                                onClose={() => setShowUpdateModal(false)}/>}
             {showTeamModal && <CreateEditTeamModal team={myTeam} open={showTeamModal}
-                                                   onClose={(isTeamDeleted) => handleOnCloseTeamModal(isTeamDeleted)}/>}
+                                                   onClose={(isTeamDeleted) => {
+                                                       handleOnCloseTeamModal(isTeamDeleted);
+                                                       setChangeOccurred(true);
+                                                   }}/>}
             {showLocationModal &&
                 <CreateEditLocationModal location={myLocation} open={showLocationModal}
-                                         onClose={() => setShowLocationModal(false)}/>}
+                                         onClose={() => {
+                                             setShowLocationModal(false);
+                                             setChangeOccurred(true);
+                                         }}/>}
         </Grid>
     )
 }

@@ -9,6 +9,7 @@ import './styles/Global.css';
 import axios from "axios";
 import {ToastProvider} from "react-toast-notifications";
 import CustomThemeProvider from "./configurations/MuiThemeContext";
+import {navigate} from "@reach/router";
 
 const credentials = JSON.parse(sessionStorage.getItem("authData"));
 
@@ -17,6 +18,17 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 if (credentials) {
     axios.defaults.headers.common['Authorization'] = credentials.userCredential;
 }
+
+axios.interceptors.response.use((response) => {
+    return response;
+}, function (error) {
+    // Do something with response error
+    if (error.response.status === 404) {
+        console.log('unauthorized, logging out ...');
+        navigate('/');
+    }
+    return Promise.reject(error.response);
+});
 
 ReactDOM.render(
     <CustomThemeProvider>

@@ -16,6 +16,13 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>, PagingAndSortingRepository<User,Long> {
 
+    @Query("SELECT user " +
+            "FROM User user " +
+            "WHERE user.deletedOn IS NULL " +
+            "   AND (user.username = :username OR user.email = :username)" +
+            "   AND user.password = :password ")
+    Optional<User> findByUsernameOrEmailAndPassword(String username, String password);
+
     Optional<User> findByUsername(String username);
 
     Optional<User> findByEmail(String email);

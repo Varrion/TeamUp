@@ -9,7 +9,7 @@ import React from "react";
 const TeamCard = ({team, onAccept, onCancel, filterTeamLead}) => {
     return (
         <Card
-            className={`card-zoom card-height m-3 text-center`}>
+            className={`card-zoom team-card m-3 text-center`}>
             <CardContent className={"cursor-pointer"} onClick={() => navigate(`/teams/${team.id}`)}>
                 <Avatar className={"profile-avatar-large"} src={team.logo?.filePath ?? 'https://i.pravatar.cc/300'}/>
                 <Typography variant={"h5"}
